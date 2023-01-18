@@ -1,0 +1,7 @@
+.vscode
+.idea
+.vscode
+.local
+index.html
+!.env-config.ts
+components.d.ts
