@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.yixiu.mapper.MzcEquipmentMapper">
+    
+    <resultMap type="MzcEquipment" id="MzcEquipmentResult">
+        <result property="equipmentId"    column="equipment_id"    />
+        <result property="deptId"    column="dept_id"    />
+        <result property="equipmentName"    column="equipment_name"    />
+        <result property="serialNumber"    column="serial_number"    />
+        <result property="factoryNumber"    column="factory_number"    />
+        <result property="modelNumber"    column="model_number"    />
+        <result property="brand"    column="brand"    />
+        <result property="price"    column="price"    />
+        <result property="purchaseTime"    column="purchase_time"    />
+        <result property="scrapTime"    column="scrap_time"    />
+        <result property="maintain"    column="maintain"    />
+        <result property="status"    column="status"    />
+        <result property="remark"    column="remark"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <association property="dept"    column="dept_id" javaType="SysDept" resultMap="deptResult" />
+    </resultMap>
+
+    <resultMap id="deptResult" type="SysDept">
+        <id     property="deptId"     column="dept_id"     />
+        <result property="parentName" column="parent_name" />
+        <result property="parentId"   column="parent_id"   />
+        <result property="deptName"   column="dept_name"   />
+        <result property="userId"     column="user_id"      />
+        <result property="leader"     column="leader" />
+        <result property="phone"      column="phone" />
+        <result property="address"    column="address" />
+        <result property="status"     column="status" />
+    </resultMap>
+
+    <sql id="selectMzcEquipmentVo">
+        select e.equipment_id, e.dept_id, e.equipment_name, e.serial_number, e.factory_number, e.model_number, e.brand, e.price, e.purchase_time, e.scrap_time, e.maintain, e.status, e.remark, e.del_flag, e.create_by, e.create_time, e.update_by, e.update_time,
+        d.*,
+        (select dept_name from sys_dept where dept_id = d.parent_id) parent_name
+        from mzc_equipment e
+        left join sys_dept d  on e.dept_id = d.dept_id
+    </sql>
+
+    <select id="selectMzcEquipmentList" parameterType="MzcEquipment" resultMap="MzcEquipmentResult">
+        <include refid="selectMzcEquipmentVo"/>
+        <where>
+            <if test="deptId != null "> and e.dept_id = #{deptId}</if>
+            <if test="equipmentName != null  and equipmentName != ''"> and equipment_name like concat('%', #{equipmentName}, '%')</if>
+            <if test="serialNumber != null  and serialNumber != ''"> and serial_number = #{serialNumber}</if>
+            <if test="factoryNumber != null  and factoryNumber != ''"> and factory_number = #{factoryNumber}</if>
+            <if test="modelNumber != null  and modelNumber != ''"> and model_number = #{modelNumber}</if>
+            <if test="brand != null  and brand != ''"> and brand = #{brand}</if>
+            <if test="price != null "> and price = #{price}</if>
+            <if test="purchaseTime != null "> and purchase_time = #{purchaseTime}</if>
+            <if test="scrapTime != null "> and scrap_time = #{scrapTime}</if>
+            <if test="maintain != null  and maintain != ''"> and maintain = #{maintain}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+            and e.del_flag = '0'
+        </where>
+    </select>
+
+    <select id="selectMzcEquipmentByEquipmentId" parameterType="Long" resultMap="MzcEquipmentResult">
+        <include refid="selectMzcEquipmentVo"/>
+        where equipment_id = #{equipmentId} and e.del_flag = '0'
+    </select>
+
+    <insert id="insertMzcEquipment" parameterType="MzcEquipment">
+        insert into mzc_equipment
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="deptId != null">dept_id,</if>
+            <if test="equipmentName != null">equipment_name,</if>
+            <if test="serialNumber != null">serial_number,</if>
+            <if test="factoryNumber != null">factory_number,</if>
+            <if test="modelNumber != null">model_number,</if>
+            <if test="brand != null">brand,</if>
+            <if test="price != null">price,</if>
+            <if test="purchaseTime != null">purchase_time,</if>
+            <if test="scrapTime != null">scrap_time,</if>
+            <if test="maintain != null">maintain,</if>
+            <if test="status != null">status,</if>
+            <if test="remark != null">remark,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="deptId != null">#{deptId},</if>
+            <if test="equipmentName != null">#{equipmentName},</if>
+            <if test="serialNumber != null">#{serialNumber},</if>
+            <if test="factoryNumber != null">#{factoryNumber},</if>
+            <if test="modelNumber != null">#{modelNumber},</if>
+            <if test="brand != null">#{brand},</if>
+            <if test="price != null">#{price},</if>
+            <if test="purchaseTime != null">#{purchaseTime},</if>
+            <if test="scrapTime != null">#{scrapTime},</if>
+            <if test="maintain != null">#{maintain},</if>
+            <if test="status != null">#{status},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateMzcEquipment" parameterType="MzcEquipment">
+        update mzc_equipment
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="equipmentName != null">equipment_name = #{equipmentName},</if>
+            <if test="serialNumber != null">serial_number = #{serialNumber},</if>
+            <if test="factoryNumber != null">factory_number = #{factoryNumber},</if>
+            <if test="modelNumber != null">model_number = #{modelNumber},</if>
+            <if test="brand != null">brand = #{brand},</if>
+            <if test="price != null">price = #{price},</if>
+            <if test="purchaseTime != null">purchase_time = #{purchaseTime},</if>
+            <if test="scrapTime != null">scrap_time = #{scrapTime},</if>
+            <if test="maintain != null">maintain = #{maintain},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where equipment_id = #{equipmentId} and del_flag = '0'
+    </update>
+
+    <delete id="deleteMzcEquipmentByEquipmentId" parameterType="Map">
+        update mzc_equipment set del_flag = '2',delete_by = #{deleteByName} where equipment_id = #{equipmentId}
+    </delete>
+
+    <delete id="deleteMzcEquipmentByEquipmentIds" parameterType="Map">
+        update mzc_equipment set del_flag = '2',delete_by = #{deleteByName} where equipment_id in
+        <foreach item="equipmentId" collection="equipmentIds" open="(" separator="," close=")">
+            #{equipmentId}
+        </foreach>
+    </delete>
+</mapper>

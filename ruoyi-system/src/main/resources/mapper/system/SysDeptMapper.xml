@@ -53,7 +53,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			AND dept_name like concat('%', #{deptName}, '%')
 		</if>
 		<if test="status != null and status != ''">
-			AND status = #{status}
+			AND d.status = #{status}
 		</if>
 		<!-- 数据范围过滤 -->
 		${params.dataScope}

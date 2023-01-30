@@ -290,4 +290,23 @@ public class FileUtils
         return baseName;
     }
 
+    /**
+     * 创建文件夹
+     *
+     * @param fileAddress 文件地址
+     */
+    public static void createFilePath(String fileAddress) {
+
+        File filePath = new File(fileAddress);
+
+        try {
+            if (!filePath.exists()) {
+                filePath.mkdirs();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
 }

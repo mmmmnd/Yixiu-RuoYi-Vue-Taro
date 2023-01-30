@@ -1,30 +1,23 @@
 package com.ruoyi.common.utils.http;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import com.alibaba.fastjson2.JSONObject;
+import com.ruoyi.common.constant.Constants;
+import com.ruoyi.common.utils.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.net.ssl.*;
+import java.io.*;
 import java.net.ConnectException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.security.cert.X509Certificate;
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import com.ruoyi.common.constant.Constants;
-import com.ruoyi.common.utils.StringUtils;
 
 /**
  * 通用http发送方法
- * 
+ *
  * @author ruoyi
  */
 public class HttpUtils
@@ -121,11 +114,25 @@ public class HttpUtils
      * 向指定 URL 发送POST方法的请求
      *
      * @param url 发送请求的 URL
+     * @param paramJson 请求参数，请求参数应该是 {name1:value1,name2:value2}的形式。
+     * @return 所代表远程资源的响应结果
+     */
+    public static String sendPost(String url, JSONObject paramJson) {
+        return sendPost(url, paramJson, null);
+    }
+
+    /**
+     * 向指定 URL 发送POST方法的请求
+     *
+     * @param url 发送请求的 URL
      * @param param 请求参数，请求参数应该是 name1=value1&name2=value2 的形式。
      * @return 所代表远程资源的响应结果
      */
-    public static String sendPost(String url, String param)
-    {
+    public static String sendPost(String url, String param) {
+        return sendPost(url,null ,param);
+    }
+
+    public static String sendPost(String url, JSONObject paramJson, String param){
         PrintWriter out = null;
         BufferedReader in = null;
         StringBuilder result = new StringBuilder();
@@ -142,7 +149,7 @@ public class HttpUtils
             conn.setDoOutput(true);
             conn.setDoInput(true);
             out = new PrintWriter(conn.getOutputStream());
-            out.print(param);
+            out.print(param == null ? paramJson.toString() : param);
             out.flush();
             in = new BufferedReader(new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8));
             String line;
@@ -154,19 +161,35 @@ public class HttpUtils
         }
         catch (ConnectException e)
         {
-            log.error("调用HttpUtils.sendPost ConnectException, url=" + url + ",param=" + param, e);
+            if(param == null){
+                log.error("调用HttpUtils.sendPost ConnectException, url=" + url + ",param=" + param, e);
+            }else{
+                log.error("调用HttpUtils.sendPost ConnectException, url=" + url + ",paramJson=" + paramJson.toString(), e);
+            }
         }
         catch (SocketTimeoutException e)
         {
-            log.error("调用HttpUtils.sendPost SocketTimeoutException, url=" + url + ",param=" + param, e);
+            if(param == null){
+                log.error("调用HttpUtils.sendPost SocketTimeoutException, url=" + url + ",param=" + param, e);
+            }else{
+                log.error("调用HttpUtils.sendPost SocketTimeoutException, url=" + url + ",paramJson=" + paramJson.toString(), e);
+            }
         }
         catch (IOException e)
         {
-            log.error("调用HttpUtils.sendPost IOException, url=" + url + ",param=" + param, e);
+            if(param == null){
+                log.error("调用HttpUtils.sendPost IOException, url=" + url + ",param=" + param, e);
+            }else{
+                log.error("调用HttpUtils.sendPost IOException, url=" + url + ",paramJson=" + paramJson.toString(), e);
+            }
         }
         catch (Exception e)
         {
-            log.error("调用HttpsUtil.sendPost Exception, url=" + url + ",param=" + param, e);
+            if(param == null){
+                log.error("调用HttpUtils.sendPost Exception, url=" + url + ",param=" + param, e);
+            }else{
+                log.error("调用HttpUtils.sendPost Exception, url=" + url + ",paramJson=" + paramJson.toString(), e);
+            }
         }
         finally
         {
@@ -183,7 +206,11 @@ public class HttpUtils
             }
             catch (IOException ex)
             {
-                log.error("调用in.close Exception, url=" + url + ",param=" + param, ex);
+                if(param == null){
+                    log.error("调用HttpUtils.sendPost, url=" + url + ",param=" + param, ex);
+                }else{
+                    log.error("调用HttpUtils.sendPost, url=" + url + ",paramJson=" + paramJson.toString(), ex);
+                }
             }
         }
         return result.toString();

@@ -1,14 +1,21 @@
 package com.ruoyi.common.constant;
 
 import io.jsonwebtoken.Claims;
+import org.springframework.context.annotation.Configuration;
 
 /**
  * 通用常量信息
  * 
  * @author ruoyi
  */
+@Configuration
 public class Constants
 {
+    /**
+     * 公共文件夹路径
+     */
+    public static final String resources = "ruoyi-yixiu/src/main/resources/";
+
     /**
      * UTF-8 字符集
      */
