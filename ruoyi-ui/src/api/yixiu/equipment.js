@@ -5,7 +5,7 @@
  * @version: 1.0.0
  * @Date: 2023-01-24 10:40:38
  * @LastEditors: 莫卓才
- * @LastEditTime: 2023-01-29 22:45:52
+ * @LastEditTime: 2023-02-01 16:31:34
  */
 import request from '@/utils/request'
 
@@ -58,5 +58,15 @@ export function qrCodeEquipment (data) {
     url: '/qrCode/equipment/',
     method: 'post',
     data: data
+  })
+}
+
+
+// 查询报废申请详细
+export function getDeptEquipmentList (query) {
+  return request({
+    url: '/yixiu/equipment/getDeptEquipmentList',
+    method: 'get',
+    params: query
   })
 }

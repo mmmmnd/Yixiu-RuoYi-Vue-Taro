@@ -29,6 +29,22 @@ public interface MzcEquipmentMapper
     public List<MzcEquipment> selectMzcEquipmentList(MzcEquipment mzcEquipment);
 
     /**
+     * 通过报废id查询关联下的设备
+     *
+     * @param scrapId 报废id
+     * @return 报废关联设备
+     */
+    public List<MzcEquipment> selectMzcScrapByScrapId(Long scrapId);
+
+    /**
+     * 通过单位id获取设备列表
+     *
+     * @param deptId 单位id
+     * @return 单位设备列表
+     */
+    public List<MzcEquipment> selectDeptEquipmentByDeptId(Long deptId);
+
+    /**
      * 新增设备列表
      * 
      * @param mzcEquipment 设备列表

@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.yixiu.mapper.MzcScrapMapper">
+    
+    <resultMap type="MzcScrap" id="MzcScrapResult">
+        <result property="scrapId"             column="scrap_id"    />
+        <result property="deptId"              column="dept_id"    />
+        <result property="deptName"            column="dept_name" />
+        <result property="parentName"          column="parent_name" />
+        <result property="number"              column="number"    />
+        <result property="nickname"            column="nickname"    />
+        <result property="phone"               column="phone"    />
+        <result property="cause"               column="cause"    />
+        <result property="record"              column="record"    />
+        <result property="depaOpinion"         column="depa_opinion"    />
+        <result property="equipmentOpinion"    column="equipment_opinion"    />
+        <result property="presidentOpinion"    column="president_opinion"    />
+        <result property="subPresident"        column="sub_president"    />
+        <result property="status"              column="status"    />
+        <result property="deleteBy"            column="delete_by"    />
+        <result property="delFlag"             column="del_flag"    />
+        <result property="createBy"            column="create_by"    />
+        <result property="createTime"          column="create_time"    />
+        <result property="updateBy"            column="update_by"    />
+        <result property="updateTime"          column="update_time"    />
+    </resultMap>
+
+    <resultMap id="EquipmentResult" type="mzcEquipment">
+        <result property="equipmentId"    column="equipment_id"    />
+        <result property="deptId"         column="dept_id"    />
+        <result property="equipmentName"  column="equipment_name"    />
+        <result property="serialNumber"   column="serial_number"    />
+        <result property="factoryNumber"  column="factory_number"    />
+        <result property="modelNumber"    column="model_number"    />
+        <result property="brand"          column="brand"    />
+        <result property="price"          column="price"    />
+        <result property="purchaseTime"   column="purchase_time"    />
+        <result property="scrapTime"      column="scrap_time"    />
+        <result property="maintain"       column="maintain"    />
+        <result property="status"         column="status"    />
+        <result property="remark"         column="remark"    />
+    </resultMap>
+
+    <sql id="selectMzcScrapVo">
+        select s.scrap_id, s.dept_id, s.number, s.nickname, s.phone, s.cause, s.record, s.depa_opinion, s.equipment_opinion, s.president_opinion, s.sub_president, s.status, s.create_by, s.create_time, s.update_by, s.update_time,
+        d.dept_name,
+        (select dept_name from sys_dept where dept_id = d.parent_id) parent_name
+        from mzc_scrap s
+        left join sys_dept d on s.dept_id = d.dept_id
+    </sql>
+
+    <select id="selectMzcScrapList" parameterType="MzcScrap" resultMap="MzcScrapResult">
+        <include refid="selectMzcScrapVo"/>
+        <where>  
+            <if test="deptId != null "> and dept_id = #{deptId}</if>
+            <if test="number != null  and number != ''"> and number = #{number}</if>
+            <if test="nickname != null  and nickname != ''"> and nickname like concat('%', #{nickname}, '%')</if>
+            <if test="phone != null  and phone != ''"> and phone = #{phone}</if>
+            <if test="cause != null  and cause != ''"> and cause = #{cause}</if>
+            <if test="record != null  and record != ''"> and record = #{record}</if>
+            <if test="depaOpinion != null  and depaOpinion != ''"> and depa_opinion = #{depaOpinion}</if>
+            <if test="equipmentOpinion != null  and equipmentOpinion != ''"> and equipment_opinion = #{equipmentOpinion}</if>
+            <if test="presidentOpinion != null  and presidentOpinion != ''"> and president_opinion = #{presidentOpinion}</if>
+            <if test="subPresident != null  and subPresident != ''"> and sub_president = #{subPresident}</if>
+            <if test="status != null  and status != ''"> and s.status = #{status}</if>
+            and s.del_flag = '0'
+        </where>
+    </select>
+    
+    <select id="selectMzcScrapByScrapId" parameterType="Long" resultMap="MzcScrapResult">
+        <include refid="selectMzcScrapVo"/>
+        where s.scrap_id = #{scrapId} and s.del_flag = '0'
+    </select>
+        
+    <insert id="insertMzcScrap" parameterType="MzcScrap" useGeneratedKeys="true" keyProperty="scrapId">
+        insert into mzc_scrap
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="deptId != null">dept_id,</if>
+            <if test="number != null">number,</if>
+            <if test="nickname != null">nickname,</if>
+            <if test="phone != null">phone,</if>
+            <if test="cause != null">cause,</if>
+            <if test="record != null">record,</if>
+            <if test="depaOpinion != null">depa_opinion,</if>
+            <if test="equipmentOpinion != null">equipment_opinion,</if>
+            <if test="presidentOpinion != null">president_opinion,</if>
+            <if test="subPresident != null">sub_president,</if>
+            <if test="status != null">status,</if>
+            <if test="deleteBy != null">delete_by,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="deptId != null">#{deptId},</if>
+            <if test="number != null">#{number},</if>
+            <if test="nickname != null">#{nickname},</if>
+            <if test="phone != null">#{phone},</if>
+            <if test="cause != null">#{cause},</if>
+            <if test="record != null">#{record},</if>
+            <if test="depaOpinion != null">#{depaOpinion},</if>
+            <if test="equipmentOpinion != null">#{equipmentOpinion},</if>
+            <if test="presidentOpinion != null">#{presidentOpinion},</if>
+            <if test="subPresident != null">#{subPresident},</if>
+            <if test="status != null">#{status},</if>
+            <if test="deleteBy != null">#{deleteBy},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateMzcScrap" parameterType="MzcScrap">
+        update mzc_scrap
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="number != null">number = #{number},</if>
+            <if test="nickname != null">nickname = #{nickname},</if>
+            <if test="phone != null">phone = #{phone},</if>
+            <if test="cause != null">cause = #{cause},</if>
+            <if test="record != null">record = #{record},</if>
+            <if test="depaOpinion != null">depa_opinion = #{depaOpinion},</if>
+            <if test="equipmentOpinion != null">equipment_opinion = #{equipmentOpinion},</if>
+            <if test="presidentOpinion != null">president_opinion = #{presidentOpinion},</if>
+            <if test="subPresident != null">sub_president = #{subPresident},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="deleteBy != null">delete_by = #{deleteBy},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where scrap_id = #{scrapId} and del_flag = '0'
+    </update>
+
+    <delete id="deleteMzcScrapByScrapId" parameterType="Long">
+        update mzc_scrap set del_flag = '2',delete_by = #{deleteByName} where scrap_id = #{scrapId}
+    </delete>
+
+    <delete id="deleteMzcScrapByScrapIds" parameterType="String">
+        update mzc_scrap set del_flag = '2',delete_by = #{deleteByName} where scrap_id in
+        <foreach item="scrapId" collection="scrapIds" open="(" separator="," close=")">
+            #{scrapId}
+        </foreach>
+    </delete>
+</mapper>

@@ -27,6 +27,11 @@
       <groupId>com.ruoyi</groupId>
       <artifactId>ruoyi-system</artifactId>
     </dependency>
+
+    <dependency>
+      <groupId>io.springfox</groupId>
+      <artifactId>springfox-boot-starter</artifactId>
+    </dependency>
   </dependencies>
 
 </project>

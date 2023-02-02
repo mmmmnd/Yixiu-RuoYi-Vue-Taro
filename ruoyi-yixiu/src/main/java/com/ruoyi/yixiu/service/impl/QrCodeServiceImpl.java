@@ -20,9 +20,9 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 @Service
-public class IQrCodeServiceImpl implements IQrCodeService {
+public class QrCodeServiceImpl implements IQrCodeService {
 
-  private static final Logger log = LoggerFactory.getLogger(IQrCodeServiceImpl.class);
+  private static final Logger log = LoggerFactory.getLogger(QrCodeServiceImpl.class);
 
   /**
    * 接口调用凭证 access_token

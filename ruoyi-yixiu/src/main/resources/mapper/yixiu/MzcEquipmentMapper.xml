@@ -69,6 +69,19 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         where equipment_id = #{equipmentId} and e.del_flag = '0'
     </select>
 
+    <select id="selectMzcScrapByScrapId" parameterType="Long" resultMap="MzcEquipmentResult">
+        select e.equipment_id, e.dept_id, e.equipment_name, e.serial_number, e.factory_number, e.model_number, e.brand, e.price, e.purchase_time, e.scrap_time, e.maintain, e.status, e.remark, e.del_flag, e.create_by, e.create_time, e.update_by, e.update_time
+        from  mzc_equipment e
+        right join mzc_equi_scrap es on es.equipment_id = e.equipment_id
+        right join mzc_scrap s on es.scrap_id = s.scrap_id
+        where s.scrap_id = #{scrapId} and e.del_flag = 0
+    </select>
+
+    <select id="selectDeptEquipmentByDeptId" parameterType="Long" resultMap="MzcEquipmentResult">
+        <include refid="selectMzcEquipmentVo"/>
+        where e.dept_id = #{deptId} and e.del_flag = '0'
+    </select>
+
     <insert id="insertMzcEquipment" parameterType="MzcEquipment">
         insert into mzc_equipment
         <trim prefix="(" suffix=")" suffixOverrides=",">

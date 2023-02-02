@@ -8,14 +8,7 @@ import com.ruoyi.yixiu.service.IQrCodeService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
@@ -74,6 +67,15 @@ public class MzcEquipmentController extends BaseController
         return success(mzcEquipmentService.selectMzcEquipmentByEquipmentId(equipmentId));
     }
 
+    /**
+     * 通过单位id获取设备列表
+     */
+    @PreAuthorize("@ss.hasPermi('yixiu:equipment:query')")
+    @GetMapping("/getDeptEquipmentList")
+    public AjaxResult selectDeptEquipmentByDeptId(@RequestParam Long deptId)
+    {
+        return success(mzcEquipmentService.selectDeptEquipmentByDeptId(deptId));
+    }
     /**
      * 新增设备列表
      */

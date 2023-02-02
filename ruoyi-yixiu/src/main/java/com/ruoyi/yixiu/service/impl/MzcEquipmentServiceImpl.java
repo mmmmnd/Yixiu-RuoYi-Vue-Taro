@@ -45,6 +45,29 @@ public class MzcEquipmentServiceImpl implements IMzcEquipmentService
     }
 
     /**
+     * 通过报废id查询关联下的设备
+     *
+     * @param scrapId 报废id
+     * @return 报废关联设备
+     */
+    @Override
+    public List<MzcEquipment> selectMzcScrapByScrapId(Long scrapId) {
+        return mzcEquipmentMapper.selectMzcScrapByScrapId(scrapId);
+    }
+
+    /**
+     * 通过单位id获取设备列表
+     *
+     * @param deptId 单位id
+     * @return 单位设备列表
+     */
+    @Override
+    public List<MzcEquipment> selectDeptEquipmentByDeptId(Long deptId) {
+        return mzcEquipmentMapper.selectDeptEquipmentByDeptId(deptId);
+    }
+
+
+    /**
      * 新增设备列表
      * 
      * @param mzcEquipment 设备列表

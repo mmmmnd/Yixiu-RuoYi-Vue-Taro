@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.yixiu.mapper.MzcEquiScrapMapper">
+    
+    <resultMap type="MzcEquiScrap" id="MzcEquiScrapResult">
+        <result property="equipmentId"    column="equipment_id"    />
+        <result property="scrapId"    column="scrap_id"    />
+    </resultMap>
+
+    <sql id="selectMzcEquiScrapVo">
+        select equipment_id, scrap_id from mzc_equi_scrap
+    </sql>
+
+    <select id="selectMzcEquiScrapList" parameterType="MzcEquiScrap" resultMap="MzcEquiScrapResult">
+        <include refid="selectMzcEquiScrapVo"/>
+        <where>  
+        </where>
+    </select>
+    
+    <select id="selectMzcEquiScrapByScrapId" parameterType="Long" resultMap="MzcEquiScrapResult">
+        <include refid="selectMzcEquiScrapVo"/>
+        where scrap_id = #{scrapId}
+    </select>
+        
+    <insert id="insertMzcEquiScrap" parameterType="MzcEquiScrap">
+        insert into mzc_equi_scrap
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="equipmentId != null">equipment_id,</if>
+            <if test="scrapId != null">scrap_id,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="equipmentId != null">#{equipmentId},</if>
+            <if test="scrapId != null">#{scrapId},</if>
+         </trim>
+    </insert>
+
+    <update id="updateMzcEquiScrap" parameterType="MzcEquiScrap">
+        update mzc_equi_scrap
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="scrapId != null">scrap_id = #{scrapId},</if>
+        </trim>
+        where scrap_id = #{scrapId}
+    </update>
+
+    <delete id="deleteMzcEquiScrapByScrapId" parameterType="Long">
+        delete from mzc_equi_scrap where scrap_id = #{scrapId}
+    </delete>
+
+    <delete id="deleteMzcEquiScrapByScrapIds" parameterType="String">
+        delete from mzc_equi_scrap where scrap_id in
+        <foreach item="scrapId" collection="array" open="(" separator="," close=")">
+            #{scrapId}
+        </foreach>
+    </delete>
+
+    <insert id="batchMzcEquiScrap">
+        insert into mzc_equi_scrap(equipment_id, scrap_id) values
+        <foreach item="item" index="index" collection="list" separator=",">
+            (#{item.equipmentId},#{item.scrapId})
+        </foreach>
+    </insert>
+</mapper>
