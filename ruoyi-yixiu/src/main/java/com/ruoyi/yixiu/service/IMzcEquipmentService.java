@@ -64,17 +64,15 @@ public interface IMzcEquipmentService
      * 批量删除设备列表
      * 
      * @param equipmentIds 需要删除的设备列表主键集合
-     * @param deleteByName 删除者
      * @return 结果
      */
-    public int deleteMzcEquipmentByEquipmentIds(Long[] equipmentIds, String deleteByName);
+    public int deleteMzcEquipmentByEquipmentIds(Long[] equipmentIds);
 
     /**
      * 删除设备列表信息
      *
      * @param equipmentId 设备列表主键
-     * @param deleteByName 删除者
      * @return 结果
      */
-    public int deleteMzcEquipmentByEquipmentId(Long equipmentId, String deleteByName);
+    public int deleteMzcEquipmentByEquipmentId(Long equipmentId);
 }

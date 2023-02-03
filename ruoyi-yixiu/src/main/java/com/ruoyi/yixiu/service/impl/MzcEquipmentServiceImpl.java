@@ -8,6 +8,8 @@ import com.ruoyi.yixiu.mapper.MzcEquipmentMapper;
 import com.ruoyi.yixiu.domain.MzcEquipment;
 import com.ruoyi.yixiu.service.IMzcEquipmentService;
 
+import static com.ruoyi.common.utils.SecurityUtils.getUsername;
+
 /**
  * 设备列表Service业务层处理
  * 
@@ -76,6 +78,7 @@ public class MzcEquipmentServiceImpl implements IMzcEquipmentService
     @Override
     public int insertMzcEquipment(MzcEquipment mzcEquipment)
     {
+        mzcEquipment.setCreateBy(getUsername());
         mzcEquipment.setCreateTime(DateUtils.getNowDate());
         return mzcEquipmentMapper.insertMzcEquipment(mzcEquipment);
     }
@@ -89,7 +92,9 @@ public class MzcEquipmentServiceImpl implements IMzcEquipmentService
     @Override
     public int updateMzcEquipment(MzcEquipment mzcEquipment)
     {
+        mzcEquipment.setUpdateBy(getUsername());
         mzcEquipment.setUpdateTime(DateUtils.getNowDate());
+
         return mzcEquipmentMapper.updateMzcEquipment(mzcEquipment);
     }
 
@@ -97,12 +102,13 @@ public class MzcEquipmentServiceImpl implements IMzcEquipmentService
      * 批量删除设备列表
      * 
      * @param equipmentIds 需要删除的设备列表主键
-     * @param deleteByName 删除者
      * @return 结果
      */
     @Override
-    public int deleteMzcEquipmentByEquipmentIds(Long[] equipmentIds, String deleteByName)
+    public int deleteMzcEquipmentByEquipmentIds(Long[] equipmentIds)
     {
+        String deleteByName = getUsername();
+
         return mzcEquipmentMapper.deleteMzcEquipmentByEquipmentIds(equipmentIds,deleteByName);
     }
 
@@ -110,12 +116,13 @@ public class MzcEquipmentServiceImpl implements IMzcEquipmentService
      * 删除设备列表信息
      * 
      * @param equipmentId 设备列表主键
-     * @param deleteByName 删除者
      * @return 结果
      */
     @Override
-    public int deleteMzcEquipmentByEquipmentId(Long equipmentId, String deleteByName)
+    public int deleteMzcEquipmentByEquipmentId(Long equipmentId)
     {
+        String deleteByName = getUsername();
+
         return mzcEquipmentMapper.deleteMzcEquipmentByEquipmentId(equipmentId,deleteByName);
     }
 }

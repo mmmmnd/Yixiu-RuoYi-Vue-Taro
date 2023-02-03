@@ -1,5 +1,6 @@
 package com.ruoyi.yixiu.domain;
 
+import io.swagger.annotations.ApiModelProperty;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import com.ruoyi.common.annotation.Excel;
@@ -16,9 +17,11 @@ public class MzcEquiScrap extends BaseEntity
     private static final long serialVersionUID = 1L;
 
     /** 设备ID */
+    @ApiModelProperty(value = "设备ID")
     private Long equipmentId;
 
     /** 报废ID */
+    @ApiModelProperty(value = "报废ID")
     private Long scrapId;
 
     public void setEquipmentId(Long equipmentId) 

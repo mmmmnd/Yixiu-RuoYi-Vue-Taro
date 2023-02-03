@@ -2,6 +2,7 @@ package com.ruoyi.common.core.domain;
 
 import java.io.Serializable;
 import com.ruoyi.common.constant.HttpStatus;
+import io.swagger.annotations.ApiModelProperty;
 
 /**
  * 响应信息主体
@@ -18,10 +19,13 @@ public class R<T> implements Serializable
     /** 失败 */
     public static final int FAIL = HttpStatus.ERROR;
 
+    @ApiModelProperty(value = "消息状态码")
     private int code;
 
+    @ApiModelProperty(value = "消息内容")
     private String msg;
 
+    @ApiModelProperty(value = "列表数据")
     private T data;
 
     public static <T> R<T> ok()

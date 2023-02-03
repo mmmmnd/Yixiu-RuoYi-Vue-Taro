@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ruoyi.common.core.domain.entity.SysDept;
+import io.swagger.annotations.ApiModelProperty;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import com.ruoyi.common.annotation.Excel;
@@ -22,60 +23,75 @@ public class MzcEquipment extends BaseEntity
     private static final long serialVersionUID = 1L;
 
     /** 设备id */
+    @ApiModelProperty(value = "设备id")
     private Long equipmentId;
 
     /** 设备关联单位id */
+    @ApiModelProperty(value = "设备关联单位id")
     @Excel(name = "设备关联单位id")
     private Long deptId;
 
     /** 设备名称 */
+    @ApiModelProperty(value = "设备名称")
     @Excel(name = "设备名称")
     private String equipmentName;
 
     /** 设备序列号 */
+    @ApiModelProperty(value = "设备序列号")
     @Excel(name = "设备序列号")
     private String serialNumber;
 
     /** 出厂编号 */
+    @ApiModelProperty(value = "出厂编号")
     @Excel(name = "出厂编号")
     private String factoryNumber;
 
     /** 设备型号 */
+    @ApiModelProperty(value = "设备型号")
     @Excel(name = "设备型号")
     private String modelNumber;
 
     /** 品牌 */
+    @ApiModelProperty(value = "品牌")
     @Excel(name = "品牌")
     private String brand;
 
     /** 价格 */
+    @ApiModelProperty(value = "价格")
     @Excel(name = "价格")
     private BigDecimal price;
 
     /** 购买时间 */
+    @ApiModelProperty(value = "购买时间")
     @JsonFormat(pattern = "yyyy-MM-dd")
     @Excel(name = "购买时间", width = 30, dateFormat = "yyyy-MM-dd")
     private Date purchaseTime;
 
     /** 报废时间 */
+    @ApiModelProperty(value = "报废时间")
     @JsonFormat(pattern = "yyyy-MM-dd")
     @Excel(name = "报废时间", width = 30, dateFormat = "yyyy-MM-dd")
     private Date scrapTime;
 
     /** 保养预警 */
+    @ApiModelProperty(value = "保养预警")
     @Excel(name = "保养预警")
     private String maintain;
 
     /** 状态（0正常 1停用） */
+    @ApiModelProperty(value = "状态 0=正常,1=停用")
     @Excel(name = "状态", readConverterExp = "0=正常,1=停用")
     private String status;
 
     /** 删除标志（0代表存在 2代表删除） */
+    @ApiModelProperty(value = "删除标志 0=存在,1=删除")
     private String delFlag;
 
     /*删除者*/
+    @ApiModelProperty(value = "删除者")
     private String deleteBy;
 
+    @ApiModelProperty(value = "单位信息")
     private SysDept dept;
 
     public void setEquipmentId(Long equipmentId) 

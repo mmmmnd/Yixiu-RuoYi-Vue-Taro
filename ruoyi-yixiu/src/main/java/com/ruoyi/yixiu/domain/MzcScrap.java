@@ -20,71 +20,89 @@ public class MzcScrap extends BaseEntity
     private static final long serialVersionUID = 1L;
 
     /** 报废id */
+    @ApiModelProperty(value = "报废id")
     private Long scrapId;
 
     /** 报废关联单位id */
+    @ApiModelProperty(value = "报废关联单位id")
     @Excel(name = "报废关联单位id")
     private Long deptId;
 
     /** 报废编号 */
+    @ApiModelProperty(value = "报废编号")
     @Excel(name = "报废编号")
     private String number;
 
     /** 联系人 */
+    @ApiModelProperty(value = "联系人")
     @Excel(name = "联系人")
     private String nickname;
 
     /** 联系电话 */
+    @ApiModelProperty(value = "联系电话")
     @Excel(name = "联系电话")
     private String phone;
 
     /** 报废原因 */
+    @ApiModelProperty(value = "报废原因")
     @Excel(name = "报废原因")
     private String cause;
 
     /** 报废情况记录 */
+    @ApiModelProperty(value = "报废情况记录")
     @Excel(name = "报废情况记录")
     private String record;
 
     /** 部门意见 */
+    @ApiModelProperty(value = "部门意见")
     @Excel(name = "部门意见")
-    private String depaOpinion;
+    private String deptOpinion;
 
     /** 设备部门意见 */
+    @ApiModelProperty(value = "设备部门意见")
     @Excel(name = "设备部门意见")
     private String equipmentOpinion;
 
     /** 院长意见 */
+    @ApiModelProperty(value = "院长意见")
     @Excel(name = "院长意见")
     private String presidentOpinion;
 
     /** 分院长意见 */
+    @ApiModelProperty(value = "分院长意见")
     @Excel(name = "分院长意见")
     private String subPresident;
 
     /** 状态（0正常 1失败 2通过） */
+    @ApiModelProperty(value = "状态 0=正常,1=失败,2=通过")
     @Excel(name = "状态", readConverterExp = "0=正常,1=失败,2=通过")
     private String status;
 
     /** 删除者 */
+    @ApiModelProperty(value = "删除者")
     private String deleteBy;
 
     /** 删除标志（0代表存在 2代表删除） */
+    @ApiModelProperty(value = "删除标志 0=存在 2=删除")
     private String delFlag;
 
     /*当前单位名称*/
+    @ApiModelProperty(value = "当前单位名称")
     private String deptName;
 
     /** 父部门名称 */
+    @ApiModelProperty(value = "父部门名称")
     private String parentName;
 
     /*设备列表*/
+    @ApiModelProperty(value = "设备列表")
     private List<MzcEquipment> equipment;
 
     /*设备列表选中*/
+    @ApiModelProperty(value = "设备列表选中")
     private List<Long> equipmentIds;
 
-    public void setScrapId(Long scrapId) 
+    public void setScrapId(Long scrapId)
     {
         this.scrapId = scrapId;
     }
@@ -145,16 +163,14 @@ public class MzcScrap extends BaseEntity
     {
         return record;
     }
-    public void setDepaOpinion(String depaOpinion) 
-    {
-        this.depaOpinion = depaOpinion;
+    public String getDeptOpinion() {
+        return deptOpinion;
     }
 
-    public String getDepaOpinion() 
-    {
-        return depaOpinion;
+    public void setDeptOpinion(String deptOpinion) {
+        this.deptOpinion = deptOpinion;
     }
-    public void setEquipmentOpinion(String equipmentOpinion) 
+    public void setEquipmentOpinion(String equipmentOpinion)
     {
         this.equipmentOpinion = equipmentOpinion;
     }
@@ -250,7 +266,7 @@ public class MzcScrap extends BaseEntity
             .append("phone", getPhone())
             .append("cause", getCause())
             .append("record", getRecord())
-            .append("depaOpinion", getDepaOpinion())
+            .append("deptOpinion", getDeptOpinion())
             .append("equipmentOpinion", getEquipmentOpinion())
             .append("presidentOpinion", getPresidentOpinion())
             .append("subPresident", getSubPresident())

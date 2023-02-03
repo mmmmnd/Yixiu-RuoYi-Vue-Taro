@@ -1,26 +1,20 @@
 package com.ruoyi.yixiu.service.impl;
 
+import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.yixiu.domain.MzcEquipment;
+import com.ruoyi.yixiu.domain.MzcScrap;
+import com.ruoyi.yixiu.mapper.MzcEquipmentMapper;
+import com.ruoyi.yixiu.mapper.MzcScrapMapper;
+import com.ruoyi.yixiu.service.IMzcScrapService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-
-import com.ruoyi.common.core.domain.entity.SysRole;
-import com.ruoyi.common.utils.DateUtils;
-import com.ruoyi.common.utils.StringUtils;
-import com.ruoyi.common.utils.bean.BeanUtils;
-import com.ruoyi.common.utils.spring.SpringUtils;
-import com.ruoyi.system.domain.SysUserPost;
-import com.ruoyi.yixiu.domain.MzcEquipment;
-import com.ruoyi.yixiu.mapper.MzcEquiScrapMapper;
-import com.ruoyi.yixiu.mapper.MzcEquipmentMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import com.ruoyi.yixiu.mapper.MzcScrapMapper;
-import com.ruoyi.yixiu.domain.MzcScrap;
-import com.ruoyi.yixiu.service.IMzcScrapService;
-
-import javax.annotation.Resource;
 
 import static com.ruoyi.common.utils.SecurityUtils.getUsername;
 
@@ -51,13 +45,17 @@ public class MzcScrapServiceImpl implements IMzcScrapService
         /*获取报废列表*/
         List<MzcEquipment> mzcEquipmentList = mzcEquipmentMapper.selectMzcScrapByScrapId(scrapId);
 
-        MzcScrap mzcScrap = mzcScrapMapper.selectMzcScrapByScrapId(scrapId);
-        mzcScrap.setEquipment(mzcEquipmentList);
+        if (StringUtils.isNotEmpty(mzcEquipmentList)){
+            MzcScrap mzcScrap = mzcScrapMapper.selectMzcScrapByScrapId(scrapId);
+            mzcScrap.setEquipment(mzcEquipmentList);
 
-        /*设备数量id*/
-        List<Long> list = mzcScrap.getEquipment().stream().map(MzcEquipment::getEquipmentId).filter(Objects::nonNull).collect(Collectors.toList());
-        mzcScrap.setEquipmentIds(list);
-        return mzcScrap;
+            /*设备数量id*/
+            List<Long> list = mzcScrap.getEquipment().stream().map(MzcEquipment::getEquipmentId).filter(Objects::nonNull).collect(Collectors.toList());
+            mzcScrap.setEquipmentIds(list);
+            return mzcScrap;
+        }else{
+            return null;
+        }
     }
 
     /**

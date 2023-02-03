@@ -105,7 +105,7 @@
                        prop="record" />
       <el-table-column label="部门意见"
                        align="center"
-                       prop="depaOpinion" />
+                       prop="deptOpinion" />
       <el-table-column label="设备部门意见"
                        align="center"
                        prop="equipmentOpinion" />
@@ -226,8 +226,8 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="部门"
-                          prop="depaOpinion">
-              <el-input v-model="form.depaOpinion"
+                          prop="deptOpinion">
+              <el-input v-model="form.deptOpinion"
                         type="textarea"
                         placeholder="请输入部门意见" />
             </el-form-item>
@@ -327,7 +327,7 @@ export default {
         phone: null,
         cause: null,
         record: null,
-        depaOpinion: null,
+        deptOpinion: null,
         equipmentOpinion: null,
         presidentOpinion: null,
         subPresident: null,
@@ -359,7 +359,7 @@ export default {
         record: [
           { required: true, message: "报废情况不能为空", trigger: "blur" }
         ],
-        depaOpinion: [
+        deptOpinion: [
           { required: true, message: "部门不能为空", trigger: "blur" }
         ],
         equipmentOpinion: [
@@ -402,7 +402,7 @@ export default {
         phone: null,
         cause: null,
         record: null,
-        depaOpinion: null,
+        deptOpinion: null,
         equipmentOpinion: null,
         presidentOpinion: null,
         subPresident: null,

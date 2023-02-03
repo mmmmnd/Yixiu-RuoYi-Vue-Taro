@@ -14,7 +14,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="phone"               column="phone"    />
         <result property="cause"               column="cause"    />
         <result property="record"              column="record"    />
-        <result property="depaOpinion"         column="depa_opinion"    />
+        <result property="deptOpinion"         column="dept_opinion"    />
         <result property="equipmentOpinion"    column="equipment_opinion"    />
         <result property="presidentOpinion"    column="president_opinion"    />
         <result property="subPresident"        column="sub_president"    />
@@ -44,7 +44,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectMzcScrapVo">
-        select s.scrap_id, s.dept_id, s.number, s.nickname, s.phone, s.cause, s.record, s.depa_opinion, s.equipment_opinion, s.president_opinion, s.sub_president, s.status, s.create_by, s.create_time, s.update_by, s.update_time,
+        select s.scrap_id, s.dept_id, s.number, s.nickname, s.phone, s.cause, s.record, s.dept_opinion, s.equipment_opinion, s.president_opinion, s.sub_president, s.status, s.create_by, s.create_time, s.update_by, s.update_time,
         d.dept_name,
         (select dept_name from sys_dept where dept_id = d.parent_id) parent_name
         from mzc_scrap s
@@ -54,13 +54,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <select id="selectMzcScrapList" parameterType="MzcScrap" resultMap="MzcScrapResult">
         <include refid="selectMzcScrapVo"/>
         <where>  
+            <if test="scrapId != null "> and s.scrap_id = #{scrapId}</if>
             <if test="deptId != null "> and dept_id = #{deptId}</if>
             <if test="number != null  and number != ''"> and number = #{number}</if>
             <if test="nickname != null  and nickname != ''"> and nickname like concat('%', #{nickname}, '%')</if>
             <if test="phone != null  and phone != ''"> and phone = #{phone}</if>
             <if test="cause != null  and cause != ''"> and cause = #{cause}</if>
             <if test="record != null  and record != ''"> and record = #{record}</if>
-            <if test="depaOpinion != null  and depaOpinion != ''"> and depa_opinion = #{depaOpinion}</if>
+            <if test="deptOpinion != null  and deptOpinion != ''"> and dept_opinion = #{deptOpinion}</if>
             <if test="equipmentOpinion != null  and equipmentOpinion != ''"> and equipment_opinion = #{equipmentOpinion}</if>
             <if test="presidentOpinion != null  and presidentOpinion != ''"> and president_opinion = #{presidentOpinion}</if>
             <if test="subPresident != null  and subPresident != ''"> and sub_president = #{subPresident}</if>
@@ -83,7 +84,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="phone != null">phone,</if>
             <if test="cause != null">cause,</if>
             <if test="record != null">record,</if>
-            <if test="depaOpinion != null">depa_opinion,</if>
+            <if test="deptOpinion != null">dept_opinion,</if>
             <if test="equipmentOpinion != null">equipment_opinion,</if>
             <if test="presidentOpinion != null">president_opinion,</if>
             <if test="subPresident != null">sub_president,</if>
@@ -102,7 +103,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="phone != null">#{phone},</if>
             <if test="cause != null">#{cause},</if>
             <if test="record != null">#{record},</if>
-            <if test="depaOpinion != null">#{depaOpinion},</if>
+            <if test="deptOpinion != null">#{deptOpinion},</if>
             <if test="equipmentOpinion != null">#{equipmentOpinion},</if>
             <if test="presidentOpinion != null">#{presidentOpinion},</if>
             <if test="subPresident != null">#{subPresident},</if>
@@ -125,7 +126,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="phone != null">phone = #{phone},</if>
             <if test="cause != null">cause = #{cause},</if>
             <if test="record != null">record = #{record},</if>
-            <if test="depaOpinion != null">depa_opinion = #{depaOpinion},</if>
+            <if test="deptOpinion != null">dept_opinion = #{deptOpinion},</if>
             <if test="equipmentOpinion != null">equipment_opinion = #{equipmentOpinion},</if>
             <if test="presidentOpinion != null">president_opinion = #{presidentOpinion},</if>
             <if test="subPresident != null">sub_president = #{subPresident},</if>
