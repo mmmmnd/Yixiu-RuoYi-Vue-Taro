@@ -2,8 +2,9 @@ package ${packageName}.service.impl;
 
 import java.util.List;
 #foreach ($column in $columns)
-#if($column.javaField == 'createTime' || $column.javaField == 'updateTime')
+#if($column.javaField == 'createTime' || $column.javaField == 'updateTime' || $column.javaField == 'deleteBy')
 import com.ruoyi.common.utils.DateUtils;
+import static com.ruoyi.common.utils.SecurityUtils.getUsername;
 #break
 #end
 #end
@@ -70,6 +71,7 @@ public class ${ClassName}ServiceImpl implements I${ClassName}Service
 #foreach ($column in $columns)
 #if($column.javaField == 'createTime')
         ${className}.setCreateTime(DateUtils.getNowDate());
+        ${className}.setCreateBy(getUsername());
 #end
 #end
 #if($table.sub)
@@ -94,8 +96,9 @@ public class ${ClassName}ServiceImpl implements I${ClassName}Service
     public int update${ClassName}(${ClassName} ${className})
     {
 #foreach ($column in $columns)
-#if($column.javaField == 'updateTime')
+#if($column.javaField == 'deleteBy')
         ${className}.setUpdateTime(DateUtils.getNowDate());
+        ${className}.setUpdateBy(getUsername());
 #end
 #end
 #if($table.sub)
@@ -117,10 +120,15 @@ public class ${ClassName}ServiceImpl implements I${ClassName}Service
     @Override
     public int delete${ClassName}By${pkColumn.capJavaField}s(${pkColumn.javaType}[] ${pkColumn.javaField}s)
     {
+#foreach ($column in $columns)
+    #if($column.javaField == 'deleteBy')
+        String deleteByName = getUsername()
+    #end
+#end
 #if($table.sub)
         ${className}Mapper.delete${subClassName}By${subTableFkClassName}s(${pkColumn.javaField}s);
 #end
-        return ${className}Mapper.delete${ClassName}By${pkColumn.capJavaField}s(${pkColumn.javaField}s);
+        return ${className}Mapper.delete${ClassName}By${pkColumn.capJavaField}s(${pkColumn.javaField}s,deleteByName);
     }
 
     /**
@@ -135,10 +143,15 @@ public class ${ClassName}ServiceImpl implements I${ClassName}Service
     @Override
     public int delete${ClassName}By${pkColumn.capJavaField}(${pkColumn.javaType} ${pkColumn.javaField})
     {
+#foreach ($column in $columns)
+    #if($column.javaField == 'deleteBy')
+        String deleteByName = getUsername()
+    #end
+#end
 #if($table.sub)
         ${className}Mapper.delete${subClassName}By${subTableFkClassName}(${pkColumn.javaField});
 #end
-        return ${className}Mapper.delete${ClassName}By${pkColumn.capJavaField}(${pkColumn.javaField});
+        return ${className}Mapper.delete${ClassName}By${pkColumn.capJavaField}(${pkColumn.javaField},deleteByName);
     }
 #if($table.sub)
 

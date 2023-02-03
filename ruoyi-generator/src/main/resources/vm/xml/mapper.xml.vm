@@ -103,26 +103,26 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </update>
 
     <delete id="delete${ClassName}By${pkColumn.capJavaField}" parameterType="${pkColumn.javaType}">
-        delete from ${tableName} where ${pkColumn.columnName} = #{${pkColumn.javaField}}
+        update ${tableName} set del_flag = '2', delete_by = #{deleteByName} where ${pkColumn.columnName} = #{${pkColumn.javaField}}
     </delete>
 
     <delete id="delete${ClassName}By${pkColumn.capJavaField}s" parameterType="String">
-        delete from ${tableName} where ${pkColumn.columnName} in 
-        <foreach item="${pkColumn.javaField}" collection="array" open="(" separator="," close=")">
+      update ${tableName} set del_flag = '2', delete_by = #{deleteByName} where ${pkColumn.columnName} = #{${pkColumn.javaField}} in
+        <foreach item="${pkColumn.javaField}" collection="${pkColumn.javaField}s" open="(" separator="," close=")">
             #{${pkColumn.javaField}}
         </foreach>
     </delete>
 #if($table.sub)
     
     <delete id="delete${subClassName}By${subTableFkClassName}s" parameterType="String">
-        delete from ${subTableName} where ${subTableFkName} in 
-        <foreach item="${subTableFkclassName}" collection="array" open="(" separator="," close=")">
+      update ${tableName} set del_flag = '2', delete_by = #{deleteByName} where ${pkColumn.columnName} = #{${pkColumn.javaField}} in
+        <foreach item="${subTableFkclassName}" collection="${pkColumn.javaField}s" open="(" separator="," close=")">
             #{${subTableFkclassName}}
         </foreach>
     </delete>
 
     <delete id="delete${subClassName}By${subTableFkClassName}" parameterType="${pkColumn.javaType}">
-        delete from ${subTableName} where ${subTableFkName} = #{${subTableFkclassName}}
+        update ${tableName} set del_flag = '2', delete_by = #{deleteByName} where ${pkColumn.columnName} = #{${pkColumn.javaField}}
     </delete>
 
     <insert id="batch${subClassName}">
