@@ -18,26 +18,35 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="createBy"    column="create_by"    />
         <result property="updateTime"    column="update_time"    />
         <result property="updateBy"    column="update_by"    />
+        <result property="supplierName"    column="supplier_name"    />
+        <result property="equipmentName"    column="equipment_name"    />
     </resultMap>
 
     <sql id="selectMzcMaterialVo">
-        select material_id, equipment_id, supplier_id, material_name, brand, status, remark, del_flag, delete_by, create_time, create_by, update_time, update_by from mzc_material
+        select m.material_id, m.equipment_id, m.supplier_id, m.material_name, m.brand, m.status, m.remark, m.del_flag, m.delete_by, m.create_time, m.create_by, m.update_time, m.update_by,
+        e.equipment_name,
+        s.supplier_name
+        from mzc_material m
+        left join mzc_equipment e on m.equipment_id = e.equipment_id
+        left join mzc_supplier s on m.supplier_id = s.supplier_id
     </sql>
 
     <select id="selectMzcMaterialList" parameterType="MzcMaterial" resultMap="MzcMaterialResult">
         <include refid="selectMzcMaterialVo"/>
         <where>  
-            <if test="equipmentId != null "> and equipment_id = #{equipmentId}</if>
-            <if test="supplierId != null "> and supplier_id = #{supplierId}</if>
+            <if test="materialId != null "> and m.material_id = #{materialId}</if>
+            <if test="equipmentId != null "> and m.equipment_id = #{equipmentId}</if>
+            <if test="supplierId != null "> and m.supplier_id = #{supplierId}</if>
             <if test="materialName != null  and materialName != ''"> and material_name like concat('%', #{materialName}, '%')</if>
             <if test="brand != null  and brand != ''"> and brand like concat('%', #{brand}, '%')</if>
             <if test="status != null  and status != ''"> and status = #{status}</if>
+            and m.del_flag = '0'
         </where>
     </select>
     
     <select id="selectMzcMaterialByMaterialId" parameterType="Long" resultMap="MzcMaterialResult">
         <include refid="selectMzcMaterialVo"/>
-        where material_id = #{materialId}
+        where material_id = #{materialId} and m.del_flag = '0'
     </select>
         
     <insert id="insertMzcMaterial" parameterType="MzcMaterial" useGeneratedKeys="true" keyProperty="materialId">
@@ -88,16 +97,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="updateTime != null">update_time = #{updateTime},</if>
             <if test="updateBy != null">update_by = #{updateBy},</if>
         </trim>
-        where material_id = #{materialId}
+        where material_id = #{materialId} and del_flag = '0'
     </update>
 
     <delete id="deleteMzcMaterialByMaterialId" parameterType="Long">
-        delete from mzc_material where material_id = #{materialId}
+        update mzc_material set del_flag = '2',delete_by = #{deleteByName} where material_id = #{materialId}
     </delete>
 
     <delete id="deleteMzcMaterialByMaterialIds" parameterType="String">
-        delete from mzc_material where material_id in 
-        <foreach item="materialId" collection="array" open="(" separator="," close=")">
+        delete from mzc_material where material_id in
+        update mzc_material set del_flag = '2',delete_by = #{deleteByName} where material_id in
+        <foreach item="materialId" collection="materialId" open="(" separator="," close=")">
             #{materialId}
         </foreach>
     </delete>

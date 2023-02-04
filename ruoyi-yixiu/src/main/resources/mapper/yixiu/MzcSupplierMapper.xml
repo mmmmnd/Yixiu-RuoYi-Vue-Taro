@@ -29,12 +29,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="supplierName != null  and supplierName != ''"> and supplier_name like concat('%', #{supplierName}, '%')</if>
             <if test="nickname != null  and nickname != ''"> and nickname like concat('%', #{nickname}, '%')</if>
             <if test="phone != null  and phone != ''"> and phone = #{phone}</if>
+            and del_flag = '0'
         </where>
     </select>
     
     <select id="selectMzcSupplierBySupplierId" parameterType="Long" resultMap="MzcSupplierResult">
         <include refid="selectMzcSupplierVo"/>
-        where supplier_id = #{supplierId}
+        where supplier_id = #{supplierId} and del_flag = '0'
     </select>
         
     <insert id="insertMzcSupplier" parameterType="MzcSupplier" useGeneratedKeys="true" keyProperty="supplierId">
@@ -79,7 +80,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="updateTime != null">update_time = #{updateTime},</if>
             <if test="updateBy != null">update_by = #{updateBy},</if>
         </trim>
-        where supplier_id = #{supplierId}
+        where supplier_id = #{supplierId} and del_flag = '0'
     </update>
 
     <delete id="deleteMzcSupplierBySupplierId" parameterType="Long">

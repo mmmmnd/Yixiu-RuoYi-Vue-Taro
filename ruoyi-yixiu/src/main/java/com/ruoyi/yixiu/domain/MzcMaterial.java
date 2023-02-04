@@ -1,5 +1,6 @@
 package com.ruoyi.yixiu.domain;
 
+import io.swagger.annotations.ApiModelProperty;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import com.ruoyi.common.annotation.Excel;
@@ -16,33 +17,49 @@ public class MzcMaterial extends BaseEntity
     private static final long serialVersionUID = 1L;
 
     /** 耗材id */
+    @ApiModelProperty(value = "耗材id")
     private Long materialId;
 
     /** 设备id */
     @Excel(name = "设备id")
+    @ApiModelProperty(value = "设备id")
     private Long equipmentId;
 
     /** 供应商 */
-    @Excel(name = "供应商")
+    @Excel(name = "供应商id")
+    @ApiModelProperty(value = "供应商id")
     private Long supplierId;
 
     /** 耗材名称 */
     @Excel(name = "耗材名称")
+    @ApiModelProperty(value = "耗材名称")
     private String materialName;
 
     /** 品牌 */
     @Excel(name = "品牌")
+    @ApiModelProperty(value = "品牌")
     private String brand;
 
     /** 耗材类型 ( 0 普通耗材 1专用耗材 ) */
     @Excel(name = "耗材类型 ( 0 普通耗材 1专用耗材 )")
+    @ApiModelProperty(value = "耗材类型 ( 0 普通耗材 1专用耗材 )")
     private String status;
 
     /** 删除标志（0代表存在 2代表删除） */
+    @ApiModelProperty(value = "删除标志（0代表存在 2代表删除）")
     private String delFlag;
 
     /** 删除者 */
+    @ApiModelProperty(value = "删除者")
     private String deleteBy;
+
+    /** 设备名称 */
+    @ApiModelProperty(value = "设备名称")
+    private String equipmentName;
+
+    /** 供应商名称 */
+    @ApiModelProperty(value = "供应商名称")
+    private String supplierName;
 
     public void setMaterialId(Long materialId) 
     {
@@ -115,6 +132,23 @@ public class MzcMaterial extends BaseEntity
     public String getDeleteBy() 
     {
         return deleteBy;
+    }
+
+
+    public String getEquipmentName() {
+        return equipmentName;
+    }
+
+    public void setEquipmentName(String equipmentName) {
+        this.equipmentName = equipmentName;
+    }
+
+    public String getSupplierName() {
+        return supplierName;
+    }
+
+    public void setSupplierName(String supplierName) {
+        this.supplierName = supplierName;
     }
 
     @Override

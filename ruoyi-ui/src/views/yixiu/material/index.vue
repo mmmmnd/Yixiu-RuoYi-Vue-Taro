@@ -91,12 +91,12 @@
       <el-table-column label="耗材id"
                        align="center"
                        prop="materialId" />
-      <el-table-column label="设备id"
+      <el-table-column label="设备名称"
                        align="center"
-                       prop="equipmentId" />
-      <el-table-column label="供应商"
+                       prop="equipmentName" />
+      <el-table-column label="供应商名称"
                        align="center"
-                       prop="supplierId" />
+                       prop="supplierName" />
       <el-table-column label="耗材名称"
                        align="center"
                        prop="materialName" />
@@ -141,35 +141,75 @@
     <!-- 添加或修改耗材对话框 -->
     <el-dialog :title="title"
                :visible.sync="open"
-               width="500px"
+               width="600px"
                append-to-body>
       <el-form ref="form"
                :model="form"
                :rules="rules"
                label-width="80px">
-        <el-form-item label="耗材名称"
-                      prop="materialName">
-          <el-input v-model="form.materialName"
-                    placeholder="请输入耗材名称" />
-        </el-form-item>
-        <el-form-item label="品牌"
-                      prop="brand">
-          <el-input v-model="form.brand"
-                    placeholder="请输入品牌" />
-        </el-form-item>
-        <el-form-item label="耗材类型">
-          <el-radio-group v-model="form.status">
-            <el-radio v-for="dict in dict.type.mzc_material_status"
-                      :key="dict.value"
-                      :label="dict.value">{{dict.label}}</el-radio>
-          </el-radio-group>
-        </el-form-item>
-        <el-form-item label="备注"
-                      prop="remark">
-          <el-input v-model="form.remark"
-                    type="textarea"
-                    placeholder="请输入内容" />
-        </el-form-item>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="设备列表"
+                          prop="equipmentId">
+              <el-select v-model="form.equipmentId"
+                         placeholder="请选择设备"
+                         @blur="customBlurValidate('equipmentId')">
+                <el-option v-for="item in scrapOptions"
+                           :key="item.equipmentId"
+                           :label="item.equipmentName"
+                           :value="item.equipmentId"></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="供应商"
+                          prop="supplierId">
+              <el-select v-model="form.supplierId"
+                         placeholder="请选择供应商"
+                         @blur="customBlurValidate('supplierId')">
+                <el-option v-for="item in supplierOptions"
+                           :key="item.supplierId"
+                           :label="item.supplierName"
+                           :value="item.supplierId"></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="耗材名称"
+                          prop="materialName">
+              <el-input v-model="form.materialName"
+                        placeholder="请输入耗材名称" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="品牌"
+                          prop="brand">
+              <el-input v-model="form.brand"
+                        placeholder="请输入品牌" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="耗材类型">
+              <el-radio-group v-model="form.status">
+                <el-radio v-for="dict in dict.type.mzc_material_status"
+                          :key="dict.value"
+                          :label="dict.value">{{dict.label}}</el-radio>
+              </el-radio-group>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="备注"
+                          prop="remark">
+              <el-input v-model="form.remark"
+                        type="textarea"
+                        placeholder="请输入内容" />
+            </el-form-item>
+          </el-col>
+        </el-row>
       </el-form>
       <div slot="footer"
            class="dialog-footer">
@@ -183,7 +223,8 @@
 
 <script>
 import { listMaterial, getMaterial, delMaterial, addMaterial, updateMaterial } from "@/api/yixiu/material";
-
+import { listEquipment } from "@/api/yixiu/equipment";
+import { listSupplier } from "@/api/yixiu/supplier";
 export default {
   name: "Material",
   dicts: ['mzc_material_status'],
@@ -203,6 +244,10 @@ export default {
       total: 0,
       // 耗材表格数据
       materialList: [],
+      // 设备列表数据
+      scrapOptions: [],
+      // 供应商列表数据
+      supplierOptions: [],
       // 弹出层标题
       title: "",
       // 是否显示弹出层
@@ -222,10 +267,10 @@ export default {
       // 表单校验
       rules: {
         equipmentId: [
-          { required: true, message: "设备id不能为空", trigger: "change" }
+          { required: true, message: "设备id不能为空", trigger: "blur" }
         ],
         supplierId: [
-          { required: true, message: "供应商不能为空", trigger: "change" }
+          { required: true, message: "供应商不能为空", trigger: "blur" }
         ],
         materialName: [
           { required: true, message: "耗材名称不能为空", trigger: "blur" }
@@ -289,20 +334,33 @@ export default {
       this.single = selection.length !== 1
       this.multiple = !selection.length
     },
+    // 失去焦点校验
+    customBlurValidate (prop) {
+      this.$refs["form"].clearValidate(prop)
+    },
     /** 新增按钮操作 */
     handleAdd () {
-      this.reset();
-      this.open = true;
-      this.title = "添加耗材";
+      const param = { pageNum: 1, pageSize: 9999 };
+
+      Promise.all([listEquipment(param), listSupplier(param)])
+        .then(res => {
+          this.reset();
+          this.open = true;
+          this.title = "添加耗材";
+        })
     },
     /** 修改按钮操作 */
     handleUpdate (row) {
-      this.reset();
+      const param = { pageNum: 1, pageSize: 9999 };
       const materialId = row.materialId || this.ids
-      getMaterial(materialId).then(response => {
-        this.form = response.data;
+
+      Promise.all([listEquipment(param), listSupplier(param), getMaterial(materialId)]).then(res => {
+        this.reset();
         this.open = true;
         this.title = "修改耗材";
+        this.scrapOptions = res[0].rows;
+        this.supplierOptions = res[1].rows;
+        this.form = res[2].data;
       });
     },
     /** 提交按钮 */
