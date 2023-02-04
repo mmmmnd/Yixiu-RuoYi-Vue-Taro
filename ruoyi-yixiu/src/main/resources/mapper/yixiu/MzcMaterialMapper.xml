@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.yixiu.mapper.MzcMaterialMapper">
+    
+    <resultMap type="MzcMaterial" id="MzcMaterialResult">
+        <result property="materialId"    column="material_id"    />
+        <result property="equipmentId"    column="equipment_id"    />
+        <result property="supplierId"    column="supplier_id"    />
+        <result property="materialName"    column="material_name"    />
+        <result property="brand"    column="brand"    />
+        <result property="status"    column="status"    />
+        <result property="remark"    column="remark"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="deleteBy"    column="delete_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="updateBy"    column="update_by"    />
+    </resultMap>
+
+    <sql id="selectMzcMaterialVo">
+        select material_id, equipment_id, supplier_id, material_name, brand, status, remark, del_flag, delete_by, create_time, create_by, update_time, update_by from mzc_material
+    </sql>
+
+    <select id="selectMzcMaterialList" parameterType="MzcMaterial" resultMap="MzcMaterialResult">
+        <include refid="selectMzcMaterialVo"/>
+        <where>  
+            <if test="equipmentId != null "> and equipment_id = #{equipmentId}</if>
+            <if test="supplierId != null "> and supplier_id = #{supplierId}</if>
+            <if test="materialName != null  and materialName != ''"> and material_name like concat('%', #{materialName}, '%')</if>
+            <if test="brand != null  and brand != ''"> and brand like concat('%', #{brand}, '%')</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+        </where>
+    </select>
+    
+    <select id="selectMzcMaterialByMaterialId" parameterType="Long" resultMap="MzcMaterialResult">
+        <include refid="selectMzcMaterialVo"/>
+        where material_id = #{materialId}
+    </select>
+        
+    <insert id="insertMzcMaterial" parameterType="MzcMaterial" useGeneratedKeys="true" keyProperty="materialId">
+        insert into mzc_material
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="equipmentId != null">equipment_id,</if>
+            <if test="supplierId != null">supplier_id,</if>
+            <if test="materialName != null and materialName != ''">material_name,</if>
+            <if test="brand != null">brand,</if>
+            <if test="status != null and status != ''">status,</if>
+            <if test="remark != null">remark,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="deleteBy != null">delete_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="updateBy != null">update_by,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="equipmentId != null">#{equipmentId},</if>
+            <if test="supplierId != null">#{supplierId},</if>
+            <if test="materialName != null and materialName != ''">#{materialName},</if>
+            <if test="brand != null">#{brand},</if>
+            <if test="status != null and status != ''">#{status},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="deleteBy != null">#{deleteBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+         </trim>
+    </insert>
+
+    <update id="updateMzcMaterial" parameterType="MzcMaterial">
+        update mzc_material
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="equipmentId != null">equipment_id = #{equipmentId},</if>
+            <if test="supplierId != null">supplier_id = #{supplierId},</if>
+            <if test="materialName != null and materialName != ''">material_name = #{materialName},</if>
+            <if test="brand != null">brand = #{brand},</if>
+            <if test="status != null and status != ''">status = #{status},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="deleteBy != null">delete_by = #{deleteBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+        </trim>
+        where material_id = #{materialId}
+    </update>
+
+    <delete id="deleteMzcMaterialByMaterialId" parameterType="Long">
+        delete from mzc_material where material_id = #{materialId}
+    </delete>
+
+    <delete id="deleteMzcMaterialByMaterialIds" parameterType="String">
+        delete from mzc_material where material_id in 
+        <foreach item="materialId" collection="array" open="(" separator="," close=")">
+            #{materialId}
+        </foreach>
+    </delete>
+</mapper>

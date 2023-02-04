@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.yixiu.mapper.MzcSupplierMapper">
+    
+    <resultMap type="MzcSupplier" id="MzcSupplierResult">
+        <result property="supplierId"    column="supplier_id"    />
+        <result property="supplierName"    column="supplier_name"    />
+        <result property="nickname"    column="nickname"    />
+        <result property="phone"    column="phone"    />
+        <result property="stauts"    column="stauts"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="deleteBy"    column="delete_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="updateBy"    column="update_by"    />
+    </resultMap>
+
+    <sql id="selectMzcSupplierVo">
+        select supplier_id, supplier_name, nickname, phone, stauts, del_flag, delete_by, create_time, create_by, update_time, update_by from mzc_supplier
+    </sql>
+
+    <select id="selectMzcSupplierList" parameterType="MzcSupplier" resultMap="MzcSupplierResult">
+        <include refid="selectMzcSupplierVo"/>
+        <where>  
+            <if test="supplierId != null  and supplierId != ''"> and supplier_id  = #{supplierId}</if>
+            <if test="supplierName != null  and supplierName != ''"> and supplier_name like concat('%', #{supplierName}, '%')</if>
+            <if test="nickname != null  and nickname != ''"> and nickname like concat('%', #{nickname}, '%')</if>
+            <if test="phone != null  and phone != ''"> and phone = #{phone}</if>
+        </where>
+    </select>
+    
+    <select id="selectMzcSupplierBySupplierId" parameterType="Long" resultMap="MzcSupplierResult">
+        <include refid="selectMzcSupplierVo"/>
+        where supplier_id = #{supplierId}
+    </select>
+        
+    <insert id="insertMzcSupplier" parameterType="MzcSupplier" useGeneratedKeys="true" keyProperty="supplierId">
+        insert into mzc_supplier
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="supplierName != null and supplierName != ''">supplier_name,</if>
+            <if test="nickname != null and nickname != ''">nickname,</if>
+            <if test="phone != null and phone != ''">phone,</if>
+            <if test="stauts != null">stauts,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="deleteBy != null">delete_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="updateBy != null">update_by,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="supplierName != null and supplierName != ''">#{supplierName},</if>
+            <if test="nickname != null and nickname != ''">#{nickname},</if>
+            <if test="phone != null and phone != ''">#{phone},</if>
+            <if test="stauts != null">#{stauts},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="deleteBy != null">#{deleteBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+         </trim>
+    </insert>
+
+    <update id="updateMzcSupplier" parameterType="MzcSupplier">
+        update mzc_supplier
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="supplierName != null and supplierName != ''">supplier_name = #{supplierName},</if>
+            <if test="nickname != null and nickname != ''">nickname = #{nickname},</if>
+            <if test="phone != null and phone != ''">phone = #{phone},</if>
+            <if test="stauts != null">stauts = #{stauts},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="deleteBy != null">delete_by = #{deleteBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+        </trim>
+        where supplier_id = #{supplierId}
+    </update>
+
+    <delete id="deleteMzcSupplierBySupplierId" parameterType="Long">
+        update mzc_supplier set del_flag = '2',delete_by = #{deleteByName} where supplier_id = #{supplierId}
+    </delete>
+
+    <delete id="deleteMzcSupplierBySupplierIds" parameterType="String">
+        update mzc_supplier set del_flag = '2',delete_by = #{deleteByName} where supplier_id in
+        <foreach item="supplierId" collection="supplierIds" open="(" separator="," close=")">
+            #{supplierId}
+        </foreach>
+    </delete>
+</mapper>
