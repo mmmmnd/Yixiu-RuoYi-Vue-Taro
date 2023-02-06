@@ -73,9 +73,12 @@
       <el-table-column label="不良情况id"
                        align="center"
                        prop="burstId" />
-      <el-table-column label="单位id"
+      <el-table-column label="上级单位"
                        align="center"
-                       prop="deptId" />
+                       prop="parentName" />
+      <el-table-column label="归属单位"
+                       align="center"
+                       prop="deptName" />
       <el-table-column label="标题"
                        align="center"
                        prop="title" />

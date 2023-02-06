@@ -8,6 +8,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="burstId"    column="burst_id"    />
         <result property="deptId"    column="dept_id"    />
         <result property="title"    column="title"    />
+        <result property="deptName"   column="dept_name" />
+        <result property="parentName" column="parent_name" />
         <result property="status"    column="status"    />
         <result property="remark"    column="remark"    />
         <result property="deleteBy"    column="delete_by"    />
@@ -19,7 +21,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectMzcBurstVo">
-        select burst_id, dept_id, title, status, remark, delete_by, del_flag, create_by, create_time, update_by, update_time from mzc_burst
+        select b.burst_id, b.dept_id, b.title, b.status, b.remark, b.delete_by, b.del_flag, b.create_by, b.create_time, b.update_by, b.update_time,
+        d.dept_name,
+        (select dept_name from sys_dept where dept_id = d.parent_id) parent_name
+        from mzc_burst b
+        left join sys_dept d on b.dept_id = d.dept_id
     </sql>
 
     <select id="selectMzcBurstList" parameterType="MzcBurst" resultMap="MzcBurstResult">
@@ -27,13 +33,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <where>  
             <if test="deptId != null "> and dept_id = #{deptId}</if>
             <if test="title != null  and title != ''"> and title like concat('%', #{title}, '%')</if>
-             and del_flag = '0'
+             and b.del_flag = '0'
         </where>
     </select>
     
     <select id="selectMzcBurstByBurstId" parameterType="Long" resultMap="MzcBurstResult">
         <include refid="selectMzcBurstVo"/>
-        where burst_id = #{burstId} and del_flag = '0'
+        where burst_id = #{burstId} and b.del_flag = '0'
 
     </select>
         

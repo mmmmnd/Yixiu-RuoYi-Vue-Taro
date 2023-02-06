@@ -30,6 +30,16 @@ public class MzcBurst extends BaseEntity
     @Excel(name = "标题")
     private String title;
 
+    /** 归属单位 */
+    @ApiModelProperty(value = "归属单位")
+    @Excel(name = "归属单位")
+    private String deptName;
+
+    /** 上级单位 */
+    @ApiModelProperty(value = "上级单位")
+    @Excel(name = "上级单位")
+    private String parentName;
+
     /** 状态 */
     @ApiModelProperty(value = "状态")
     private String status;
@@ -68,7 +78,23 @@ public class MzcBurst extends BaseEntity
         this.title = title;
     }
 
-    public String getTitle() 
+    public String getDeptName() {
+        return deptName;
+    }
+
+    public void setDeptName(String deptName) {
+        this.deptName = deptName;
+    }
+
+    public String getParentName() {
+        return parentName;
+    }
+
+    public void setParentName(String parentName) {
+        this.parentName = parentName;
+    }
+
+    public String getTitle()
     {
         return title;
     }
