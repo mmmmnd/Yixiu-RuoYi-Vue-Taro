@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.yixiu.mapper.MzcBurstMapper">
+    
+    <resultMap type="MzcBurst" id="MzcBurstResult">
+        <result property="burstId"    column="burst_id"    />
+        <result property="deptId"    column="dept_id"    />
+        <result property="title"    column="title"    />
+        <result property="status"    column="status"    />
+        <result property="remark"    column="remark"    />
+        <result property="deleteBy"    column="delete_by"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectMzcBurstVo">
+        select burst_id, dept_id, title, status, remark, delete_by, del_flag, create_by, create_time, update_by, update_time from mzc_burst
+    </sql>
+
+    <select id="selectMzcBurstList" parameterType="MzcBurst" resultMap="MzcBurstResult">
+        <include refid="selectMzcBurstVo"/>
+        <where>  
+            <if test="deptId != null "> and dept_id = #{deptId}</if>
+            <if test="title != null  and title != ''"> and title like concat('%', #{title}, '%')</if>
+             and del_flag = '0'
+        </where>
+    </select>
+    
+    <select id="selectMzcBurstByBurstId" parameterType="Long" resultMap="MzcBurstResult">
+        <include refid="selectMzcBurstVo"/>
+        where burst_id = #{burstId} and del_flag = '0'
+
+    </select>
+        
+    <insert id="insertMzcBurst" parameterType="MzcBurst" useGeneratedKeys="true" keyProperty="burstId">
+        insert into mzc_burst
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="deptId != null">dept_id,</if>
+            <if test="title != null and title != ''">title,</if>
+            <if test="status != null">status,</if>
+            <if test="remark != null and remark != ''">remark,</if>
+            <if test="deleteBy != null">delete_by,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="deptId != null">#{deptId},</if>
+            <if test="title != null and title != ''">#{title},</if>
+            <if test="status != null">#{status},</if>
+            <if test="remark != null and remark != ''">#{remark},</if>
+            <if test="deleteBy != null">#{deleteBy},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateMzcBurst" parameterType="MzcBurst">
+        update mzc_burst
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="title != null and title != ''">title = #{title},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="remark != null and remark != ''">remark = #{remark},</if>
+            <if test="deleteBy != null">delete_by = #{deleteBy},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where burst_id = #{burstId} and del_flag = '0'
+    </update>
+
+    <delete id="deleteMzcBurstByBurstId" parameterType="Long">
+        update mzc_burst set del_flag = '2', delete_by = #{deleteByName} where burst_id = #{burstId}
+    </delete>
+
+    <delete id="deleteMzcBurstByBurstIds" parameterType="String">
+      update mzc_burst set del_flag = '2', delete_by = #{deleteByName} where burst_id in
+        <foreach item="burstId" collection="burstIds" open="(" separator="," close=")">
+            #{burstId}
+        </foreach>
+    </delete>
+</mapper>
