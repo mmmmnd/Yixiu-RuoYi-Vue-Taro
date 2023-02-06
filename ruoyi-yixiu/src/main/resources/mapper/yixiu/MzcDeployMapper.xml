@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.yixiu.mapper.MzcDeployMapper">
+    
+    <resultMap type="MzcDeploy" id="MzcDeployResult">
+        <result property="deployId"    column="deploy_id"    />
+        <result property="equipmentId"    column="equipment_id"    />
+        <result property="deptIdIn"    column="dept_id_in"    />
+        <result property="deptIdInName"    column="dept_id_in_name"    />
+        <result property="deptIdOut"    column="dept_id_out"    />
+        <result property="deptIdOutName"    column="dept_id_out_name"    />
+        <result property="cause"    column="cause"    />
+        <result property="leaderOpinion"    column="leader_opinion"    />
+        <result property="departmentOpinion"    column="department_opinion"    />
+        <result property="equipmentOpinion"    column="equipment_opinion"    />
+        <result property="status"    column="status"    />
+        <result property="remark"    column="remark"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="deleteBy"    column="delete_by"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectMzcDeployVo">
+        select d.deploy_id, d.equipment_id, d.dept_id_in, d.dept_id_out, d.cause, d.leader_opinion, d.department_opinion, d.equipment_opinion, d.status, d.remark, d.del_flag, d.delete_by, d.create_by, d.create_time, d.update_by, d.update_time,
+        e.equipment_name,
+        (select dept_name from sys_dept where dept_id = d.dept_id_in) dept_id_in_name,
+        (select dept_name from sys_dept where dept_id = d.dept_id_out) dept_id_out_name
+        from mzc_deploy d
+        left join mzc_equipment e on d.equipment_id = e.equipment_id
+    </sql>
+
+    <select id="selectMzcDeployList" parameterType="MzcDeploy" resultMap="MzcDeployResult">
+        <include refid="selectMzcDeployVo"/>
+        <where>  
+            <if test="equipmentId != null "> and equipment_id = #{equipmentId}</if>
+            <if test="cause != null  and cause != ''"> and cause like concat('%', #{cause}, '%')</if>
+             and d.del_flag = '0'
+        </where>
+    </select>
+    
+    <select id="selectMzcDeployByDeployId" parameterType="Long" resultMap="MzcDeployResult">
+        <include refid="selectMzcDeployVo"/>
+        where deploy_id = #{deployId} and d.del_flag = '0'
+
+    </select>
+        
+    <insert id="insertMzcDeploy" parameterType="MzcDeploy" useGeneratedKeys="true" keyProperty="deployId">
+        insert into mzc_deploy
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="equipmentId != null">equipment_id,</if>
+            <if test="deptIdIn != null">dept_id_in,</if>
+            <if test="deptIdOut != null">dept_id_out,</if>
+            <if test="cause != null and cause != ''">cause,</if>
+            <if test="leaderOpinion != null">leader_opinion,</if>
+            <if test="departmentOpinion != null">department_opinion,</if>
+            <if test="equipmentOpinion != null">equipment_opinion,</if>
+            <if test="status != null">status,</if>
+            <if test="remark != null">remark,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="deleteBy != null">delete_by,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="equipmentId != null">#{equipmentId},</if>
+            <if test="deptIdIn != null">#{deptIdIn},</if>
+            <if test="deptIdOut != null">#{deptIdOut},</if>
+            <if test="cause != null and cause != ''">#{cause},</if>
+            <if test="leaderOpinion != null">#{leaderOpinion},</if>
+            <if test="departmentOpinion != null">#{departmentOpinion},</if>
+            <if test="equipmentOpinion != null">#{equipmentOpinion},</if>
+            <if test="status != null">#{status},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="deleteBy != null">#{deleteBy},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateMzcDeploy" parameterType="MzcDeploy">
+        update mzc_deploy
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="equipmentId != null">equipment_id = #{equipmentId},</if>
+            <if test="deptIdIn != null">dept_id_in = #{deptIdIn},</if>
+            <if test="deptIdOut != null">dept_id_out = #{deptIdOut},</if>
+            <if test="cause != null and cause != ''">cause = #{cause},</if>
+            <if test="leaderOpinion != null">leader_opinion = #{leaderOpinion},</if>
+            <if test="departmentOpinion != null">department_opinion = #{departmentOpinion},</if>
+            <if test="equipmentOpinion != null">equipment_opinion = #{equipmentOpinion},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="deleteBy != null">delete_by = #{deleteBy},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where deploy_id = #{deployId} and del_flag = '0'
+    </update>
+
+    <delete id="deleteMzcDeployByDeployId" parameterType="Long">
+        update mzc_deploy set del_flag = '2', delete_by = #{deleteByName} where deploy_id = #{deployId}
+    </delete>
+
+    <delete id="deleteMzcDeployByDeployIds" parameterType="String">
+      update mzc_deploy set del_flag = '2', delete_by = #{deleteByName} where deploy_id in
+        <foreach item="deployId" collection="deployIds" open="(" separator="," close=")">
+            #{deployId}
+        </foreach>
+    </delete>
+</mapper>

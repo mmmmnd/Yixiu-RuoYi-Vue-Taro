@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.yixiu.mapper.MzcPartsMapper">
+    
+    <resultMap type="MzcParts" id="MzcPartsResult">
+        <result property="partsId"    column="parts_id"    />
+        <result property="name"    column="name"    />
+        <result property="model"    column="model"    />
+        <result property="number"    column="number"    />
+        <result property="purpose"    column="purpose"    />
+        <result property="needStatus"    column="need_status"    />
+        <result property="purchaseName"    column="purchase_name"    />
+        <result property="auditStatus"    column="audit_status"    />
+        <result property="auditOpinion"    column="audit_opinion"    />
+        <result property="auditBy"    column="audit_by"    />
+        <result property="auditTime"    column="audit_time"    />
+        <result property="status"    column="status"    />
+        <result property="remark"    column="remark"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="updateBy"    column="update_by"    />
+    </resultMap>
+
+    <sql id="selectMzcPartsVo">
+        select parts_id, name, model, number, purpose, need_status, purchase_name, audit_status, audit_opinion, audit_by, audit_time, status, remark, del_flag, create_time, create_by, update_time, update_by from mzc_parts
+    </sql>
+
+    <select id="selectMzcPartsList" parameterType="MzcParts" resultMap="MzcPartsResult">
+        <include refid="selectMzcPartsVo"/>
+        <where>  
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="needStatus != null "> and need_status = #{needStatus}</if>
+            <if test="auditStatus != null  and auditStatus != ''"> and audit_status = #{auditStatus}</if>
+             and del_flag = '0'
+        </where>
+    </select>
+    
+    <select id="selectMzcPartsByPartsId" parameterType="Long" resultMap="MzcPartsResult">
+        <include refid="selectMzcPartsVo"/>
+        where parts_id = #{partsId} and del_flag = '0'
+
+    </select>
+        
+    <insert id="insertMzcParts" parameterType="MzcParts" useGeneratedKeys="true" keyProperty="partsId">
+        insert into mzc_parts
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="name != null and name != ''">name,</if>
+            <if test="model != null and model != ''">model,</if>
+            <if test="number != null">number,</if>
+            <if test="purpose != null">purpose,</if>
+            <if test="needStatus != null">need_status,</if>
+            <if test="purchaseName != null">purchase_name,</if>
+            <if test="auditStatus != null">audit_status,</if>
+            <if test="auditOpinion != null">audit_opinion,</if>
+            <if test="auditBy != null">audit_by,</if>
+            <if test="auditTime != null">audit_time,</if>
+            <if test="status != null">status,</if>
+            <if test="remark != null">remark,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="updateBy != null">update_by,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="name != null and name != ''">#{name},</if>
+            <if test="model != null and model != ''">#{model},</if>
+            <if test="number != null">#{number},</if>
+            <if test="purpose != null">#{purpose},</if>
+            <if test="needStatus != null">#{needStatus},</if>
+            <if test="purchaseName != null">#{purchaseName},</if>
+            <if test="auditStatus != null">#{auditStatus},</if>
+            <if test="auditOpinion != null">#{auditOpinion},</if>
+            <if test="auditBy != null">#{auditBy},</if>
+            <if test="auditTime != null">#{auditTime},</if>
+            <if test="status != null">#{status},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+         </trim>
+    </insert>
+
+    <update id="updateMzcParts" parameterType="MzcParts">
+        update mzc_parts
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null and name != ''">name = #{name},</if>
+            <if test="model != null and model != ''">model = #{model},</if>
+            <if test="number != null">number = #{number},</if>
+            <if test="purpose != null">purpose = #{purpose},</if>
+            <if test="needStatus != null">need_status = #{needStatus},</if>
+            <if test="purchaseName != null">purchase_name = #{purchaseName},</if>
+            <if test="auditStatus != null">audit_status = #{auditStatus},</if>
+            <if test="auditOpinion != null">audit_opinion = #{auditOpinion},</if>
+            <if test="auditBy != null">audit_by = #{auditBy},</if>
+            <if test="auditTime != null">audit_time = #{auditTime},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+        </trim>
+        where parts_id = #{partsId} and del_flag = '0'
+    </update>
+
+    <delete id="deleteMzcPartsByPartsId" parameterType="Long">
+        update mzc_parts set del_flag = '2', delete_by = #{deleteByName} where parts_id = #{partsId}
+    </delete>
+
+    <delete id="deleteMzcPartsByPartsIds" parameterType="String">
+      update mzc_parts set del_flag = '2', delete_by = #{deleteByName} where parts_id in
+        <foreach item="partsId" collection="partsIds" open="(" separator="," close=")">
+            #{partsId}
+        </foreach>
+    </delete>
+</mapper>
