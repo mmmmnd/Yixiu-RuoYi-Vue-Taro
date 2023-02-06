@@ -95,7 +95,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </delete>
 
     <delete id="deleteMzcComplaintByComplaintIds" parameterType="String">
-      update mzc_complaint set del_flag = '2', delete_by = #{deleteByName} where complaint_id = #{complaintId} in
+      update mzc_complaint set del_flag = '2', delete_by = #{deleteByName} where complaint_id in
         <foreach item="complaintId" collection="complaintIds" open="(" separator="," close=")">
             #{complaintId}
         </foreach>
