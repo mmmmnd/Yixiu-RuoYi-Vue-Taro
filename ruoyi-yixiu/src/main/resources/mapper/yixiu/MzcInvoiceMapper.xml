@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.yixiu.mapper.MzcInvoiceMapper">
+    
+    <resultMap type="MzcInvoice" id="MzcInvoiceResult">
+        <result property="invoiceId"    column="invoice_id"    />
+        <result property="deptName"    column="dept_name"    />
+        <result property="dutyParagraph"    column="duty_paragraph"    />
+        <result property="project"    column="project"    />
+        <result property="price"    column="price"    />
+        <result property="rejectTime"    column="reject_time"    />
+        <result property="status"    column="status"    />
+        <result property="remake"    column="remake"    />
+        <result property="deleteBy"    column="delete_by"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectMzcInvoiceVo">
+        select invoice_id, dept_name, duty_paragraph, project, price, reject_time, status, remake, delete_by, del_flag, create_by, create_time, update_by, update_time from mzc_invoice
+    </sql>
+
+    <select id="selectMzcInvoiceList" parameterType="MzcInvoice" resultMap="MzcInvoiceResult">
+        <include refid="selectMzcInvoiceVo"/>
+        <where>  
+            <if test="project != null  and project != ''"> and project like concat('%', #{project}, '%')</if>
+             and del_flag = '0'
+        </where>
+    </select>
+    
+    <select id="selectMzcInvoiceByInvoiceId" parameterType="Long" resultMap="MzcInvoiceResult">
+        <include refid="selectMzcInvoiceVo"/>
+        where invoice_id = #{invoiceId} and del_flag = '0'
+
+    </select>
+        
+    <insert id="insertMzcInvoice" parameterType="MzcInvoice">
+        insert into mzc_invoice
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="invoiceId != null">invoice_id,</if>
+            <if test="deptName != null">dept_name,</if>
+            <if test="dutyParagraph != null">duty_paragraph,</if>
+            <if test="project != null">project,</if>
+            <if test="price != null">price,</if>
+            <if test="rejectTime != null">reject_time,</if>
+            <if test="status != null">status,</if>
+            <if test="remake != null">remake,</if>
+            <if test="deleteBy != null">delete_by,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="invoiceId != null">#{invoiceId},</if>
+            <if test="deptName != null">#{deptName},</if>
+            <if test="dutyParagraph != null">#{dutyParagraph},</if>
+            <if test="project != null">#{project},</if>
+            <if test="price != null">#{price},</if>
+            <if test="rejectTime != null">#{rejectTime},</if>
+            <if test="status != null">#{status},</if>
+            <if test="remake != null">#{remake},</if>
+            <if test="deleteBy != null">#{deleteBy},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateMzcInvoice" parameterType="MzcInvoice">
+        update mzc_invoice
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="deptName != null">dept_name = #{deptName},</if>
+            <if test="dutyParagraph != null">duty_paragraph = #{dutyParagraph},</if>
+            <if test="project != null">project = #{project},</if>
+            <if test="price != null">price = #{price},</if>
+            <if test="rejectTime != null">reject_time = #{rejectTime},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="remake != null">remake = #{remake},</if>
+            <if test="deleteBy != null">delete_by = #{deleteBy},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where invoice_id = #{invoiceId} and del_flag = '0'
+    </update>
+
+    <delete id="deleteMzcInvoiceByInvoiceId" parameterType="Long">
+        update mzc_invoice set del_flag = '2', delete_by = #{deleteByName} where invoice_id = #{invoiceId}
+    </delete>
+
+    <delete id="deleteMzcInvoiceByInvoiceIds" parameterType="String">
+      update mzc_invoice set del_flag = '2', delete_by = #{deleteByName} where invoice_id in
+        <foreach item="invoiceId" collection="invoiceIds" open="(" separator="," close=")">
+            #{invoiceId}
+        </foreach>
+    </delete>
+</mapper>
