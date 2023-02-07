@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.yixiu.mapper.MzcReimbursementMapper">
+    
+    <resultMap type="MzcReimbursement" id="MzcReimbursementResult">
+        <result property="reimbursementId"    column="reimbursement_id"    />
+        <result property="project"    column="project"    />
+        <result property="category"    column="category"    />
+        <result property="price"    column="price"    />
+        <result property="totalPrice"    column="total_price"    />
+        <result property="person"    column="person"    />
+        <result property="status"    column="status"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="deleteBy"    column="delete_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="updateBy"    column="update_by"    />
+    </resultMap>
+
+    <sql id="selectMzcReimbursementVo">
+        select reimbursement_id, project, category, price, total_price, person, status, del_flag, delete_by, create_time, create_by, update_time, update_by from mzc_reimbursement
+    </sql>
+
+    <select id="selectMzcReimbursementList" parameterType="MzcReimbursement" resultMap="MzcReimbursementResult">
+        <include refid="selectMzcReimbursementVo"/>
+        <where>
+            <if test="project != null  and project != ''"> and project like concat('%', #{project}, '%')</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+             and del_flag = '0'
+        </where>
+    </select>
+
+    <select id="selectMzcReimbursementByReimbursementId" parameterType="Long" resultMap="MzcReimbursementResult">
+        <include refid="selectMzcReimbursementVo"/>
+        where reimbursement_id = #{reimbursementId} and del_flag = '0'
+
+    </select>
+
+    <insert id="insertMzcReimbursement" parameterType="MzcReimbursement" useGeneratedKeys="true" keyProperty="reimbursementId">
+        insert into mzc_reimbursement
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="project != null and project != ''">project,</if>
+            <if test="category != null and category != ''">category,</if>
+            <if test="price != null">price,</if>
+            <if test="totalPrice != null">total_price,</if>
+            <if test="person != null and person != ''">person,</if>
+            <if test="status != null">status,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="deleteBy != null">delete_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="updateBy != null">update_by,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="project != null and project != ''">#{project},</if>
+            <if test="category != null and category != ''">#{category},</if>
+            <if test="price != null">#{price},</if>
+            <if test="totalPrice != null">#{totalPrice},</if>
+            <if test="person != null and person != ''">#{person},</if>
+            <if test="status != null">#{status},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="deleteBy != null">#{deleteBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+         </trim>
+    </insert>
+
+    <update id="updateMzcReimbursement" parameterType="MzcReimbursement">
+        update mzc_reimbursement
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="project != null and project != ''">project = #{project},</if>
+            <if test="category != null and category != ''">category = #{category},</if>
+            <if test="price != null">price = #{price},</if>
+            <if test="totalPrice != null">total_price = #{totalPrice},</if>
+            <if test="person != null and person != ''">person = #{person},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="deleteBy != null">delete_by = #{deleteBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+        </trim>
+        where reimbursement_id = #{reimbursementId} and del_flag = '0'
+    </update>
+
+    <delete id="deleteMzcReimbursementByReimbursementId" parameterType="Long">
+        update mzc_reimbursement set del_flag = '2', delete_by = #{deleteByName} where reimbursement_id = #{reimbursementId}
+    </delete>
+
+    <delete id="deleteMzcReimbursementByReimbursementIds" parameterType="String">
+      update mzc_reimbursement set del_flag = '2', delete_by = #{deleteByName} where reimbursement_id in
+        <foreach item="reimbursementId" collection="reimbursementIds" open="(" separator="," close=")">
+            #{reimbursementId}
+        </foreach>
+    </delete>
+</mapper>
