@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.yixiu.mapper.MzcInventoryMapper">
+    
+    <resultMap type="MzcInventory" id="MzcInventoryResult">
+        <result property="inventoryId"    column="inventory_id"    />
+        <result property="name"    column="name"    />
+        <result property="model"    column="model"    />
+        <result property="number"    column="number"    />
+        <result property="stauts"    column="stauts"    />
+        <result property="remark"    column="remark"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="deleteBy"    column="delete_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="updateBy"    column="update_by"    />
+    </resultMap>
+
+    <sql id="selectMzcInventoryVo">
+        select inventory_id, name, model, number, stauts, remark, del_flag, delete_by, create_time, create_by, update_time, update_by from mzc_inventory
+    </sql>
+
+    <select id="selectMzcInventoryList" parameterType="MzcInventory" resultMap="MzcInventoryResult">
+        <include refid="selectMzcInventoryVo"/>
+        <where>  
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+             and del_flag = '0'
+        </where>
+    </select>
+    
+    <select id="selectMzcInventoryByInventoryId" parameterType="Long" resultMap="MzcInventoryResult">
+        <include refid="selectMzcInventoryVo"/>
+        where inventory_id = #{inventoryId} and del_flag = '0'
+
+    </select>
+        
+    <insert id="insertMzcInventory" parameterType="MzcInventory" useGeneratedKeys="true" keyProperty="inventoryId">
+        insert into mzc_inventory
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="name != null">name,</if>
+            <if test="model != null">model,</if>
+            <if test="number != null">number,</if>
+            <if test="stauts != null">stauts,</if>
+            <if test="remark != null">remark,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="deleteBy != null">delete_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="updateBy != null">update_by,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="name != null">#{name},</if>
+            <if test="model != null">#{model},</if>
+            <if test="number != null">#{number},</if>
+            <if test="stauts != null">#{stauts},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="deleteBy != null">#{deleteBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+         </trim>
+    </insert>
+
+    <update id="updateMzcInventory" parameterType="MzcInventory">
+        update mzc_inventory
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null">name = #{name},</if>
+            <if test="model != null">model = #{model},</if>
+            <if test="number != null">number = #{number},</if>
+            <if test="stauts != null">stauts = #{stauts},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="deleteBy != null">delete_by = #{deleteBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+        </trim>
+        where inventory_id = #{inventoryId} and del_flag = '0'
+    </update>
+
+    <delete id="deleteMzcInventoryByInventoryId" parameterType="Long">
+        update mzc_inventory set del_flag = '2', delete_by = #{deleteByName} where inventory_id = #{inventoryId}
+    </delete>
+
+    <delete id="deleteMzcInventoryByInventoryIds" parameterType="String">
+      update mzc_inventory set del_flag = '2', delete_by = #{deleteByName} where inventory_id in
+        <foreach item="inventoryId" collection="inventoryIds" open="(" separator="," close=")">
+            #{inventoryId}
+        </foreach>
+    </delete>
+</mapper>
