@@ -17,6 +17,7 @@ public class MzcSupplier extends BaseEntity
     private static final long serialVersionUID = 1L;
 
     /** 供应商id */
+    @ApiModelProperty(value = "供应商id")
     private Long supplierId;
 
     /** 供应商名称 */
