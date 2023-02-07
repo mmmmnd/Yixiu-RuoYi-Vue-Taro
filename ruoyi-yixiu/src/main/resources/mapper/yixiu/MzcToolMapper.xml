@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.yixiu.mapper.MzcToolMapper">
+    
+    <resultMap type="MzcTool" id="MzcToolResult">
+        <result property="toolId"    column="tool_id"    />
+        <result property="deptId"    column="dept_id"    />
+        <result property="toolName"    column="tool_name"    />
+        <result property="model"    column="model"    />
+        <result property="number"    column="number"    />
+        <result property="performance"    column="performance"    />
+        <result property="purpose"    column="purpose"    />
+        <result property="technical"    column="technical"    />
+        <result property="reason"    column="reason"    />
+        <result property="toolPrice"    column="tool_price"    />
+        <result property="deptOpinion"    column="dept_opinion"    />
+        <result property="engineeringOpinion"    column="engineering_opinion"    />
+        <result property="correlationDeptOpinion"    column="correlation_dept_opinion"    />
+        <result property="stauts"    column="stauts"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="deleteBy"    column="delete_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="deptName"    column="dept_name"    />
+    </resultMap>
+
+    <sql id="selectMzcToolVo">
+        select t.tool_id, t.dept_id, t.tool_name, t.model, t.number, t.performance, t.purpose, t.technical, t.reason, t.tool_price, t.dept_opinion, t.engineering_opinion, t.correlation_dept_opinion, t.stauts, t.del_flag, t.delete_by, t.create_time, t.create_by, t.update_time, t.update_by,
+        d.dept_name
+        from mzc_tool t
+        left join sys_dept d on t.dept_id = d.dept_id
+    </sql>
+
+    <select id="selectMzcToolList" parameterType="MzcTool" resultMap="MzcToolResult">
+        <include refid="selectMzcToolVo"/>
+        <where>  
+            <if test="toolName != null  and toolName != ''"> and tool_name like concat('%', #{toolName}, '%')</if>
+             and t.del_flag = '0'
+        </where>
+    </select>
+    
+    <select id="selectMzcToolByToolId" parameterType="Long" resultMap="MzcToolResult">
+        <include refid="selectMzcToolVo"/>
+        where tool_id = #{toolId} and t.del_flag = '0'
+
+    </select>
+        
+    <insert id="insertMzcTool" parameterType="MzcTool" useGeneratedKeys="true" keyProperty="toolId">
+        insert into mzc_tool
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="deptId != null">dept_id,</if>
+            <if test="toolName != null and toolName != ''">tool_name,</if>
+            <if test="model != null and model != ''">model,</if>
+            <if test="number != null">number,</if>
+            <if test="performance != null">performance,</if>
+            <if test="purpose != null">purpose,</if>
+            <if test="technical != null and technical != ''">technical,</if>
+            <if test="reason != null">reason,</if>
+            <if test="toolPrice != null">tool_price,</if>
+            <if test="deptOpinion != null">dept_opinion,</if>
+            <if test="engineeringOpinion != null">engineering_opinion,</if>
+            <if test="correlationDeptOpinion != null">correlation_dept_opinion,</if>
+            <if test="stauts != null">stauts,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="deleteBy != null">delete_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="updateBy != null">update_by,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="deptId != null">#{deptId},</if>
+            <if test="toolName != null and toolName != ''">#{toolName},</if>
+            <if test="model != null and model != ''">#{model},</if>
+            <if test="number != null">#{number},</if>
+            <if test="performance != null">#{performance},</if>
+            <if test="purpose != null">#{purpose},</if>
+            <if test="technical != null and technical != ''">#{technical},</if>
+            <if test="reason != null">#{reason},</if>
+            <if test="toolPrice != null">#{toolPrice},</if>
+            <if test="deptOpinion != null">#{deptOpinion},</if>
+            <if test="engineeringOpinion != null">#{engineeringOpinion},</if>
+            <if test="correlationDeptOpinion != null">#{correlationDeptOpinion},</if>
+            <if test="stauts != null">#{stauts},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="deleteBy != null">#{deleteBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+         </trim>
+    </insert>
+
+    <update id="updateMzcTool" parameterType="MzcTool">
+        update mzc_tool
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="toolName != null and toolName != ''">tool_name = #{toolName},</if>
+            <if test="model != null and model != ''">model = #{model},</if>
+            <if test="number != null">number = #{number},</if>
+            <if test="performance != null">performance = #{performance},</if>
+            <if test="purpose != null">purpose = #{purpose},</if>
+            <if test="technical != null and technical != ''">technical = #{technical},</if>
+            <if test="reason != null">reason = #{reason},</if>
+            <if test="toolPrice != null">tool_price = #{toolPrice},</if>
+            <if test="deptOpinion != null">dept_opinion = #{deptOpinion},</if>
+            <if test="engineeringOpinion != null">engineering_opinion = #{engineeringOpinion},</if>
+            <if test="correlationDeptOpinion != null">correlation_dept_opinion = #{correlationDeptOpinion},</if>
+            <if test="stauts != null">stauts = #{stauts},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="deleteBy != null">delete_by = #{deleteBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+        </trim>
+        where tool_id = #{toolId} and del_flag = '0'
+    </update>
+
+    <delete id="deleteMzcToolByToolId" parameterType="Long">
+        update mzc_tool set del_flag = '2', delete_by = #{deleteByName} where tool_id = #{toolId}
+    </delete>
+
+    <delete id="deleteMzcToolByToolIds" parameterType="String">
+      update mzc_tool set del_flag = '2', delete_by = #{deleteByName} where tool_id in
+        <foreach item="toolId" collection="toolIds" open="(" separator="," close=")">
+            #{toolId}
+        </foreach>
+    </delete>
+</mapper>
