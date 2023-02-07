@@ -2,6 +2,7 @@ package com.ruoyi.yixiu.domain;
 
 import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import io.swagger.annotations.ApiModelProperty;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import com.ruoyi.common.annotation.Excel;
@@ -18,56 +19,70 @@ public class MzcParts extends BaseEntity
     private static final long serialVersionUID = 1L;
 
     /** 配件id */
+    @ApiModelProperty(value = "配件id")
     private Long partsId;
 
     /** 配件名称 */
+    @ApiModelProperty(value = "配件名称")
     @Excel(name = "配件名称")
     private String name;
 
     /** 配件型号 */
+    @ApiModelProperty(value = "配件型号")
     @Excel(name = "配件型号")
     private String model;
 
     /** 配件数量 */
+    @ApiModelProperty(value = "配件数量")
     @Excel(name = "配件数量")
     private Long number;
 
     /** 用途 */
+    @ApiModelProperty(value = "用途")
     @Excel(name = "用途")
     private String purpose;
 
     /** 是否急需 ( 0 false 1 true ) */
+    @ApiModelProperty(value = "是否急需 ( 0 false 1 true )")
     @Excel(name = "是否急需 ( 0 false 1 true )")
     private Integer needStatus;
 
     /** 采购人 */
     @Excel(name = "采购人")
+    @ApiModelProperty(value = "采购人")
     private String purchaseName;
 
     /** 审核状态（ 0 未审核 1 已审核 2未通过 ） */
+    @ApiModelProperty(value = "审核状态（ 0 未审核 1 已审核 2未通过 ）")
     @Excel(name = "审核状态", readConverterExp = "0=,未=审核,1=,已=审核,2=未通过")
     private String auditStatus;
 
     /** 审核意见 */
     @Excel(name = "审核意见")
+    @ApiModelProperty(value = "审核意见")
     private String auditOpinion;
 
     /** 审核人 */
     @Excel(name = "审核人")
+    @ApiModelProperty(value = "审核人")
     private String auditBy;
 
     /** 审核时间 */
+    @ApiModelProperty(value = "审核时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Excel(name = "审核时间", width = 30, dateFormat = "yyyy-MM-dd HH:mm:ss")
     private Date auditTime;
 
     /** 状态 */
+    @ApiModelProperty(value = "状态")
     private String status;
 
     /** 删除标志（0代表存在 2代表删除） */
+    @ApiModelProperty(value = "删除标志（0代表存在 2代表删除）")
     private String delFlag;
 
     /** 删除者 */
+    @ApiModelProperty(value = "删除者")
     private String deleteBy;
 
     public void setPartsId(Long partsId) 
