@@ -347,6 +347,8 @@ export default {
           this.reset();
           this.open = true;
           this.title = "添加耗材";
+          this.scrapOptions = res[0].rows;
+          this.supplierOptions = res[1].rows;
         })
     },
     /** 修改按钮操作 */
