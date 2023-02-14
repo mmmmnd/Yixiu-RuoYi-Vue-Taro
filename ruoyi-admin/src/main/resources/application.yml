@@ -137,3 +137,10 @@ xss:
   excludes: /system/notice
   # 匹配链接
   urlPatterns: /system/*,/monitor/*,/tool/*
+
+# 微信配置
+wx:
+  miniapp:
+    configs:
+      - appid: wxe6992da1142e2f35 #微信小程序的appid
+        secret: 1e0d83ea00fd48279288cd33798fa183 #微信小程序的Secret

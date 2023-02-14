@@ -1,6 +1,8 @@
 package com.ruoyi.yixiu.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
 
 import com.ruoyi.common.core.domain.R;
@@ -35,6 +37,15 @@ public class MzcWxController extends BaseController
 {
     @Autowired
     private IMzcWxService mzcWxService;
+
+    @PostMapping("/login")
+    public R<Map<String, String>> login(String code) {
+        Map<String, String> map = new HashMap<>();
+        String login = mzcWxService.login(code);
+        map.put("token",login);
+
+        return R.ok(map);
+    }
 
     /**
      * 查询微信用户列表

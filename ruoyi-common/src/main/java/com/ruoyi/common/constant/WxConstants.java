@@ -8,12 +8,12 @@ public class WxConstants {
   /**
    * 小程序id
    */
-  public static final String appId = "wx9f150315f83976c0";
+  public static final String appId = "wxe6992da1142e2f35";
 
   /**
    * 小程序密钥
    */
-  public static final String appKey = "7eb81c69c47417b2cc9851de1261f674";
+  public static final String appKey = "1e0d83ea00fd48279288cd33798fa183";
 
   /**
    * 获取token

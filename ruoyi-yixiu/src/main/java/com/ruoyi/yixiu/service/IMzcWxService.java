@@ -11,6 +11,15 @@ import com.ruoyi.yixiu.domain.MzcWx;
  */
 public interface IMzcWxService 
 {
+
+    /**
+     * 通过code获取用户信息
+     *
+     * @param code code
+     * @return 用户信息
+     */
+    public String login(String code);
+
     /**
      * 查询微信用户
      * 

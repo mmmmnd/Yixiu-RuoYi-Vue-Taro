@@ -113,6 +113,18 @@ public class SysUserServiceImpl implements ISysUserService
     }
 
     /**
+     * 通过微信openid查询用户
+     *
+     * @param openId 微信openId
+     * @return 用户对象信息
+     */
+    @Override
+    public SysUser selectUserByOpenid(String openId)
+    {
+        return userMapper.selectUserByOpenid(openId);
+    }
+
+    /**
      * 通过用户ID查询用户
      * 
      * @param userId 用户ID
