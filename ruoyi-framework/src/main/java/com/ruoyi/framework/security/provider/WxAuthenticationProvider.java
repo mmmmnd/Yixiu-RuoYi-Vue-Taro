@@ -7,7 +7,6 @@ import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.framework.security.token.WxAuthenticationToken;
 import com.ruoyi.framework.web.service.SysPermissionService;
-import com.ruoyi.framework.web.service.WxUserDetails;
 import com.ruoyi.system.service.ISysUserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +18,6 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
-
 
 @Component
 public class WxAuthenticationProvider extends AbstractUserDetailsAuthenticationProvider {
@@ -47,9 +45,9 @@ public class WxAuthenticationProvider extends AbstractUserDetailsAuthenticationP
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
 
-        String openId = authentication.getName();
-        //通过自定义的CustomUserDetailsService，以用户输入的用户名查询用户信息
-        LoginUser userDetails = (LoginUser) loadUserByUsername(openId);
+        String username = authentication.getName();
+        //通过自定义的loadUserByUsername，以用户输入的用户名查询用户信息
+        LoginUser userDetails = (LoginUser) loadUserByUsername(username);
 
         Object principalToReturn = userDetails;
         //将用户信息塞到SecurityContext中，方便获取当前用户信息
@@ -67,17 +65,23 @@ public class WxAuthenticationProvider extends AbstractUserDetailsAuthenticationP
         return WxAuthenticationToken.class.isAssignableFrom(aClass);
     }
 
-    public UserDetails loadUserByUsername(String openId) throws UsernameNotFoundException {
-        SysUser user = userService.selectUserByOpenid(openId);
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        SysUser user = userService.selectUserByUserName(username);
 
-        if (StringUtils.isNull(user)) {
-            log.info("登录用户：{} 不存在.", openId);
-        } else if (UserStatus.DELETED.getCode().equals(user.getDelFlag())) {
-            log.info("登录用户：{} 已被删除.", openId);
-            throw new ServiceException("对不起，您的账号：" + user.getUserName() + " 已被删除");
-        } else if (UserStatus.DISABLE.getCode().equals(user.getStatus())) {
-            log.info("登录用户：{} 已被停用.", openId);
-            throw new ServiceException("对不起，您的账号：" + user.getUserName() + " 已停用");
+        if (StringUtils.isNull(user))
+        {
+            log.info("登录用户：{} 不存在.", username);
+            throw new ServiceException("登录用户：" + username + " 不存在");
+        }
+        else if (UserStatus.DELETED.getCode().equals(user.getDelFlag()))
+        {
+            log.info("登录用户：{} 已被删除.", username);
+            throw new ServiceException("对不起，您的账号：" + username + " 已被删除");
+        }
+        else if (UserStatus.DISABLE.getCode().equals(user.getStatus()))
+        {
+            log.info("登录用户：{} 已被停用.", username);
+            throw new ServiceException("对不起，您的账号：" + username + " 已停用");
         }
 
         return createLoginUser(user);

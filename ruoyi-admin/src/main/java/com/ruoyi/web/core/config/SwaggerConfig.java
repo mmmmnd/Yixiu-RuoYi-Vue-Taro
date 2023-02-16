@@ -41,9 +41,6 @@ public class SwaggerConfig
     @Value("${knife4j.enable}")
     private boolean enable;
 
-    /** 设置请求的统一前缀 */
-    @Value("${knife4j.pathMapping}")
-    private String pathMapping;
 
     @Autowired
     public SwaggerConfig(OpenApiExtensionResolver openApiExtensionResolver) {
@@ -73,7 +70,7 @@ public class SwaggerConfig
                 /* 设置安全模式，swagger可以设置访问token */
                 .securitySchemes(securitySchemes())
                 .securityContexts(securityContexts())
-                .pathMapping(pathMapping);
+            ;
 
 //        return new Docket(DocumentationType.OAS_30)
 //                // 是否启用Swagger

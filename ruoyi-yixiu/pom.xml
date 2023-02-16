@@ -47,10 +47,6 @@
       <groupId>com.github.binarywang</groupId>
       <artifactId>weixin-java-miniapp</artifactId>
     </dependency>
-    <dependency>
-      <groupId>com.ruoyi</groupId>
-      <artifactId>ruoyi-framework</artifactId>
-    </dependency>
 
   </dependencies>
 

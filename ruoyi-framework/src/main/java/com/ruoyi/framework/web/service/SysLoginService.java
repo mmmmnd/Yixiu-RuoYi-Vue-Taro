@@ -1,6 +1,13 @@
 package com.ruoyi.framework.web.service;
 
 import javax.annotation.Resource;
+
+import com.ruoyi.common.core.domain.model.WxBindingUser;
+import com.ruoyi.common.exception.wx.WxNotCodeException;
+import com.ruoyi.common.utils.*;
+import com.ruoyi.common.utils.bean.BeanUtils;
+import com.ruoyi.framework.security.token.WxAuthenticationToken;
+import com.ruoyi.system.domain.vo.WxUserVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -16,10 +23,6 @@ import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.exception.user.CaptchaException;
 import com.ruoyi.common.exception.user.CaptchaExpireException;
 import com.ruoyi.common.exception.user.UserPasswordNotMatchException;
-import com.ruoyi.common.utils.DateUtils;
-import com.ruoyi.common.utils.MessageUtils;
-import com.ruoyi.common.utils.ServletUtils;
-import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.ip.IpUtils;
 import com.ruoyi.framework.manager.AsyncManager;
 import com.ruoyi.framework.manager.factory.AsyncFactory;
@@ -101,6 +104,84 @@ public class SysLoginService
     }
 
     /**
+     * 通过code获取用户信息
+     *
+     * @param code code
+     * @return 用户信息
+     */
+    public WxUserVO login(String code) {
+
+        if (StringUtils.isEmpty(code)) {
+            throw new WxNotCodeException();
+        }
+
+        WxUserVO wxUserVO = new WxUserVO();
+        String openId = "ofRQm44wwrKLCpOIbfk0w1KMSVY8";
+
+        SysUser user = userService.selectUserByOpenid(openId);
+
+        /*新用户*/
+        if (StringUtils.isNull(user)){
+            SysUser sysUser = new SysUser();
+            sysUser.setSex("2");
+            sysUser.setUserType("01");
+            sysUser.setNickName("微信用户");
+            sysUser.setOpenId(openId);
+            userService.insertUser(sysUser);
+
+            BeanUtils.copyBeanProp(wxUserVO,sysUser);
+        }else{
+            /*老用户*/
+            if (StringUtils.isNotEmpty(user.getPhonenumber())) {
+                /*老用户*/
+                String token = checkUserReturnToken(user);
+                wxUserVO.setToken(token);
+                wxUserVO.setPhone(user.getPhonenumber());
+            }
+            /*小程序未授权信息*/
+            wxUserVO.setOpenId(openId);
+
+        }
+
+        return wxUserVO;
+    }
+
+    /**
+     * 绑定用户手机号码
+     * @param wxBindingUser  微信openId 用户手机号码
+     * @return 结果
+     */
+    public WxUserVO phone(WxBindingUser wxBindingUser){
+        WxUserVO wxUserVO = new WxUserVO();
+
+        /*通过手机号码查询用户是否存在*/
+        SysUser user = userService.selectUserByPhone(wxBindingUser.getPhone());
+
+        if (StringUtils.isNotNull(user)){
+            /*
+              查询是否是系统用户
+              是 写入openid
+              否 写入用户信息
+             */
+            user.setOpenId(wxBindingUser.getOpenId());
+        }else {
+            user = userService.selectUserByOpenid(wxBindingUser.getOpenId());
+
+            user.setDeptId(109L); /*游客*/
+            user.setUserName(wxBindingUser.getPhone());
+            user.setPhonenumber(wxBindingUser.getPhone());
+            user.setPassword(SecurityUtils.encryptPassword("123456"));
+        }
+
+        userService.updateUser(user);
+
+        String token = checkUserReturnToken(user);
+        wxUserVO.setToken(token);
+
+        return wxUserVO;
+    }
+
+    /**
      * 校验验证码
      * 
      * @param username 用户名
@@ -137,5 +218,21 @@ public class SysLoginService
         sysUser.setLoginIp(IpUtils.getIpAddr(ServletUtils.getRequest()));
         sysUser.setLoginDate(DateUtils.getNowDate());
         userService.updateUserProfile(sysUser);
+    }
+
+    /**
+     * 校验用户返回token
+     * @param user 用户
+     * @return 结果
+     */
+    private String checkUserReturnToken(SysUser user){
+        WxAuthenticationToken wxAuthenticationToken = new WxAuthenticationToken(user.getUserName(), null);
+        // 该方法会通过AuthenticationProvider.authenticate认证
+        Authentication authentication = authenticationManager.authenticate(wxAuthenticationToken);
+
+        LoginUser loginUser = (LoginUser) authentication.getPrincipal();
+        recordLoginInfo(loginUser.getUserId());
+        // 生成token
+        return tokenService.createToken(loginUser);
     }
 }

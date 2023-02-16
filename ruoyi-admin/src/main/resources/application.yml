@@ -120,8 +120,6 @@ knife4j:
   enable: true
   # 开启生产环境屏蔽
   production: false
-  # 请求前缀
-  pathMapping: /dev-api
 
   setting:
     # 开启自定义Swagger

@@ -1,10 +1,17 @@
 package com.ruoyi.web.controller.system;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.domain.model.LoginUser;
+import com.ruoyi.common.core.domain.model.WxBindingUser;
+import com.ruoyi.system.domain.vo.WxUserVO;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,6 +25,8 @@ import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.framework.web.service.SysLoginService;
 import com.ruoyi.framework.web.service.SysPermissionService;
 import com.ruoyi.system.service.ISysMenuService;
+
+import javax.validation.constraints.NotNull;
 
 /**
  * 登录验证
@@ -51,6 +60,30 @@ public class SysLoginController
                 loginBody.getUuid());
         ajax.put(Constants.TOKEN, token);
         return ajax;
+    }
+
+    /**
+     * 登录方法
+     *
+     * @param code 微信code
+     * @return 结果
+     */
+    @ApiOperation("微信登录")
+    @PostMapping("/wxLogin")
+    public R<WxUserVO> login(String code) {
+        return R.ok(loginService.login(code));
+    }
+
+    /**
+     * 小程序绑定手机号码
+     *
+     * @param wxBindingUser 微信openId 用户手机号码
+     * @return 结果
+     */
+    @ApiOperation("微信绑定")
+    @PostMapping("/wxBinding")
+    public R<WxUserVO> phone(@Validated @RequestBody WxBindingUser wxBindingUser) {
+        return R.ok(loginService.phone(wxBindingUser));
     }
 
     /**
