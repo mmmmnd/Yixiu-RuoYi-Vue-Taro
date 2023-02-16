@@ -33,7 +33,7 @@
         <poi.version>4.1.2</poi.version>
         <velocity.version>2.3</velocity.version>
         <jwt.version>0.9.1</jwt.version>
-        <binarywan.version>3.9.4.B</binarywan.version>
+        <binarywan.version>4.3.0</binarywan.version>
     </properties>
 
     <!-- 依赖声明 -->

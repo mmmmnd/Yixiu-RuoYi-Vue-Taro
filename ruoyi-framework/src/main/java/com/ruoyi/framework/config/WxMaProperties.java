@@ -1,17 +1,19 @@
-package com.ruoyi.yixiu.config;
+package com.ruoyi.framework.config;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Bean;
 
 import java.util.List;
 
 /**
  * @author <a href="https://github.com/binarywang">Binary Wang</a>
  */
+@Data
 @ConfigurationProperties(prefix = "wx.miniapp")
 public class WxMaProperties {
 
-    public List<Config> configs;
+    private List<Config> configs;
 
     @Data
     public static class Config {
@@ -41,11 +43,4 @@ public class WxMaProperties {
         private String msgDataFormat;
     }
 
-    public List<Config> getConfigs() {
-        return configs;
-    }
-
-    public void setConfigs(List<Config> configs) {
-        this.configs = configs;
-    }
 }

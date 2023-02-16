@@ -10,12 +10,10 @@ import com.ruoyi.common.core.domain.model.LoginUser;
 import com.ruoyi.common.core.domain.model.WxBindingUser;
 import com.ruoyi.system.domain.vo.WxUserVO;
 import io.swagger.annotations.ApiOperation;
+import me.chanjar.weixin.common.error.WxErrorException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.domain.entity.SysMenu;
@@ -69,8 +67,8 @@ public class SysLoginController
      * @return 结果
      */
     @ApiOperation("微信登录")
-    @PostMapping("/wxLogin")
-    public R<WxUserVO> login(String code) {
+    @GetMapping("/wxLogin")
+    public R<WxUserVO> login(@RequestParam String code) {
         return R.ok(loginService.login(code));
     }
 

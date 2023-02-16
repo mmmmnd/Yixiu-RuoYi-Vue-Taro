@@ -2,12 +2,16 @@ package com.ruoyi.framework.web.service;
 
 import javax.annotation.Resource;
 
+import cn.binarywang.wx.miniapp.api.WxMaService;
+import cn.binarywang.wx.miniapp.bean.WxMaJscode2SessionResult;
+import cn.binarywang.wx.miniapp.util.WxMaConfigHolder;
 import com.ruoyi.common.core.domain.model.WxBindingUser;
 import com.ruoyi.common.exception.wx.WxNotCodeException;
 import com.ruoyi.common.utils.*;
 import com.ruoyi.common.utils.bean.BeanUtils;
 import com.ruoyi.framework.security.token.WxAuthenticationToken;
 import com.ruoyi.system.domain.vo.WxUserVO;
+import me.chanjar.weixin.common.error.WxErrorException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -41,9 +45,6 @@ public class SysLoginService
     @Autowired
     private TokenService tokenService;
 
-    @Resource
-    private AuthenticationManager authenticationManager;
-
     @Autowired
     private RedisCache redisCache;
     
@@ -53,6 +54,11 @@ public class SysLoginService
     @Autowired
     private ISysConfigService configService;
 
+    @Resource
+    private AuthenticationManager authenticationManager;
+
+    @Resource
+    private WxMaService wxMaService;
     /**
      * 登录验证
      * 
@@ -115,8 +121,17 @@ public class SysLoginService
             throw new WxNotCodeException();
         }
 
+        WxMaJscode2SessionResult  sessionInf = null;
+        try {
+            sessionInf = wxMaService.getUserService().getSessionInfo(code);
+        } catch (WxErrorException e) {
+            throw new ServiceException(e.getMessage());
+        } finally {
+            WxMaConfigHolder.remove();/*清理ThreadLocal*/
+        }
+
         WxUserVO wxUserVO = new WxUserVO();
-        String openId = "ofRQm44wwrKLCpOIbfk0w1KMSVY8";
+        String openId = sessionInf.getOpenid();
 
         SysUser user = userService.selectUserByOpenid(openId);
 
