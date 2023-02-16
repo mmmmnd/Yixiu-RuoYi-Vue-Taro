@@ -4,9 +4,9 @@ import javax.annotation.Resource;
 
 import cn.binarywang.wx.miniapp.api.WxMaService;
 import cn.binarywang.wx.miniapp.bean.WxMaJscode2SessionResult;
+import cn.binarywang.wx.miniapp.bean.WxMaPhoneNumberInfo;
 import cn.binarywang.wx.miniapp.util.WxMaConfigHolder;
 import com.ruoyi.common.core.domain.model.WxBindingUser;
-import com.ruoyi.common.exception.wx.WxNotCodeException;
 import com.ruoyi.common.utils.*;
 import com.ruoyi.common.utils.bean.BeanUtils;
 import com.ruoyi.framework.security.token.WxAuthenticationToken;
@@ -116,11 +116,6 @@ public class SysLoginService
      * @return 用户信息
      */
     public WxUserVO login(String code) {
-
-        if (StringUtils.isEmpty(code)) {
-            throw new WxNotCodeException();
-        }
-
         WxMaJscode2SessionResult  sessionInf = null;
         try {
             sessionInf = wxMaService.getUserService().getSessionInfo(code);
@@ -161,6 +156,24 @@ public class SysLoginService
         return wxUserVO;
     }
 
+    /**
+     * 获取微信手机号码
+     * @param code code
+     * @return 结果
+     */
+    public String getWxPhone(String code){
+        WxMaPhoneNumberInfo phoneNoInfo = null;
+
+        try {
+            phoneNoInfo = wxMaService.getUserService().getNewPhoneNoInfo(code);
+        } catch (WxErrorException e) {
+            throw new ServiceException(e.getMessage());
+        } finally {
+            WxMaConfigHolder.remove();/*清理ThreadLocal*/
+        }
+
+        return phoneNoInfo.getPhoneNumber();
+    }
     /**
      * 绑定用户手机号码
      * @param wxBindingUser  微信openId 用户手机号码

@@ -6,11 +6,10 @@ import java.util.Map;
 import java.util.Set;
 
 import com.ruoyi.common.core.domain.R;
-import com.ruoyi.common.core.domain.model.LoginUser;
 import com.ruoyi.common.core.domain.model.WxBindingUser;
 import com.ruoyi.system.domain.vo.WxUserVO;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import me.chanjar.weixin.common.error.WxErrorException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -31,6 +30,8 @@ import javax.validation.constraints.NotNull;
  * 
  * @author ruoyi
  */
+@Api(tags = "用户管理")
+@Validated
 @RestController
 public class SysLoginController
 {
@@ -68,10 +69,23 @@ public class SysLoginController
      */
     @ApiOperation("微信登录")
     @GetMapping("/wxLogin")
-    public R<WxUserVO> login(@RequestParam String code) {
+    public R<WxUserVO> login(@NotNull(message = "code不能为空") String code) {
         return R.ok(loginService.login(code));
     }
 
+    /**
+     * 获取微信手机号码
+     * @param code code
+     * @return 结果
+     */
+    @ApiOperation("获取微信手机号码")
+    @GetMapping("/getWxPhone")
+    public R<Map<String,String>> getWxPhone(@NotNull(message = "code不能为空") String code){
+        Map<String,String> map = new HashMap<>();
+
+        map.put("phone", loginService.getWxPhone(code));
+        return R.ok(map);
+    }
     /**
      * 小程序绑定手机号码
      *
