@@ -97,7 +97,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	
 	<select id="checkDeptNameUnique" resultMap="SysDeptResult">
 	    <include refid="selectDeptVo"/>
-		where dept_name=#{deptName} and parent_id = #{parentId} and del_flag = '0' limit 1
+		where dept_name=#{deptName} and parent_id = #{parentId} and d.del_flag = '0' limit 1
 	</select>
     
     <insert id="insertDept" parameterType="SysDept">
@@ -178,4 +178,19 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		update sys_dept set del_flag = '2' where dept_id = #{deptId}
 	</delete>
 
+	<select id="selectDeptListByLength" parameterType="Integer" resultMap="SysDeptResult">
+		<include refid="selectDeptVo"/>
+		where d.del_flag = '0'
+		<if test="length != null and length != ''">
+			and length(d.ancestors) = #{length}
+		</if>
+	</select>
+
+	<select id="selectDeptListByParentId" parameterType="Long" resultMap="SysDeptResult">
+		<include refid="selectDeptVo"/>
+		where d.del_flag = '0'
+		<if test="length != null and length != ''">
+			and parent_id = #{parentId}
+		</if>
+	</select>
 </mapper> 

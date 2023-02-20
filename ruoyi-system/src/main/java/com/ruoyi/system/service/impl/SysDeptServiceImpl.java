@@ -249,6 +249,7 @@ public class SysDeptServiceImpl implements ISysDeptService
         return result;
     }
 
+
     /**
      * 修改该部门的父级部门状态
      * 
@@ -291,6 +292,28 @@ public class SysDeptServiceImpl implements ISysDeptService
     public int deleteDeptById(Long deptId)
     {
         return deptMapper.deleteDeptById(deptId);
+    }
+
+    /**
+     * 查询指定祖级列表长度的列表
+     *
+     * @param length 字段长度
+     * @return 结果
+     */
+    @Override
+    public List<SysDept> selectDeptListByLength(Integer length) {
+        return deptMapper.selectDeptListByLength(length);
+    }
+
+    /**
+     * 查询父部门id下的列表
+     *
+     * @param parentId 字段长度
+     * @return 结果
+     */
+    @Override
+    public List<SysDept> selectDeptListByParentId(Long parentId) {
+        return deptMapper.selectDeptListByParentId(parentId);
     }
 
     /**

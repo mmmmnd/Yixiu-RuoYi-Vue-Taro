@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.yixiu.mapper.MzcOrderMapper">
+    
+    <resultMap type="MzcOrder" id="MzcOrderResult">
+        <result property="orderId"    column="order_id"    />
+        <result property="deptId"    column="dept_id"    />
+        <result property="equipmentId"    column="equipment_id"    />
+        <result property="repairman"    column="repairman"    />
+        <result property="repairPhone"    column="repair_phone"    />
+        <result property="workType"    column="work_type"    />
+        <result property="expectationTime"    column="expectation_time"    />
+        <result property="errorDescription"    column="error_description"    />
+        <result property="applyDeptOpinion"    column="apply_dept_opinion"    />
+        <result property="equipmentOpinion"    column="equipment_opinion"    />
+        <result property="subheadOpinion"    column="subhead_opinion"    />
+        <result property="deanOpinion"    column="dean_opinion"    />
+        <result property="status"    column="status"    />
+        <result property="appraiseOpinion"    column="appraise_opinion"    />
+        <result property="appraise"    column="appraise"    />
+        <result property="userId"    column="user_id"    />
+        <result property="deleteBy"    column="delete_by"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <association property="equipment"    column="dept_id" javaType="MzcEquipment" resultMap="equipmentResult" />
+        <association property="dept"    column="dept_id" javaType="SysDept" resultMap="deptResult" />
+    </resultMap>
+
+    <resultMap id="equipmentResult" type="MzcEquipment">
+        <result property="equipmentId"    column="equipment_id"    />
+        <result property="deptId"    column="dept_id"    />
+        <result property="equipmentName"    column="equipment_name"    />
+        <result property="serialNumber"    column="serial_number"    />
+        <result property="factoryNumber"    column="factory_number"    />
+        <result property="modelNumber"    column="model_number"    />
+        <result property="brand"    column="brand"    />
+        <result property="price"    column="price"    />
+        <result property="purchaseTime"    column="purchase_time"    />
+        <result property="scrapTime"    column="scrap_time"    />
+        <result property="maintain"    column="maintain"    />
+        <result property="status"    column="status"    />
+        <result property="remark"    column="remark"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <resultMap id="deptResult" type="SysDept">
+        <id     property="deptId"     column="dept_id"     />
+        <result property="parentName" column="parent_name" />
+        <result property="parentId"   column="parent_id"   />
+        <result property="deptName"   column="dept_name"   />
+        <result property="userId"     column="user_id"      />
+        <result property="leader"     column="leader" />
+        <result property="phone"      column="phone" />
+        <result property="address"    column="address" />
+        <result property="status"     column="status" />
+    </resultMap>
+
+    <sql id="selectMzcOrderVo">
+        select o.order_id, o.dept_id, o.equipment_id, o.repairman, o.repair_phone, o.work_type, o.expectation_time, o.error_description, o.apply_dept_opinion, o.equipment_opinion, o.subhead_opinion, o.dean_opinion, o.status, o.appraise_opinion, o.appraise, o.user_id, o.delete_by, o.del_flag, o.create_by, o.create_time, o.update_by, o.update_time,
+        e.*,
+        d.*,
+        (select dept_name from sys_dept where dept_id = d.parent_id) parent_name
+        from mzc_order o
+        left JOIN mzc_equipment e on o.equipment_id = e.equipment_id
+        left join sys_dept d  on o.dept_id = d.dept_id
+    </sql>
+
+    <select id="selectMzcOrderList" parameterType="MzcOrder" resultMap="MzcOrderResult">
+        <include refid="selectMzcOrderVo"/>
+        <where>  
+            <if test="deptId != null "> and o.dept_id = #{deptId}</if>
+            <if test="equipmentId != null "> and o.equipment_id = #{equipmentId}</if>
+            <if test="workType != null  and workType != ''"> and work_type = #{workType}</if>
+            <if test="status != null  and status != ''"> and o.status = #{status}</if>
+            <if test="appraise != null "> and appraise = #{appraise}</if>
+             and o.del_flag = '0'
+        </where>
+    </select>
+    
+    <select id="selectMzcOrderByOrderId" parameterType="Long" resultMap="MzcOrderResult">
+        <include refid="selectMzcOrderVo"/>
+        where order_id = #{orderId} and del_flag = '0'
+
+    </select>
+        
+    <insert id="insertMzcOrder" parameterType="MzcOrder" useGeneratedKeys="true" keyProperty="orderId">
+        insert into mzc_order
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="deptId != null">dept_id,</if>
+            <if test="equipmentId != null">equipment_id,</if>
+            <if test="repairman != null">repairman,</if>
+            <if test="repairPhone != null">repair_phone,</if>
+            <if test="workType != null">work_type,</if>
+            <if test="expectationTime != null">expectation_time,</if>
+            <if test="errorDescription != null">error_description,</if>
+            <if test="applyDeptOpinion != null">apply_dept_opinion,</if>
+            <if test="equipmentOpinion != null">equipment_opinion,</if>
+            <if test="subheadOpinion != null">subhead_opinion,</if>
+            <if test="deanOpinion != null">dean_opinion,</if>
+            <if test="status != null">status,</if>
+            <if test="appraiseOpinion != null">appraise_opinion,</if>
+            <if test="appraise != null">appraise,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="deleteBy != null">delete_by,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="deptId != null">#{deptId},</if>
+            <if test="equipmentId != null">#{equipmentId},</if>
+            <if test="repairman != null">#{repairman},</if>
+            <if test="repairPhone != null">#{repairPhone},</if>
+            <if test="workType != null">#{workType},</if>
+            <if test="expectationTime != null">#{expectationTime},</if>
+            <if test="errorDescription != null">#{errorDescription},</if>
+            <if test="applyDeptOpinion != null">#{applyDeptOpinion},</if>
+            <if test="equipmentOpinion != null">#{equipmentOpinion},</if>
+            <if test="subheadOpinion != null">#{subheadOpinion},</if>
+            <if test="deanOpinion != null">#{deanOpinion},</if>
+            <if test="status != null">#{status},</if>
+            <if test="appraiseOpinion != null">#{appraiseOpinion},</if>
+            <if test="appraise != null">#{appraise},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="deleteBy != null">#{deleteBy},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateMzcOrder" parameterType="MzcOrder">
+        update mzc_order
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="equipmentId != null">equipment_id = #{equipmentId},</if>
+            <if test="repairman != null">repairman = #{repairman},</if>
+            <if test="repairPhone != null">repair_phone = #{repairPhone},</if>
+            <if test="workType != null">work_type = #{workType},</if>
+            <if test="expectationTime != null">expectation_time = #{expectationTime},</if>
+            <if test="errorDescription != null">error_description = #{errorDescription},</if>
+            <if test="applyDeptOpinion != null">apply_dept_opinion = #{applyDeptOpinion},</if>
+            <if test="equipmentOpinion != null">equipment_opinion = #{equipmentOpinion},</if>
+            <if test="subheadOpinion != null">subhead_opinion = #{subheadOpinion},</if>
+            <if test="deanOpinion != null">dean_opinion = #{deanOpinion},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="appraiseOpinion != null">appraise_opinion = #{appraiseOpinion},</if>
+            <if test="appraise != null">appraise = #{appraise},</if>
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="deleteBy != null">delete_by = #{deleteBy},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where order_id = #{orderId} and del_flag = '0'
+    </update>
+
+    <delete id="deleteMzcOrderByOrderId" parameterType="Long">
+        update mzc_order set del_flag = '2', delete_by = #{deleteByName} where order_id = #{orderId}
+    </delete>
+
+    <delete id="deleteMzcOrderByOrderIds" parameterType="String">
+      update mzc_order set del_flag = '2', delete_by = #{deleteByName} where order_id in
+        <foreach item="orderId" collection="orderIds" open="(" separator="," close=")">
+            #{orderId}
+        </foreach>
+    </delete>
+</mapper>
