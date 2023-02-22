@@ -180,9 +180,19 @@
         <template slot-scope="scope">
           <el-button size="mini"
                      type="text"
-                     icon="el-icon-edit"
-                     @click="handleUpdate(scope.row)"
-                     v-hasPermi="['yixiu:order:edit']">修改</el-button>
+                     icon="el-icon-s-promotion"
+                     v-hasPermi="['yixiu:equipment:edit']">详情</el-button>
+          <el-button size="mini"
+                     type="text"
+                     icon="el-icon-s-promotion"
+                     v-if="checkRole(['maintainDirector']) && scope.row.status == 0"
+                     v-hasPermi="['yixiu:equipment:edit']">派单</el-button>
+          <el-button size="mini"
+                     type="text"
+                     icon="el-icon-document-copy"
+                     v-if="checkRole(['engineer']) && scope.row.status == 0"
+                     @click="orderReceiving(scope.row)"
+                     v-hasPermi="['yixiu:equipment:edit']">接单</el-button>
           <el-button size="mini"
                      type="text"
                      icon="el-icon-delete"
@@ -219,6 +229,9 @@
 </template>
 
 <script>
+import cache from '@/plugins/cache'
+import { checkRole } from '@/utils/permission'
+import { addReceiving } from "@/api/yixiu/receiving";
 import { listOrder, getOrder, delOrder, addOrder, updateOrder } from "@/api/yixiu/order";
 
 export default {
@@ -265,6 +278,7 @@ export default {
     this.getList();
   },
   methods: {
+    checkRole,
     /** 查询订单列表 */
     getList () {
       this.loading = true;
@@ -374,6 +388,16 @@ export default {
       this.download('yixiu/order/export', {
         ...this.queryParams
       }, `order_${new Date().getTime()}.xlsx`)
+    },
+    orderReceiving (e) {
+      const userInfo = cache.session.getJSON('userInfo');
+      const param = {};
+      param.orderId = e.orderId;
+      param.userId = userInfo.userId;
+
+      addReceiving(param).then(res => {
+        console.log(res);
+      })
     }
   }
 };

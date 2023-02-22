@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.yixiu.mapper.MzcReceivingMapper">
+    
+    <resultMap type="MzcReceiving" id="MzcReceivingResult">
+        <result property="receivingId"    column="receiving_id"    />
+        <result property="orderId"    column="order_id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="status"    column="status"    />
+        <result property="deleteBy"    column="delete_by"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectMzcReceivingVo">
+        select receiving_id, order_id, user_id, status, delete_by, del_flag, create_by, create_time, update_by, update_time from mzc_receiving
+    </sql>
+
+    <select id="selectMzcReceivingList" parameterType="MzcReceiving" resultMap="MzcReceivingResult">
+        <include refid="selectMzcReceivingVo"/>
+        <where>  
+             and del_flag = '0'
+        </where>
+    </select>
+    
+    <select id="selectMzcReceivingByReceivingId" parameterType="Long" resultMap="MzcReceivingResult">
+        <include refid="selectMzcReceivingVo"/>
+        where receiving_id = #{receivingId} and del_flag = '0'
+
+    </select>
+        
+    <insert id="insertMzcReceiving" parameterType="MzcReceiving">
+        insert into mzc_receiving
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="receivingId != null">receiving_id,</if>
+            <if test="orderId != null">order_id,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="status != null">status,</if>
+            <if test="deleteBy != null">delete_by,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="receivingId != null">#{receivingId},</if>
+            <if test="orderId != null">#{orderId},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="status != null">#{status},</if>
+            <if test="deleteBy != null">#{deleteBy},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateMzcReceiving" parameterType="MzcReceiving">
+        update mzc_receiving
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="orderId != null">order_id = #{orderId},</if>
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="deleteBy != null">delete_by = #{deleteBy},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where receiving_id = #{receivingId} and del_flag = '0'
+    </update>
+
+    <delete id="deleteMzcReceivingByReceivingId" parameterType="Long">
+        update mzc_receiving set del_flag = '2', delete_by = #{deleteByName} where receiving_id = #{receivingId}
+    </delete>
+
+    <delete id="deleteMzcReceivingByReceivingIds" parameterType="String">
+      update mzc_receiving set del_flag = '2', delete_by = #{deleteByName} where receiving_id in
+        <foreach item="receivingId" collection="receivingIds" open="(" separator="," close=")">
+            #{receivingId}
+        </foreach>
+    </delete>
+</mapper>

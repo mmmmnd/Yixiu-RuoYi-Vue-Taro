@@ -5,7 +5,7 @@ import store from '@/store'
  * @param {Array} value 校验值
  * @returns {Boolean}
  */
-export function checkPermi(value) {
+export function checkPermi (value) {
   if (value && value instanceof Array && value.length > 0) {
     const permissions = store.getters && store.getters.permissions
     const permissionDatas = value
@@ -30,7 +30,7 @@ export function checkPermi(value) {
  * @param {Array} value 校验值
  * @returns {Boolean}
  */
-export function checkRole(value) {
+export function checkRole (value) {
   if (value && value instanceof Array && value.length > 0) {
     const roles = store.getters && store.getters.roles
     const permissionRoles = value
@@ -40,10 +40,7 @@ export function checkRole(value) {
       return super_admin === role || permissionRoles.includes(role)
     })
 
-    if (!hasRole) {
-      return false
-    }
-    return true
+    return hasRole ? true : false
   } else {
     console.error(`need roles! Like checkRole="['admin','editor']"`)
     return false
