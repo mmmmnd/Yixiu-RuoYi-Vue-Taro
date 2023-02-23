@@ -39,9 +39,6 @@ public class MzcReceivingController extends BaseController
     @Autowired
     private IMzcReceivingService mzcReceivingService;
 
-    @Resource
-    private IMzcOrderService mzcOrderService;
-
     /**
      * 查询接单列表
      */
@@ -85,10 +82,6 @@ public class MzcReceivingController extends BaseController
     @PostMapping
     public R<Integer> add(@RequestBody MzcReceiving mzcReceiving)
     {
-        MzcOrder mzcOrder = new MzcOrder();
-        mzcOrder.setStatus("2");
-        mzcOrderService.updateMzcOrder(mzcOrder);
-
         return R.ok(mzcReceivingService.insertMzcReceiving(mzcReceiving));
     }
 

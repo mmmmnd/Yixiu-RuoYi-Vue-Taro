@@ -389,14 +389,16 @@ export default {
         ...this.queryParams
       }, `order_${new Date().getTime()}.xlsx`)
     },
+    /* 自主接单 */
     orderReceiving (e) {
       const userInfo = cache.session.getJSON('userInfo');
       const param = {};
-      param.orderId = e.orderId;
+      param.orderId = 2||e.orderId;
       param.userId = userInfo.userId;
 
       addReceiving(param).then(res => {
         console.log(res);
+        this.$modal.msgSuccess("接单成功");
       })
     }
   }

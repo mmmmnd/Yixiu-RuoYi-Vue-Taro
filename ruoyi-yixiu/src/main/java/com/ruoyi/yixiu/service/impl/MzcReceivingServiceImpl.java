@@ -1,13 +1,21 @@
 package com.ruoyi.yixiu.service.impl;
 
 import java.util.List;
+
+import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
 import static com.ruoyi.common.utils.SecurityUtils.getUsername;
+
+import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.yixiu.domain.MzcOrder;
+import com.ruoyi.yixiu.service.IMzcOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.ruoyi.yixiu.mapper.MzcReceivingMapper;
 import com.ruoyi.yixiu.domain.MzcReceiving;
 import com.ruoyi.yixiu.service.IMzcReceivingService;
+
+import javax.annotation.Resource;
 
 /**
  * 接单Service业务层处理
@@ -21,6 +29,8 @@ public class MzcReceivingServiceImpl implements IMzcReceivingService
     @Autowired
     private MzcReceivingMapper mzcReceivingMapper;
 
+    @Resource
+    private IMzcOrderService mzcOrderService;
     /**
      * 查询接单
      *
@@ -54,9 +64,19 @@ public class MzcReceivingServiceImpl implements IMzcReceivingService
     @Override
     public int insertMzcReceiving(MzcReceiving mzcReceiving)
     {
-        mzcReceiving.setCreateTime(DateUtils.getNowDate());
-        mzcReceiving.setCreateBy(getUsername());
-        return mzcReceivingMapper.insertMzcReceiving(mzcReceiving);
+        MzcOrder order = mzcOrderService.selectMzcOrderByOrderId(mzcReceiving.getOrderId());
+
+        if (StringUtils.isNotNull(order)) {
+            order.setStatus("2");
+            mzcOrderService.updateMzcOrder(order);
+
+            mzcReceiving.setCreateTime(DateUtils.getNowDate());
+            mzcReceiving.setCreateBy(getUsername());
+            return mzcReceivingMapper.insertMzcReceiving(mzcReceiving);
+        } else {
+            throw new ServiceException("接单失败，订单不存在");
+        }
+
     }
 
     /**
