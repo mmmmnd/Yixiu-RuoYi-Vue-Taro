@@ -2,6 +2,7 @@ package com.ruoyi.yixiu.domain;
 
 import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ruoyi.common.core.domain.entity.SysDept;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -12,13 +13,14 @@ import com.ruoyi.common.core.domain.BaseEntity;
  * 订单对象 mzc_order
  * 
  * @author mmmmnd
- * @date 2023-02-19
+ * @date 2023-02-24
  */
 public class MzcOrder extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
     /** 订单id */
+    @Excel(name = "订单id")
     private Long orderId;
 
     /** 维修点id */
@@ -28,6 +30,9 @@ public class MzcOrder extends BaseEntity
     /** 设备id */
     @Excel(name = "设备id")
     private Long equipmentId;
+
+    /** 反馈单id */
+    private Long feedbackId;
 
     /** 报修人 */
     @Excel(name = "报修人")
@@ -51,27 +56,39 @@ public class MzcOrder extends BaseEntity
     private String errorDescription;
 
     /** 申请科室意见 */
-    @Excel(name = "申请科室意见")
     private String applyDeptOpinion;
 
     /** 装备部意见 */
-    @Excel(name = "装备部意见")
     private String equipmentOpinion;
 
     /** 分管院长审批意见 */
-    @Excel(name = "分管院长审批意见")
     private String subheadOpinion;
 
     /** 院长审批意见 */
-    @Excel(name = "院长审批意见")
     private String deanOpinion;
 
-    /** 状态（0等待处理 1系统派单 2自主接单 3开始检测 4出具报告 5提供报价 6审核 7 开始维修 8维修完成 9 验收） */
-    @Excel(name = "状态", readConverterExp = "0=等待处理,1=系统派单,2=自主接单,3=开始检测,4=出具报告,5=提供报价,6=审核,7=,开=始维修,8=维修完成,9=,验=收")
+    /** 工程师（用户id） */
+    private Long engineerId;
+
+    /** 工程师 */
+    @Excel(name = "工程师", readConverterExp = "用=户id")s
+    private String engineerName;
+
+    /** 状态类型（1系统派单 2工程师接单） */
+    @Excel(name = "状态类型", readConverterExp = "1=系统派单,2=工程师接单")
+    private Integer orderType;
+
+    /** 派单操作人 */
+    private String sendOrders;
+
+    /** 接单派单时间  */
+    private Date dateTime;
+
+    /** 状态（0等待处理 1系统派单 2工程师接单 3开始检测 4出具报告 5提供报价 6审核 7 开始维修 8维修完成 9 验收） */
+    @Excel(name = "状态", readConverterExp = "0=等待处理,1=系统派单,2=工程师接单,3=开始检测,4=出具报告,5=提供报价,6=审核,7=,开=始维修,8=维修完成,9=,验=收")
     private String status;
 
     /** 评价意见 */
-    @Excel(name = "评价意见")
     private String appraiseOpinion;
 
     /** 评价（1很差，2差，3一般，4好，5很好） */
@@ -79,7 +96,9 @@ public class MzcOrder extends BaseEntity
     private Integer appraise;
 
     /** 评价人（用户id） */
-    @Excel(name = "评价人", readConverterExp = "用=户id")
+    private Long appraiseId;
+
+    /** 创建人id */
     private Long userId;
 
     /** 删除人 */
@@ -88,10 +107,8 @@ public class MzcOrder extends BaseEntity
     /** 删除标志（0代表存在 2代表删除） */
     private String delFlag;
 
-    /*设备列表*/
     private MzcEquipment equipment;
 
-    /* 部门列表*/
     private SysDept dept;
 
     public void setOrderId(Long orderId) 
@@ -121,12 +138,16 @@ public class MzcOrder extends BaseEntity
     {
         return equipmentId;
     }
-
-    public static long getSerialVersionUID() {
-        return serialVersionUID;
+    public void setFeedbackId(Long feedbackId) 
+    {
+        this.feedbackId = feedbackId;
     }
 
-    public void setRepairman(String repairman)
+    public Long getFeedbackId() 
+    {
+        return feedbackId;
+    }
+    public void setRepairman(String repairman) 
     {
         this.repairman = repairman;
     }
@@ -207,7 +228,52 @@ public class MzcOrder extends BaseEntity
     {
         return deanOpinion;
     }
-    public void setStatus(String status) 
+    public void setEngineerId(Long engineerId) 
+    {
+        this.engineerId = engineerId;
+    }
+
+    public Long getEngineerId() 
+    {
+        return engineerId;
+    }
+
+    public String getEngineerName() {
+        return engineerName;
+    }
+
+    public void setEngineerName(String engineerName) {
+        this.engineerName = engineerName;
+    }
+
+    public void setOrderType(Integer orderType)
+    {
+        this.orderType = orderType;
+    }
+
+    public Integer getOrderType() 
+    {
+        return orderType;
+    }
+    public void setSendOrders(String sendOrders) 
+    {
+        this.sendOrders = sendOrders;
+    }
+
+    public String getSendOrders() 
+    {
+        return sendOrders;
+    }
+
+    public Date getDateTime() {
+        return dateTime;
+    }
+
+    public void setDateTime(Date dateTime) {
+        this.dateTime = dateTime;
+    }
+
+    public void setStatus(String status)
     {
         this.status = status;
     }
@@ -243,7 +309,16 @@ public class MzcOrder extends BaseEntity
     {
         return userId;
     }
-    public void setDeleteBy(String deleteBy) 
+
+    public Long getAppraiseId() {
+        return appraiseId;
+    }
+
+    public void setAppraiseId(Long appraiseId) {
+        this.appraiseId = appraiseId;
+    }
+
+    public void setDeleteBy(String deleteBy)
     {
         this.deleteBy = deleteBy;
     }
@@ -284,6 +359,7 @@ public class MzcOrder extends BaseEntity
             .append("orderId", getOrderId())
             .append("deptId", getDeptId())
             .append("equipmentId", getEquipmentId())
+            .append("feedbackId", getFeedbackId())
             .append("repairman", getRepairman())
             .append("repairPhone", getRepairPhone())
             .append("workType", getWorkType())
@@ -293,6 +369,10 @@ public class MzcOrder extends BaseEntity
             .append("equipmentOpinion", getEquipmentOpinion())
             .append("subheadOpinion", getSubheadOpinion())
             .append("deanOpinion", getDeanOpinion())
+            .append("engineerId", getEngineerId())
+            .append("orderType", getOrderType())
+            .append("sendOrders", getSendOrders())
+            .append("dateTime", getDateTime())
             .append("status", getStatus())
             .append("appraiseOpinion", getAppraiseOpinion())
             .append("appraise", getAppraise())

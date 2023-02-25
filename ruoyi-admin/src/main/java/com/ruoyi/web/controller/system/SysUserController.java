@@ -258,9 +258,9 @@ public class SysUserController extends BaseController
      * 用于后台单位管理获取业务员信息
      */
     @PreAuthorize("@ss.hasPermi('system:user:query')")
-    @Log(title = "务员信息", businessType = BusinessType.GRANT)
-    @GetMapping("/businessUserInfo")
-    public AjaxResult getBusinessUserInfo() {
-        return success(userService.businessUserInfo(100L));
+    @Log(title = "获取角色信息", businessType = BusinessType.GRANT)
+    @GetMapping("/businessUserInfo/{roleId}")
+    public AjaxResult getBusinessUserInfo(@PathVariable("roleId") Long roleId) {
+        return success(userService.businessUserInfo(roleId));
     }
 }

@@ -1,27 +1,32 @@
 package com.ruoyi.yixiu.domain.dto.order;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import org.springframework.format.annotation.DateTimeFormat;
+import io.swagger.annotations.ApiModelProperty;
 
 import java.util.Date;
 
 public class MzcOrderAddDTO {
 
+    @ApiModelProperty(value = "单位id")
     private Long deptId;
 
+    @ApiModelProperty(value = "设备id")
     private Long equipmentId;
 
+    @ApiModelProperty(value = "报修人")
     private String repairman;
 
+    @ApiModelProperty(value = "报修电话")
     private String repairPhone;
 
-    @JsonProperty("productId")
+    @ApiModelProperty(value = "工作类别")
     private String workType;
 
+    @ApiModelProperty(value = "期望上门服务时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm",timezone="GMT+8")
     private Date expectationTime;
 
+    @ApiModelProperty(value = "故障描述")
     private String errorDescription;
 
     public Long getDeptId() {

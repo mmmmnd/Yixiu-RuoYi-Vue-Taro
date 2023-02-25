@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper
-PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ruoyi.yixiu.mapper.MzcOrderMapper">
-    
+
     <resultMap type="MzcOrder" id="MzcOrderResult">
         <result property="orderId"    column="order_id"    />
         <result property="deptId"    column="dept_id"    />
         <result property="equipmentId"    column="equipment_id"    />
+        <result property="feedbackId"    column="feedback_id"    />
         <result property="repairman"    column="repairman"    />
         <result property="repairPhone"    column="repair_phone"    />
         <result property="workType"    column="work_type"    />
@@ -17,9 +18,15 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="equipmentOpinion"    column="equipment_opinion"    />
         <result property="subheadOpinion"    column="subhead_opinion"    />
         <result property="deanOpinion"    column="dean_opinion"    />
+        <result property="engineerId"    column="engineer_id"    />
+        <result property="engineerName"    column="engineer_name"    />
+        <result property="orderType"    column="order_type"    />
+        <result property="sendOrders"    column="send_orders"    />
+        <result property="dateTime"    column="date_time"    />
         <result property="status"    column="status"    />
         <result property="appraiseOpinion"    column="appraise_opinion"    />
         <result property="appraise"    column="appraise"    />
+        <result property="appraiseId"    column="appraise_id"    />
         <result property="userId"    column="user_id"    />
         <result property="deleteBy"    column="delete_by"    />
         <result property="delFlag"    column="del_flag"    />
@@ -65,10 +72,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectMzcOrderVo">
-        select o.order_id, o.dept_id, o.equipment_id, o.repairman, o.repair_phone, o.work_type, o.expectation_time, o.error_description, o.apply_dept_opinion, o.equipment_opinion, o.subhead_opinion, o.dean_opinion, o.status, o.appraise_opinion, o.appraise, o.user_id, o.delete_by, o.del_flag, o.create_by, o.create_time, o.update_by, o.update_time,o.status,
+        select order_id, o.dept_id, o.equipment_id, o.feedback_id, o.repairman, o.repair_phone, o.work_type, o.expectation_time, o.error_description, o.apply_dept_opinion, o.equipment_opinion, o.subhead_opinion, o.dean_opinion, o.engineer_id, o.order_type, o.send_orders, o.date_time, o.status, o.appraise_opinion, o.appraise, o.appraise_id, o.user_id, o.delete_by, o.del_flag, o.create_by, o.create_time, o.update_by, o.update_time,
         e.*,
         d.*,
-        (select dept_name from sys_dept where dept_id = d.parent_id) parent_name
+        (select dept_name from sys_dept where dept_id = d.parent_id) parent_name,
+        (select nick_name from sys_user where user_id = o.engineer_id) engineer_name
         from mzc_order o
         left JOIN mzc_equipment e on o.equipment_id = e.equipment_id
         left join sys_dept d  on o.dept_id = d.dept_id
@@ -76,27 +84,31 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <select id="selectMzcOrderList" parameterType="MzcOrder" resultMap="MzcOrderResult">
         <include refid="selectMzcOrderVo"/>
-        <where>  
+        <where>
             <if test="deptId != null "> and o.dept_id = #{deptId}</if>
-            <if test="equipmentId != null "> and o.equipment_id = #{equipmentId}</if>
+            <if test="equipmentId != null "> and equipment_id = #{equipmentId}</if>
             <if test="workType != null  and workType != ''"> and work_type = #{workType}</if>
-            <if test="status != null  and status != ''"> and o.status = #{status}</if>
+            <if test="orderType != null "> and order_type = #{orderType}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
             <if test="appraise != null "> and appraise = #{appraise}</if>
-             and o.del_flag = '0'
+            and o.del_flag = '0'
         </where>
+        <!-- 数据范围过滤 -->
+        ${params.dataScope}
     </select>
-    
+
     <select id="selectMzcOrderByOrderId" parameterType="Long" resultMap="MzcOrderResult">
         <include refid="selectMzcOrderVo"/>
-        where o.order_id = #{orderId} and o.del_flag = '0'
+        where order_id = #{orderId} and o.del_flag = '0'
 
     </select>
-        
+
     <insert id="insertMzcOrder" parameterType="MzcOrder" useGeneratedKeys="true" keyProperty="orderId">
         insert into mzc_order
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="deptId != null">dept_id,</if>
             <if test="equipmentId != null">equipment_id,</if>
+            <if test="feedbackId != null">feedback_id,</if>
             <if test="repairman != null">repairman,</if>
             <if test="repairPhone != null">repair_phone,</if>
             <if test="workType != null">work_type,</if>
@@ -106,9 +118,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="equipmentOpinion != null">equipment_opinion,</if>
             <if test="subheadOpinion != null">subhead_opinion,</if>
             <if test="deanOpinion != null">dean_opinion,</if>
+            <if test="engineerId != null">engineer_id,</if>
+            <if test="orderType != null">order_type,</if>
+            <if test="sendOrders != null">send_orders,</if>
+            <if test="dateTime != null">date_time,</if>
             <if test="status != null">status,</if>
             <if test="appraiseOpinion != null">appraise_opinion,</if>
             <if test="appraise != null">appraise,</if>
+            <if test="appraiseId != null">appraise_id,</if>
             <if test="userId != null">user_id,</if>
             <if test="deleteBy != null">delete_by,</if>
             <if test="delFlag != null">del_flag,</if>
@@ -116,10 +133,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="createTime != null">create_time,</if>
             <if test="updateBy != null">update_by,</if>
             <if test="updateTime != null">update_time,</if>
-         </trim>
+        </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="deptId != null">#{deptId},</if>
             <if test="equipmentId != null">#{equipmentId},</if>
+            <if test="feedbackId != null">#{feedbackId},</if>
             <if test="repairman != null">#{repairman},</if>
             <if test="repairPhone != null">#{repairPhone},</if>
             <if test="workType != null">#{workType},</if>
@@ -129,6 +147,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="equipmentOpinion != null">#{equipmentOpinion},</if>
             <if test="subheadOpinion != null">#{subheadOpinion},</if>
             <if test="deanOpinion != null">#{deanOpinion},</if>
+            <if test="engineerId != null">#{engineerId},</if>
+            <if test="orderType != null">#{orderType},</if>
+            <if test="sendOrders != null">#{sendOrders},</if>
+            <if test="dateTime != null">#{dateTime},</if>
             <if test="status != null">#{status},</if>
             <if test="appraiseOpinion != null">#{appraiseOpinion},</if>
             <if test="appraise != null">#{appraise},</if>
@@ -139,7 +161,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="createTime != null">#{createTime},</if>
             <if test="updateBy != null">#{updateBy},</if>
             <if test="updateTime != null">#{updateTime},</if>
-         </trim>
+        </trim>
     </insert>
 
     <update id="updateMzcOrder" parameterType="MzcOrder">
@@ -147,6 +169,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <trim prefix="SET" suffixOverrides=",">
             <if test="deptId != null">dept_id = #{deptId},</if>
             <if test="equipmentId != null">equipment_id = #{equipmentId},</if>
+            <if test="feedbackId != null">feedback_id = #{feedbackId},</if>
             <if test="repairman != null">repairman = #{repairman},</if>
             <if test="repairPhone != null">repair_phone = #{repairPhone},</if>
             <if test="workType != null">work_type = #{workType},</if>
@@ -156,9 +179,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="equipmentOpinion != null">equipment_opinion = #{equipmentOpinion},</if>
             <if test="subheadOpinion != null">subhead_opinion = #{subheadOpinion},</if>
             <if test="deanOpinion != null">dean_opinion = #{deanOpinion},</if>
+            <if test="engineerId != null">engineer_id = #{engineerId},</if>
+            <if test="orderType != null">order_type = #{orderType},</if>
+            <if test="sendOrders != null">send_orders = #{sendOrders},</if>
+            <if test="dateTime != null">date_time = #{dateTime},</if>
             <if test="status != null">status = #{status},</if>
             <if test="appraiseOpinion != null">appraise_opinion = #{appraiseOpinion},</if>
             <if test="appraise != null">appraise = #{appraise},</if>
+            <if test="appraiseId != null">appraise_id = #{appraiseId},</if>
             <if test="userId != null">user_id = #{userId},</if>
             <if test="deleteBy != null">delete_by = #{deleteBy},</if>
             <if test="delFlag != null">del_flag = #{delFlag},</if>
@@ -175,7 +203,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </delete>
 
     <delete id="deleteMzcOrderByOrderIds" parameterType="String">
-      update mzc_order set del_flag = '2', delete_by = #{deleteByName} where order_id in
+        update mzc_order set del_flag = '2', delete_by = #{deleteByName} where order_id in
         <foreach item="orderId" collection="orderIds" open="(" separator="," close=")">
             #{orderId}
         </foreach>

@@ -31,10 +31,10 @@
                      :value="dict.value" />
         </el-select>
       </el-form-item>
-      <el-form-item label="状态"
-                    prop="status">
-        <el-select v-model="queryParams.status"
-                   placeholder="请选择状态"
+      <el-form-item label="订单类型"
+                    prop="orderType">
+        <el-select v-model="queryParams.orderType"
+                   placeholder="请选择订单类型"
                    clearable>
           <el-option v-for="dict in dict.type.mzc_order_status"
                      :key="dict.value"
@@ -42,12 +42,12 @@
                      :value="dict.value" />
         </el-select>
       </el-form-item>
-      <el-form-item label="评价"
-                    prop="appraise">
-        <el-select v-model="queryParams.appraise"
-                   placeholder="请选择评价"
+      <el-form-item label="状态"
+                    prop="status">
+        <el-select v-model="queryParams.status"
+                   placeholder="请选择状态"
                    clearable>
-          <el-option v-for="dict in dict.type.mzc_order_appraise_status"
+          <el-option v-for="dict in dict.type.mzc_order_status"
                      :key="dict.value"
                      :label="dict.label"
                      :value="dict.value" />
@@ -66,6 +66,23 @@
 
     <el-row :gutter="10"
             class="mb8">
+      <el-col :span="1.5">
+        <el-button type="primary"
+                   plain
+                   icon="el-icon-plus"
+                   size="mini"
+                   @click="handleAdd"
+                   v-hasPermi="['yixiu:order:add']">新增</el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button type="success"
+                   plain
+                   icon="el-icon-edit"
+                   size="mini"
+                   :disabled="single"
+                   @click="handleUpdate"
+                   v-hasPermi="['yixiu:order:edit']">修改</el-button>
+      </el-col>
       <el-col :span="1.5">
         <el-button type="danger"
                    plain
@@ -133,24 +150,23 @@
                        prop="expectationTime"
                        width="180">
         <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.expectationTime, '{y}-{m}-{d}') }}</span>
+          <span>{{ parseTime(scope.row.expectationTime, "{y}-{m}-{d}") }}</span>
         </template>
       </el-table-column>
       <el-table-column label="故障描述"
                        align="center"
                        prop="errorDescription" />
-      <el-table-column label="申请科室意见"
+      <el-table-column label="工程师"
                        align="center"
-                       prop="applyDeptOpinion" />
-      <el-table-column label="装备部意见"
+                       prop="engineerName" />
+      <el-table-column label="订单类型"
                        align="center"
-                       prop="equipmentOpinion" />
-      <el-table-column label="分管院长审批意见"
-                       align="center"
-                       prop="subheadOpinion" />
-      <el-table-column label="院长审批意见"
-                       align="center"
-                       prop="deanOpinion" />
+                       prop="orderType">
+        <template slot-scope="scope">
+          <dict-tag :options="dict.type.mzc_order_status"
+                    :value="scope.row.orderType" />
+        </template>
+      </el-table-column>
       <el-table-column label="状态"
                        align="center"
                        prop="status">
@@ -159,9 +175,6 @@
                     :value="scope.row.status" />
         </template>
       </el-table-column>
-      <el-table-column label="评价意见"
-                       align="center"
-                       prop="appraiseOpinion" />
       <el-table-column label="评价"
                        align="center"
                        prop="appraise">
@@ -170,23 +183,28 @@
                     :value="scope.row.appraise" />
         </template>
       </el-table-column>
-      <el-table-column label="评价人"
-                       align="center"
-                       prop="userId" />
       <el-table-column label="操作"
                        align="center"
-                       fixed="right"
                        class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button size="mini"
                      type="text"
                      icon="el-icon-s-promotion"
                      v-hasPermi="['yixiu:equipment:edit']">详情</el-button>
-          <el-button size="mini"
-                     type="text"
-                     icon="el-icon-s-promotion"
-                     v-if="checkRole(['maintainDirector']) && scope.row.status == 0"
-                     v-hasPermi="['yixiu:equipment:edit']">派单</el-button>
+
+          <el-dropdown @command="e=>handleCommand(e,scope.row)"
+                       v-if="checkRole(['maintainDirector']) && scope.row.status == 0"
+                       v-hasPermi="['yixiu:equipment:edit']">
+            <span class="el-dropdown-link">
+              派单<i class="el-icon-arrow-down el-icon--right"></i>
+            </span>
+            <el-dropdown-menu slot="dropdown"
+                              v-for="(item, index) in dropdownMenuArr"
+                              :key="index">
+              <el-dropdown-item :command="item.userId">{{item.nickName}}</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
+
           <el-button size="mini"
                      type="text"
                      icon="el-icon-document-copy"
@@ -202,7 +220,7 @@
       </el-table-column>
     </el-table>
 
-    <pagination v-show="total>0"
+    <pagination v-show="total > 0"
                 :total="total"
                 :page.sync="queryParams.pageNum"
                 :limit.sync="queryParams.pageSize"
@@ -231,12 +249,12 @@
 <script>
 import cache from '@/plugins/cache'
 import { checkRole } from '@/utils/permission'
-import { addReceiving } from "@/api/yixiu/receiving";
-import { listOrder, getOrder, delOrder, addOrder, updateOrder } from "@/api/yixiu/order";
+import { listOrder, getOrder, delOrder, addOrder, updateOrder, pickOrder, sendOrder } from "@/api/yixiu/order";
+import { getBusinessUserInfo } from "@/api/system/user";
 
 export default {
   name: "Order",
-  dicts: ['mzc_order_type', 'mzc_order_status', 'mzc_order_appraise_status'],
+  dicts: ["mzc_order_type", "mzc_order_status"],
   data () {
     return {
       // 遮罩层
@@ -264,14 +282,16 @@ export default {
         deptId: null,
         equipmentId: null,
         workType: null,
+        orderType: null,
         status: null,
         appraise: null,
       },
       // 表单参数
       form: {},
       // 表单校验
-      rules: {
-      }
+      rules: {},
+      dropdownMenuArr: [],
+      userInfo: cache.session.getJSON("userInfo")
     };
   },
   created () {
@@ -282,11 +302,14 @@ export default {
     /** 查询订单列表 */
     getList () {
       this.loading = true;
-      listOrder(this.queryParams).then(response => {
-        this.orderList = response.rows;
-        this.total = response.total;
+      const roleId = 110;
+
+      Promise.all([listOrder(this.queryParams), getBusinessUserInfo(roleId)]).then(res => {
+        this.orderList = res[0].rows;
+        this.total = res[0].total;
+        this.dropdownMenuArr = res[1].data;
         this.loading = false;
-      });
+      })
     },
     // 取消按钮
     cancel () {
@@ -299,6 +322,7 @@ export default {
         orderId: null,
         deptId: null,
         equipmentId: null,
+        feedbackId: null,
         repairman: null,
         repairPhone: null,
         workType: null,
@@ -308,7 +332,11 @@ export default {
         equipmentOpinion: null,
         subheadOpinion: null,
         deanOpinion: null,
-        status: null,
+        engineerId: null,
+        orderType: null,
+        sendOrders: null,
+        sendTime: null,
+        status: "0",
         appraiseOpinion: null,
         appraise: null,
         userId: null,
@@ -317,7 +345,7 @@ export default {
         createBy: null,
         createTime: null,
         updateBy: null,
-        updateTime: null
+        updateTime: null,
       };
       this.resetForm("form");
     },
@@ -391,16 +419,44 @@ export default {
     },
     /* 自主接单 */
     orderReceiving (e) {
-      const userInfo = cache.session.getJSON('userInfo');
       const param = {};
-      param.orderId = 2||e.orderId;
-      param.userId = userInfo.userId;
+      param.orderId = e.orderId;
+      param.engineerId = this.userInfo.userId;
 
-      addReceiving(param).then(res => {
-        console.log(res);
+      pickOrder(param).then((res) => {
+        this.getList();
+        this.$modal.msgSuccess("接单成功");
+      });
+    },
+    /* 派单 */
+    handleCommand (userId, e) {
+      const param = {
+        orderId: e.orderId,
+        engineerId: userId,
+        sendOrders: this.userInfo.nickName
+      }
+
+      sendOrder(param).then(res => {
+        this.getList();
         this.$modal.msgSuccess("接单成功");
       })
+
+
     }
-  }
+  },
 };
 </script>
+<style scoped>
+.el-dropdown-link {
+  cursor: pointer;
+  color: #409eff;
+}
+.el-dropdown-menu {
+  overflow-y: auto;
+  overflow-x: hidden;
+  max-height: 300px;
+}
+.el-icon-arrow-down {
+  font-size: 12px;
+}
+</style>

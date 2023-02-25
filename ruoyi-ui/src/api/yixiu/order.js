@@ -1,7 +1,7 @@
 import request from '@/utils/request'
 
 // 查询订单列表
-export function listOrder(query) {
+export function listOrder (query) {
   return request({
     url: '/yixiu/order/list',
     method: 'get',
@@ -10,7 +10,7 @@ export function listOrder(query) {
 }
 
 // 查询订单详细
-export function getOrder(orderId) {
+export function getOrder (orderId) {
   return request({
     url: '/yixiu/order/' + orderId,
     method: 'get'
@@ -18,7 +18,7 @@ export function getOrder(orderId) {
 }
 
 // 新增订单
-export function addOrder(data) {
+export function addOrder (data) {
   return request({
     url: '/yixiu/order',
     method: 'post',
@@ -27,7 +27,7 @@ export function addOrder(data) {
 }
 
 // 修改订单
-export function updateOrder(data) {
+export function updateOrder (data) {
   return request({
     url: '/yixiu/order',
     method: 'put',
@@ -36,9 +36,27 @@ export function updateOrder(data) {
 }
 
 // 删除订单
-export function delOrder(orderId) {
+export function delOrder (orderId) {
   return request({
     url: '/yixiu/order/' + orderId,
     method: 'delete'
+  })
+}
+
+// 自主接单
+export function pickOrder (data) {
+  return request({
+    url: '/yixiu/order/pick',
+    method: 'post',
+    data: data
+  })
+}
+
+// 系统接单
+export function sendOrder (data) {
+  return request({
+    url: '/yixiu/order/send',
+    method: 'post',
+    data: data
   })
 }

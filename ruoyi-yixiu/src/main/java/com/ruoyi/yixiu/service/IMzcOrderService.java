@@ -2,13 +2,12 @@ package com.ruoyi.yixiu.service;
 
 import java.util.List;
 import com.ruoyi.yixiu.domain.MzcOrder;
-import com.ruoyi.yixiu.domain.dto.order.MzcOrderAddDTO;
 
 /**
  * 订单Service接口
  * 
  * @author mmmmnd
- * @date 2023-02-19
+ * @date 2023-02-24
  */
 public interface IMzcOrderService 
 {
@@ -59,4 +58,20 @@ public interface IMzcOrderService
      * @return 结果
      */
     public int deleteMzcOrderByOrderId(Long orderId);
+
+    /**
+     * 自主接单
+     *
+     * @param mzcOrder 订单
+     * @return 结果
+     */
+    public int pickOrder(MzcOrder mzcOrder);
+
+    /**
+     * 系统派单
+     *
+     * @param mzcOrder 订单
+     * @return 结果
+     */
+    public int sendOrder(MzcOrder mzcOrder);
 }
