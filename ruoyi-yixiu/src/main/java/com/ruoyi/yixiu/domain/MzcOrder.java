@@ -71,7 +71,7 @@ public class MzcOrder extends BaseEntity
     private Long engineerId;
 
     /** 工程师 */
-    @Excel(name = "工程师", readConverterExp = "用=户id")s
+    @Excel(name = "工程师", readConverterExp = "用=户id")
     private String engineerName;
 
     /** 状态类型（1系统派单 2工程师接单） */
@@ -82,6 +82,7 @@ public class MzcOrder extends BaseEntity
     private String sendOrders;
 
     /** 接单派单时间  */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date dateTime;
 
     /** 状态（0等待处理 1系统派单 2工程师接单 3开始检测 4出具报告 5提供报价 6审核 7 开始维修 8维修完成 9 验收） */

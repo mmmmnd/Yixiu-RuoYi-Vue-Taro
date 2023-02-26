@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.ruoyi.common.annotation.DataScope;
+import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
 
 import static com.ruoyi.common.utils.SecurityUtils.getUsername;
@@ -14,8 +15,6 @@ import org.springframework.stereotype.Service;
 import com.ruoyi.yixiu.mapper.MzcOrderMapper;
 import com.ruoyi.yixiu.domain.MzcOrder;
 import com.ruoyi.yixiu.service.IMzcOrderService;
-
-import javax.annotation.Resource;
 
 /**
  * 订单Service业务层处理
@@ -53,7 +52,7 @@ public class MzcOrderServiceImpl implements IMzcOrderService
     {
 
         /*自主接单不显示派单 其他都显示*/
-         if (mzcOrder.getOrderType() == 2){
+         if (mzcOrder.getOrderType() != null && mzcOrder.getOrderType() == 2){
              mzcOrder.setOrderType(null);
          }
 
@@ -154,4 +153,27 @@ public class MzcOrderServiceImpl implements IMzcOrderService
 
         return updateMzcOrder(mzcOrder);
     }
+
+    /**
+     * 订单检测
+     *
+     * @param orderId 订单ID
+     * @return 结果
+     */
+    @Override
+    public int detectionOrder(Long orderId) {
+        MzcOrder mzcOrder = selectMzcOrderByOrderId(orderId);
+
+        /*订单为接单或派单才进行操作*/
+        if (mzcOrder.getStatus().equals("1") || mzcOrder.getStatus().equals("2")) {
+            mzcOrder.setStatus("3");
+            /*创建订单反馈*/
+        } else {
+            throw new ServiceException("非法参数！");
+        }
+
+        return updateMzcOrder(mzcOrder);
+    }
+
+
 }

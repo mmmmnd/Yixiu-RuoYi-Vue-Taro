@@ -74,4 +74,12 @@ public interface IMzcOrderService
      * @return 结果
      */
     public int sendOrder(MzcOrder mzcOrder);
+
+    /**
+     * 订单检测
+     *
+     * @param orderId 订单ID
+     * @return 结果
+     */
+    public int detectionOrder(Long orderId);
 }

@@ -5,10 +5,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.utils.bean.BeanUtils;
-import com.ruoyi.yixiu.domain.dto.order.MzcOrderAddDTO;
-import com.ruoyi.yixiu.domain.dto.order.MzcOrderListDTO;
-import com.ruoyi.yixiu.domain.dto.order.MzcOrderPickDTO;
-import com.ruoyi.yixiu.domain.dto.order.MzcOrderSendDTO;
+import com.ruoyi.yixiu.domain.dto.order.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -151,5 +148,17 @@ public class MzcOrderController extends BaseController
         BeanUtils.copyBeanProp(mzcOrder, mzcOrderSendDTO);
 
         return R.ok(mzcOrderService.sendOrder(mzcOrder));
+    }
+
+    /**
+     * 订单检测
+     */
+    @ApiOperation("订单检测")
+    @PreAuthorize("@ss.hasPermi('yixiu:order:detection')")
+    @Log(title = "订单检测", businessType = BusinessType.INSERT)
+    @PostMapping("/detection")
+    public R<Integer> detection(@ApiParam(value = "订单ID", defaultValue = "1", required = true) @PathVariable("orderId") Long orderId)
+    {
+        return R.ok(mzcOrderService.detectionOrder(orderId));
     }
 }

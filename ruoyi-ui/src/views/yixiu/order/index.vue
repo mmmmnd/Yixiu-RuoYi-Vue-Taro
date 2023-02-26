@@ -67,32 +67,6 @@
     <el-row :gutter="10"
             class="mb8">
       <el-col :span="1.5">
-        <el-button type="primary"
-                   plain
-                   icon="el-icon-plus"
-                   size="mini"
-                   @click="handleAdd"
-                   v-hasPermi="['yixiu:order:add']">新增</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button type="success"
-                   plain
-                   icon="el-icon-edit"
-                   size="mini"
-                   :disabled="single"
-                   @click="handleUpdate"
-                   v-hasPermi="['yixiu:order:edit']">修改</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button type="danger"
-                   plain
-                   icon="el-icon-delete"
-                   size="mini"
-                   :disabled="multiple"
-                   @click="handleDelete"
-                   v-hasPermi="['yixiu:order:remove']">删除</el-button>
-      </el-col>
-      <el-col :span="1.5">
         <el-button type="warning"
                    plain
                    icon="el-icon-download"
@@ -122,15 +96,6 @@
       <el-table-column label="设备名称"
                        align="center"
                        prop="equipment.equipmentName" />
-      <el-table-column label="序列号"
-                       align="center"
-                       prop="equipment.serialNumber" />
-      <el-table-column label="型号"
-                       align="center"
-                       prop="equipment.modelNumber" />
-      <el-table-column label="出厂编号"
-                       align="center"
-                       prop="equipment.factoryNumber" />
       <el-table-column label="报修人"
                        align="center"
                        prop="repairman" />
@@ -153,9 +118,6 @@
           <span>{{ parseTime(scope.row.expectationTime, "{y}-{m}-{d}") }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="故障描述"
-                       align="center"
-                       prop="errorDescription" />
       <el-table-column label="工程师"
                        align="center"
                        prop="engineerName" />
@@ -189,9 +151,9 @@
         <template slot-scope="scope">
           <el-button size="mini"
                      type="text"
-                     icon="el-icon-s-promotion"
+                     icon="el-icon-document"
+                     @click="handleInfo(scope.row)"
                      v-hasPermi="['yixiu:equipment:edit']">详情</el-button>
-
           <el-dropdown @command="e=>handleCommand(e,scope.row)"
                        v-if="checkRole(['maintainDirector']) && scope.row.status == 0"
                        v-hasPermi="['yixiu:equipment:edit']">
@@ -214,6 +176,7 @@
           <el-button size="mini"
                      type="text"
                      icon="el-icon-delete"
+                     v-if="checkRole(['admin'])"
                      @click="handleDelete(scope.row)"
                      v-hasPermi="['yixiu:order:remove']">删除</el-button>
         </template>
@@ -229,13 +192,58 @@
     <!-- 添加或修改订单对话框 -->
     <el-dialog :title="title"
                :visible.sync="open"
-               width="500px"
+               width="800px"
                append-to-body>
-      <el-form ref="form"
-               :model="form"
-               :rules="rules"
-               label-width="80px">
-      </el-form>
+      <el-descriptions title="订单详情"
+                       :column="3">
+        <el-descriptions-item label="医院名称">{{form.dept && form.dept.parentName}}</el-descriptions-item>
+        <el-descriptions-item label="科室名称">{{form.dept && form.dept.deptName}}</el-descriptions-item>
+        <el-descriptions-item label="订单状态">
+          <dict-tag :options="dict.type.mzc_order_status"
+                    :value="form.status" />
+        </el-descriptions-item>
+
+        <el-descriptions-item label="工作类型">
+          <dict-tag :options="dict.type.mzc_order_type"
+                    :value="form.workType" />
+        </el-descriptions-item>
+        <el-descriptions-item label="订单类型">
+          <dict-tag :options="dict.type.mzc_order_status"
+                    :value="form.orderType" />
+        </el-descriptions-item>
+
+        <el-descriptions-item label="报修人">{{form.repairman}}</el-descriptions-item>
+        <el-descriptions-item label="联系方式">{{form.repairPhone}}</el-descriptions-item>
+        <el-descriptions-item label="期望上门时间">{{form.expectationTime}}</el-descriptions-item>
+        <el-descriptions-item label="订单处理时间">{{form.dateTime}}</el-descriptions-item>
+        <el-descriptions-item label="描述详情">{{form.errorDescription}}</el-descriptions-item>
+      </el-descriptions>
+
+      <el-descriptions title="设备详情"
+                       :column="2">
+        <el-descriptions-item label="设备名称">{{form.equipment && form.equipment.equipmentName}}</el-descriptions-item>
+        <el-descriptions-item label="序列号">{{form.equipment && form.equipment.serialNumber}}</el-descriptions-item>
+        <el-descriptions-item label="型号">{{form.equipment && form.equipment.modelNumber}}</el-descriptions-item>
+        <el-descriptions-item label="出厂编号">{{form.equipment && form.equipment.factoryNumber}}</el-descriptions-item>
+      </el-descriptions>
+
+      <el-descriptions title="审核详情"
+                       :column="2"
+                       v-if="form.status>5">
+        <el-descriptions-item label="申请科室意见">{{form.applyDeptOpinion}}</el-descriptions-item>
+        <el-descriptions-item label="装备部意见">{{form.equipmentOpinion}}</el-descriptions-item>
+        <el-descriptions-item label="院长审批意见">{{form.subheadOpinion}}</el-descriptions-item>
+        <el-descriptions-item label="分管院长审批意见">{{form.equipmentOpinion}}</el-descriptions-item>
+      </el-descriptions>
+
+      <el-descriptions title="评价详情"
+                       :column="2"
+                       v-if="form.status==9">
+        <el-descriptions-item label="评价人">{{form.appraiseId}}</el-descriptions-item>
+        <el-descriptions-item label="评价">{{form.appraise}}</el-descriptions-item>
+        <el-descriptions-item label="评价意见"
+                              :span="2">{{form.appraiseOpinion}}</el-descriptions-item>
+      </el-descriptions>
       <div slot="footer"
            class="dialog-footer">
         <el-button type="primary"
@@ -321,7 +329,9 @@ export default {
       this.form = {
         orderId: null,
         deptId: null,
+        dept: null,
         equipmentId: null,
+        equipment: null,
         feedbackId: null,
         repairman: null,
         repairPhone: null,
@@ -380,6 +390,13 @@ export default {
         this.open = true;
         this.title = "修改订单";
       });
+    },
+    /** 详情按钮操作 */
+    handleInfo (row) {
+      this.reset();
+      this.form = row;
+      this.open = true;
+      this.title = "订单详情";
     },
     /** 提交按钮 */
     submitForm () {
