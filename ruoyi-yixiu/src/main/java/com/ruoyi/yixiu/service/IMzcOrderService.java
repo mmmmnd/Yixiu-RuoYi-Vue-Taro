@@ -2,6 +2,8 @@ package com.ruoyi.yixiu.service;
 
 import java.util.List;
 import com.ruoyi.yixiu.domain.MzcOrder;
+import com.ruoyi.yixiu.domain.dto.order.MzcOrderReportDTO;
+import com.ruoyi.yixiu.domain.vo.MzcOrderOfferVO;
 
 /**
  * 订单Service接口
@@ -82,4 +84,19 @@ public interface IMzcOrderService
      * @return 结果
      */
     public int detectionOrder(Long orderId);
+
+    /**
+     * 检测报告
+     *
+     * @param mzcOrderReportDTO 配件信息
+     */
+    public void reportOrder(MzcOrderReportDTO mzcOrderReportDTO);
+
+    /**
+     * 检测报告
+     *
+     * @param feedbackId 反馈单id
+     * @return 结果
+     */
+    public List<MzcOrderOfferVO> reportOffer(Long feedbackId);
 }

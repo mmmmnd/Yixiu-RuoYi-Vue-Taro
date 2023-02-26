@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.utils.bean.BeanUtils;
 import com.ruoyi.yixiu.domain.dto.order.*;
+import com.ruoyi.yixiu.domain.vo.MzcOrderOfferVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -125,7 +126,7 @@ public class MzcOrderController extends BaseController
      */
     @ApiOperation("自主接单")
     @PreAuthorize("@ss.hasPermi('yixiu:order:pick')")
-    @Log(title = "自主接单", businessType = BusinessType.INSERT)
+    @Log(title = "自主接单", businessType = BusinessType.OTHER)
     @PostMapping("/pick")
     public R<Integer> pick(@RequestBody MzcOrderPickDTO mzcOrderPickDTO)
     {
@@ -140,7 +141,7 @@ public class MzcOrderController extends BaseController
      */
     @ApiOperation("系统派单")
     @PreAuthorize("@ss.hasPermi('yixiu:order:send')")
-    @Log(title = "系统派单", businessType = BusinessType.INSERT)
+    @Log(title = "系统派单", businessType = BusinessType.OTHER)
     @PostMapping("/send")
     public R<Integer> send(@RequestBody MzcOrderSendDTO mzcOrderSendDTO)
     {
@@ -155,10 +156,35 @@ public class MzcOrderController extends BaseController
      */
     @ApiOperation("订单检测")
     @PreAuthorize("@ss.hasPermi('yixiu:order:detection')")
-    @Log(title = "订单检测", businessType = BusinessType.INSERT)
-    @PostMapping("/detection")
+    @Log(title = "订单检测", businessType = BusinessType.OTHER)
+    @GetMapping("/detection/{orderId}")
     public R<Integer> detection(@ApiParam(value = "订单ID", defaultValue = "1", required = true) @PathVariable("orderId") Long orderId)
     {
         return R.ok(mzcOrderService.detectionOrder(orderId));
+    }
+
+    /**
+     * 检测报告
+     */
+    @ApiOperation("检测报告")
+    @PreAuthorize("@ss.hasPermi('yixiu:order:report')")
+    @Log(title = "检测报告", businessType = BusinessType.OTHER)
+    @PostMapping("/report")
+    public R<Integer> report(@RequestBody MzcOrderReportDTO mzcOrderReportDTO)
+    {
+        mzcOrderService.reportOrder(mzcOrderReportDTO);
+        return R.ok();
+    }
+
+    /**
+     * 配件报价
+     */
+    @ApiOperation("配件报价")
+    @PreAuthorize("@ss.hasPermi('yixiu:order:offer')")
+    @Log(title = "配件报价", businessType = BusinessType.OTHER)
+    @GetMapping("/offer/{feedbackId}")
+    public  R<List<MzcOrderOfferVO>> offer(@ApiParam(value = "订单ID", defaultValue = "1", required = true) @PathVariable("feedbackId") Long feedbackId)
+    {
+        return R.ok(mzcOrderService.reportOffer(feedbackId));
     }
 }

@@ -5,16 +5,16 @@
   * @version: 1.0.0
   * @Date: 2021-11-17 10:31:48
  * @LastEditors: 莫卓才
- * @LastEditTime: 2022-11-21 10:25:02
+ * @LastEditTime: 2023-02-24 10:38:48
  -->
  <template>
   <view class="loginbg">
     <view class="tips">为提供更好的使用体验，当前页面需要授权使用</view>
     <view class="denglu2">
-      <button v-if="!isLogin"
+      <button v-if="!isOpenId"
               @tap="getuserinfo">点击授权微信登录</button>
 
-      <button v-if="isLogin && !isPhone"
+      <button v-if="isOpenId && !isPhone"
               type="default"
               open-type="getPhoneNumber"
               @getphonenumber="getUserPhone">点击授权手机号码</button>
@@ -33,35 +33,30 @@ import { getLogin, getPhone } from '@/utils/mixin/auto';
 const authStore = useAuthStore();
 const tabbar = useTabbarStore();
 
-const isLogin = authStore.isLogin;
 const isPhone = authStore.isPhone;
+const isOpenId = authStore.isOpenId;
 
-const title = isLogin ? '绑定手机' : '登录';
+const title = isPhone ? '绑定手机' : '登录';
 Taro.setNavigationBarTitle({ title });
 
 /**用户登录 */
 const getuserinfo = () => {
   getLogin(res => {
-    const { nickName, openid } = res;
-
+    res = res.data;
     Taro.showLoading({ title: '加载中' });
 
-    saveWechatInfo({
-      openid: openid,
-      nickname: nickName
-    }).then(() => {
-      Taro.showToast({
-        title: '授权成功',
-        icon: 'success',
-        success() {
-          // const url = '/pages/home/index';
-          const url = !res.phone ? '/pages/login/index' : '/pages/home/index';
-          authStore.setAuthStore(res);
-          tabbar.setActive(0);
+    Taro.showToast({
+      title: '授权成功',
+      icon: 'success',
+      success() {
+        const url = !res.phone ? '/pages/login/index' : '/pages/home/index';
+        res.roleId = 0;
 
-          setTimeout(() => Taro.reLaunch({ url }), 2000);
-        }
-      });
+        authStore.setAuthStore(res);
+        tabbar.setActive(0);
+
+        setTimeout(() => Taro.reLaunch({ url }), 2000);
+      }
     });
   });
 };

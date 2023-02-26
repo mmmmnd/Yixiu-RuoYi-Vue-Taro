@@ -5,7 +5,7 @@
  * @version: 1.0.0
  * @Date: 2022-09-20 10:30:13
  * @LastEditors: 莫卓才
- * @LastEditTime: 2022-09-26 16:13:53
+ * @LastEditTime: 2023-02-17 15:40:14
  */
 import { Order, User, Menu } from '@/interfaces/';
 import Https from '@/utils/http/https';
@@ -13,7 +13,7 @@ const https = new Https();
 
 /**我的信息 */
 export function myInfo(params): Promise<Service.BackendResultConfig<User.IMyInfo>> {
-  return https.post('/foreign/my/myInfo', params);
+  return https.get('/getInfo', params);
 }
 
 /**关于 */
@@ -23,10 +23,10 @@ export function myAbout(params): Promise<Service.BackendResultConfig<Order.IComp
 
 /**Nav导航栏 */
 export function headerMenu(params): Promise<Service.BackendResultObjectConfig<Menu.IFooterMenu>> {
-  return https.get('/foreign/my/headerMenu', params);
+  return https.get('/yixiu/config/headerMenu', params);
 }
 
 /**Tabbar导航栏 */
 export function footerMenu(params): Promise<Service.BackendResultObjectConfig<Menu.IFooterMenu>> {
-  return https.get('/foreign/my/footerMenu', params);
+  return https.get('/yixiu/config/footerMenu', params);
 }

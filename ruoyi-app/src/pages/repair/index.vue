@@ -5,7 +5,7 @@
  * @version: 1.0.0
  * @Date: 2022-09-06 09:47:23
  * @LastEditors: 莫卓才
- * @LastEditTime: 2022-11-15 09:36:33
+ * @LastEditTime: 2023-02-24 16:41:51
 -->
 <template >
   <view class="home">
@@ -16,7 +16,7 @@
     <view class="body p-2 bannber"
           :style="{marginTop:marginTop+'px'}">
 
-      <image :src="swiperList[0]?.remote_path"
+      <image :src="BASE_URL+swiperList[0]?.filePath"
              class="w-100 h-100 "
              mode="scaleToFill" />
     </view>
@@ -38,121 +38,133 @@
                       ref="ruleForm"
                       style="">
               <nut-form-item label="医院名称:"
-                             prop="company_name"
+                             prop="companyName"
                              required
                              label-width="190rpx"
                              label-align="right"
                              class="px-0 d-flex ai-center"
-                             :rules="formRules.company_name">
-                <input class="nut-input-text"
-                       @blur="customBlurValidate('company_name')"
-                       v-model="formData.company_name"
-                       placeholder="请输入医院名称"
-                       type="text" />
+                             :rules="formRules.companyName">
+                <picker mode="selector"
+                        rangeKey="deptName"
+                        :range="companyType"
+                        @change="e=>typeChange('company',e)">
+                  <view class="picker text-subtitle">
+                    {{formData.companyName?formData.companyName:"请选择医院名称"}}
+                  </view>
+                </picker>
               </nut-form-item>
+
               <nut-form-item label="科室:"
-                             prop="department_name"
+                             prop="deptName"
                              required
                              label-width="190rpx"
                              label-align="right"
                              class="px-0 d-flex ai-center"
-                             :rules="formRules.department_name">
-                <input class="nut-input-text"
-                       @blur="customBlurValidate('department_name')"
-                       v-model="formData.department_name"
-                       placeholder="请输入科室"
-                       type="text" />
+                             :rules="formRules.deptName">
+                <picker mode="selector"
+                        rangeKey="deptName"
+                        :range="deptType"
+                        @change="e=>typeChange('dept',e)">
+                  <view class="picker text-subtitle">
+                    {{formData.deptName?formData.deptName:"请选择科室"}}
+                  </view>
+                </picker>
               </nut-form-item>
+
               <nut-form-item label="设备名称:"
-                             prop="facility_name"
+                             prop="equipmentName"
                              required
                              label-width="190rpx"
                              label-align="right"
                              class="px-0 d-flex ai-center"
-                             :rules="formRules.facility_name">
-                <input class="nut-input-text"
-                       @blur="customBlurValidate('facility_name')"
-                       v-model="formData.facility_name"
-                       placeholder="请输入设备名称"
-                       type="text" />
+                             :rules="formRules.equipmentName">
+                <picker mode="selector"
+                        rangeKey="equipmentName"
+                        :range="equipmentType"
+                        @change="e=>typeChange('equipment',e)">
+                  <view class="picker text-subtitle">
+                    {{formData.equipmentName?formData.equipmentName:"请选择设备名称"}}
+                  </view>
+                </picker>
               </nut-form-item>
+
               <nut-form-item label="系列号:"
-                             prop="serial_number"
-                             required
-                             label-width="190rpx"
-                             label-align="right"
-                             class="px-0 d-flex ai-center"
-                             :rules="formRules.serial_number">
-                <input class="nut-input-text"
-                       @blur="customBlurValidate('serial_number')"
-                       v-model="formData.serial_number"
-                       placeholder="请输入系列号"
-                       type="text" />
-              </nut-form-item>
-              <nut-form-item label="报修人:"
-                             prop="creater"
-                             required
-                             label-width="190rpx"
-                             label-align="right"
-                             class="px-0 d-flex ai-center"
-                             :rules="formRules.creater">
-                <input class="nut-input-text"
-                       @blur="customBlurValidate('creater')"
-                       v-model="formData.creater"
-                       placeholder="请输入报修人"
-                       type="text" />
-              </nut-form-item>
-              <nut-form-item label="手机号码:"
-                             prop="creater_phone"
-                             required
-                             label-width="190rpx"
-                             label-align="right"
-                             class="px-0 d-flex ai-center"
-                             :rules="formRules.creater_phone">
-                <input class="nut-input-text"
-                       @blur="customBlurValidate('creater_phone')"
-                       v-model="formData.creater_phone"
-                       placeholder="请输入手机号码"
-                       type="text" />
-              </nut-form-item>
-              <nut-form-item label="型号:"
-                             prop="facility_model"
                              label-width="190rpx"
                              label-align="right"
                              class="px-0 d-flex ai-center">
                 <input class="nut-input-text"
-                       v-model="formData.facility_model"
+                       disabled="true"
+                       v-model="formData.serialNumber"
+                       placeholder="请输入系列号"
+                       type="text" />
+              </nut-form-item>
+              <nut-form-item label="型号:"
+                             label-width="190rpx"
+                             label-align="right"
+                             class="px-0 d-flex ai-center">
+                <input class="nut-input-text"
+                       disabled="true"
+                       v-model="formData.modelNumber"
                        placeholder="请输入型号"
                        type="text" />
               </nut-form-item>
               <nut-form-item label="出厂编号:"
-                             prop="factory_number"
                              label-width="190rpx"
                              label-align="right"
                              class="px-0 d-flex ai-center">
                 <input class="nut-input-text"
-                       v-model="formData.factory_number"
+                       disabled="true"
+                       v-model="formData.factoryNumber"
                        placeholder="请输入出厂编号"
                        type="text" />
               </nut-form-item>
-              <nut-form-item label="工作类别:"
-                             prop="type_id"
+
+              <nut-form-item label="报修人:"
+                             prop="repairman"
                              required
                              label-width="190rpx"
                              label-align="right"
                              class="px-0 d-flex ai-center"
-                             :rules="formRules.type_id">
+                             :rules="formRules.repairman">
+                <input class="nut-input-text"
+                       @blur="customBlurValidate('repairman')"
+                       v-model="formData.repairman"
+                       placeholder="请输入报修人"
+                       type="text" />
+              </nut-form-item>
+
+              <nut-form-item label="手机号码:"
+                             prop="repairPhone"
+                             required
+                             label-width="190rpx"
+                             label-align="right"
+                             class="px-0 d-flex ai-center"
+                             :rules="formRules.repairPhone">
+                <input class="nut-input-text"
+                       @blur="customBlurValidate('repairPhone')"
+                       v-model="formData.repairPhone"
+                       placeholder="请输入手机号码"
+                       type="text" />
+              </nut-form-item>
+
+              <nut-form-item label="工作类别:"
+                             prop="productName"
+                             required
+                             label-width="190rpx"
+                             label-align="right"
+                             class="px-0 d-flex ai-center"
+                             :rules="formRules.productName">
                 <picker mode="selector"
                         rangeKey="name"
                         :range="productType"
-                        @change="typeChange">
+                        @change="e=>typeChange('product',e)">
                   <view class="picker text-subtitle">
-                    {{formData.type_name?formData.type_name:"请选择工作类型"}}
+                    {{formData.productName?formData.productName:"请选择工作类型"}}
                   </view>
                 </picker>
               </nut-form-item>
               <nut-form-item label="上门时间:"
-                             prop="expect_time"
+                             prop="expectationTime"
                              label-width="190rpx"
                              label-align="right"
                              class="px-0 d-flex ai-center">
@@ -161,14 +173,14 @@
                                        :default-time="defaultTime"
                                        @result="onResult">
                   <input class="nut-input-text"
-                         v-model="formData.expect_time"
+                         v-model="formData.expectationTime"
                          :disabled="true"
                          placeholder="请选择期望上门服务时间"
                          type="text" />
                 </date-picker-component>
               </nut-form-item>
               <nut-form-item label="报修描述:"
-                             prop="failure_describe"
+                             prop="errorDescription"
                              label-width="190rpx"
                              label-align="right"
                              class="px-0 d-flex ai-center">
@@ -176,11 +188,11 @@
                   <textarea :auto-focusd="true"
                             class="w-100 text-black"
                             style="height:80px;"
-                            v-model="formData.failure_describe"
+                            v-model="formData.errorDescription"
                             :disable-default-padding="true"
                             maxlength="140"
                             placeholder="请输入报修描述" />
-                  <view class="nut-input-word-limit">{{formData.failure_describe?.length}}/140</view>
+                  <view class="nut-input-word-limit">{{formData.errorDescription?.length}}/60</view>
                 </view>
               </nut-form-item>
               <nut-cell>
@@ -207,9 +219,18 @@
 
 <script lang="ts" setup>
 import * as Taro from '@tarojs/taro';
+import { BASE_URL } from '@/config';
 import { reactive, toRefs } from 'vue';
 import { useAuthStore, useTabbarStore } from '@/store';
-import { oneKey, orderTypeArr, scanQrcodeRepair, slideList } from '@/api/';
+import {
+  addOrder,
+  orderTypeArr,
+  scanQrcodeRepair,
+  slideList,
+  deptAncestorsList,
+  deptParentIdList,
+  deptEquipmentList
+} from '@/api/';
 import { Vo } from '@/interfaces/';
 import { getViewStyle } from '@/utils/util';
 import NavBarComponent from '@/components/NavBarComponent.vue';
@@ -228,7 +249,10 @@ const state = reactive({
   NavBarName: '一键报修',
   swiperList: [],
   ruleForm: null,
-  productType: [], // 产品类型
+  companyType: [], // 医院类型
+  deptType: [], // 科室类型
+  equipmentType: [], // 设备类型
+  productType: [], // 工作类型
   startTime: null,
   endTime: null,
   defaultTime: null,
@@ -242,6 +266,9 @@ const {
   swiperList,
   ruleForm,
   productType,
+  companyType,
+  deptType,
+  equipmentType,
   startTime,
   endTime,
   defaultTime,
@@ -249,55 +276,39 @@ const {
 } = toRefs(state);
 
 const formData = reactive({
-  facility_id: '',
-  facility_name: '',
-  serial_number: '',
-  creater: '',
-  creater_phone: '',
-  company_id: 0,
-  company_name: '',
-  department_id: 0,
-  department_name: '',
-  expect_time: '',
-  facility_model: '',
-  factory_number: '',
-  type_id: '',
-  type_name: '',
-  failure_describe: ''
+  companyId: '',
+  companyName: '',
+  deptId: '',
+  deptName: '',
+  equipmentId: '',
+  equipmentName: '',
+  serialNumber: '',
+  modelNumber: '',
+  factoryNumber: '',
+  repairman: '',
+  repairPhone: '',
+  workType: '',
+  productName: '',
+  expectationTime: '',
+  errorDescription: ''
 });
 
 const formRules = reactive({
-  facility_name: [{ required: true, message: '请输入设备名称' }],
-  creater: [{ required: true, message: '请输入报修人' }],
-  serial_number: [{ required: true, message: '请输入序列号' }],
-  creater_phone: [
+  companyName: [{ required: true, message: '请输入医院' }],
+  deptName: [{ required: true, message: '请输入科室' }],
+  equipmentName: [{ required: true, message: '请输入设备名称' }],
+  productName: [{ required: true, message: '请输入工作类别' }],
+  repairman: [{ required: true, message: '请输入报修人' }],
+  repairPhone: [
     { required: true, message: '请填写手机号码' },
     { regex: /^1[0-9]{10}$/, message: '手机号码格式不正确' }
-  ],
-  company_name: [{ required: true, message: '请输入医院' }],
-  department_name: [{ required: true, message: '请输入科室' }],
-  type_id: [{ required: true, message: '请输入工作类别' }]
+  ]
 });
 
 /**清除通过扫码获取二次点击无法清除列表数据 */
 Taro.useDidHide(() => {
   routerParams.id = '';
   ruleForm.value.reset();
-  formData.facility_id = '';
-  formData.facility_name = '';
-  formData.serial_number = '';
-  formData.creater = userInfo.value.nickname;
-  formData.creater_phone = userInfo.value.phone;
-  formData.company_id = userInfo.value.company_id;
-  formData.company_name = userInfo.value.company_name;
-  formData.department_id = 0;
-  formData.department_name = userInfo.value.department_name;
-  formData.expect_time = '';
-  formData.facility_model = '';
-  formData.factory_number = '';
-  formData.type_id = '';
-  formData.type_name = '';
-  formData.failure_describe = '';
 });
 
 // 设置高度
@@ -325,13 +336,57 @@ defaultTime.value = getTime('min', 0, null);
 
 /**获取时间 */
 const onResult = arr => {
-  formData.expect_time = arr[0] + '-' + arr[1] + '-' + arr[2] + ' ' + arr[3] + ':' + arr[4];
+  formData.expectationTime = arr[0] + '-' + arr[1] + '-' + arr[2] + ' ' + arr[3] + ':' + arr[4];
 };
 
 /**工作类型 */
-const typeChange = function (e) {
-  formData.type_id = productType.value[e.detail.value].id;
-  formData.type_name = productType.value[e.detail.value].name;
+const typeChange = function (type, e) {
+  /* 医院类型 */
+  if (type == 'company') {
+    formData.companyId = companyType.value[e.detail.value].deptId;
+    formData.companyName = companyType.value[e.detail.value].deptName;
+    deptParentIdList({ parentId: formData.companyId }).then(res => {
+      deptType.value = [];
+      formData.deptId = '';
+      formData.deptName = '';
+
+      equipmentType.value = [];
+      formData.equipmentId = '';
+      formData.equipmentName = '';
+
+      deptType.value = res.data;
+    });
+    /* 科室类型 */
+  } else if (type == 'dept') {
+    formData.deptId = deptType.value[e.detail.value].deptId;
+    formData.deptName = deptType.value[e.detail.value].deptName;
+    deptEquipmentList({ deptId: formData.deptId }).then(res => {
+      equipmentType.value = [];
+      formData.equipmentId = '';
+      formData.equipmentName = '';
+
+      equipmentType.value = res.data;
+    });
+    /* 设备类型 */
+  } else if (type == 'equipment') {
+    formData.equipmentId = equipmentType.value[e.detail.value].equipmentId;
+    formData.equipmentName = equipmentType.value[e.detail.value].equipmentName;
+
+    formData.serialNumber = equipmentType.value[e.detail.value].serialNumber;
+    formData.modelNumber = equipmentType.value[e.detail.value].modelNumber;
+    formData.factoryNumber = equipmentType.value[e.detail.value].factoryNumber;
+  } else if (type == 'equipment') {
+    formData.equipmentId = equipmentType.value[e.detail.value].equipmentId;
+    formData.equipmentName = equipmentType.value[e.detail.value].equipmentName;
+
+    formData.serialNumber = equipmentType.value[e.detail.value].serialNumber;
+    formData.modelNumber = equipmentType.value[e.detail.value].modelNumber;
+    formData.factoryNumber = equipmentType.value[e.detail.value].factoryNumber;
+  } else if (type == 'product') {
+    formData.workType = productType.value[e.detail.value].id;
+    formData.productName = productType.value[e.detail.value].name;
+  }
+
   ruleForm.value.reset();
 };
 
@@ -341,7 +396,7 @@ const submit = () => {
     if (valid) {
       Taro.showLoading({ title: '正在提交' });
 
-      oneKey({ data: formData }).then(res => {
+      addOrder(formData).then(res => {
         tabbar.setActive(0);
         Taro.showToast({ title: res.msg, icon: 'success' });
         setTimeout(() => Taro.reLaunch({ url: '/pages/home/index' }), 2000);
@@ -358,29 +413,44 @@ const customBlurValidate = (prop: string) => {
 /**重置状态 */
 const reset = () => {
   ruleForm.value.reset();
-  formData.type_id = '';
-  formData.type_name = '';
-  formData.expect_time = '';
-  formData.failure_describe = '';
+  deptType.value = [];
+  equipmentType.value = [];
+  formData.companyId = '';
+  formData.companyName = '';
+  formData.deptId = '';
+  formData.deptName = '';
+  formData.equipmentId = '';
+  formData.equipmentName = '';
+  formData.serialNumber = '';
+  formData.modelNumber = '';
+  formData.factoryNumber = '';
+  formData.repairman = '';
+  formData.repairPhone = '';
+  formData.workType = '';
+  formData.productName = '';
+  formData.expectationTime = '';
+  formData.errorDescription = '';
 };
 
 /** 获取工作类型 */
-Promise.all([orderTypeArr({}), slideList({})]).then(res => {
+Promise.all([orderTypeArr({}), slideList({}), deptAncestorsList({})]).then(res => {
   const arr: object[] = [];
 
   for (var i in res[0].data) {
-    if (res[0].data[i]) arr.push({ id: i, name: res[0].data[i] });
+    if (res[0].data[i]) arr.push({ id: res[0].data[i].dictValue, name: res[0].data[i].dictLabel });
   }
 
   productType.value = arr;
 
-  swiperList.value.push(...res[1].data);
+  swiperList.value.push(...res[1].rows);
 
   userInfo.value = authStore.userInfos.myInfo;
-  formData.company_name = userInfo.value.company_name;
-  formData.department_name = userInfo.value.department_name;
-  formData.creater = userInfo.value.nickname;
-  formData.creater_phone = userInfo.value.phone;
+  // formData.company_name = userInfo.value.company_name;
+  // formData.department_name = userInfo.value.department_name;
+  // formData.creater = userInfo.value.nickname;
+  // formData.creater_phone = userInfo.value.phone;
+
+  companyType.value = res[2].data;
 });
 
 Taro.useDidShow(() => {

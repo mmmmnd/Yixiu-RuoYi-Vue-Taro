@@ -16,7 +16,7 @@
       <view class="flex-grow-0 name text-right text-subtitle assess-label">型号：</view>
       <input class="nut-input-text"
              type="text"
-             v-model="formData.model_number"
+             v-model="formData.partsModel"
              style="border: 1px solid #999;"
              placeholder="请输入型号" />
     </view>
@@ -24,14 +24,14 @@
       <view class="flex-grow-0 name text-right text-subtitle assess-label">配件名：</view>
       <input class="nut-input-text"
              type="text"
-             v-model="formData.parts_name"
+             v-model="formData.partsName"
              style="border: 1px solid #999;"
              placeholder="请输入配件名" />
     </view>
     <view class="d-flex py-1 px-4 pl-2">
       <view class="flex-grow-0 name text-right text-subtitle assess-label"
             style="width: 74px;">数量：</view>
-      <nut-inputnumber v-model="formData.num"
+      <nut-inputnumber v-model="formData.number"
                        min="0" />
     </view>
     <view class="d-flex py-1 px-4 pl-2">
@@ -46,7 +46,7 @@
       <view class="flex-grow-0 name text-right text-subtitle assess-label">部件费：</view>
       <input class="nut-input-text"
              type="text"
-             v-model="formData.parts_price"
+             v-model="formData.partsPrice"
              style="border: 1px solid #999;"
              placeholder="请输入配件费" />
     </view>
@@ -54,7 +54,7 @@
       <view class="flex-grow-0 name text-right text-subtitle assess-label">维修费：</view>
       <input class="nut-input-text"
              type="text"
-             v-model="formData.repair_price"
+             v-model="formData.maintenancePrice"
              style="border: 1px solid #999;"
              placeholder="请输入维修费" />
     </view>

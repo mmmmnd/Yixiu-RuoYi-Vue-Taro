@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.yixiu.mapper.MzcOrderFeedbackMapper">
+    
+    <resultMap type="MzcOrderFeedback" id="MzcOrderFeedbackResult">
+        <result property="feedbackId"    column="feedback_id"    />
+        <result property="maintenanceStartTime"    column="maintenance_start_time"    />
+        <result property="maintenanceEndTime"    column="maintenance_end_time"    />
+        <result property="warrantyPeriod"    column="warranty_period"    />
+        <result property="equipmentInspection"    column="equipment_inspection"    />
+        <result property="totalPrice"    column="total_price"    />
+        <result property="quotationDate"    column="quotation_date"    />
+        <result property="offeror"    column="offeror"    />
+        <result property="deleteBy"    column="delete_by"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectMzcOrderFeedbackVo">
+        select feedback_id, maintenance_start_time, maintenance_end_time, warranty_period, equipment_inspection, total_price, quotation_date, offeror, delete_by, del_flag, create_by, create_time, update_by, update_time from mzc_order_feedback
+    </sql>
+
+    <select id="selectMzcOrderFeedbackList" parameterType="MzcOrderFeedback" resultMap="MzcOrderFeedbackResult">
+        <include refid="selectMzcOrderFeedbackVo"/>
+        <where>  
+            <if test="maintenanceStartTime != null "> and maintenance_start_time = #{maintenanceStartTime}</if>
+            <if test="maintenanceEndTime != null "> and maintenance_end_time = #{maintenanceEndTime}</if>
+            <if test="warrantyPeriod != null "> and warranty_period = #{warrantyPeriod}</if>
+            <if test="equipmentInspection != null  and equipmentInspection != ''"> and equipment_inspection = #{equipmentInspection}</if>
+            <if test="totalPrice != null "> and total_price = #{totalPrice}</if>
+            <if test="quotationDate != null "> and quotation_date = #{quotationDate}</if>
+            <if test="offeror != null  and offeror != ''"> and offeror = #{offeror}</if>
+            <if test="deleteBy != null  and deleteBy != ''"> and delete_by = #{deleteBy}</if>
+             and del_flag = '0'
+        </where>
+    </select>
+    
+    <select id="selectMzcOrderFeedbackByFeedbackId" parameterType="Long" resultMap="MzcOrderFeedbackResult">
+        <include refid="selectMzcOrderFeedbackVo"/>
+        where feedback_id = #{feedbackId} and del_flag = '0'
+
+    </select>
+        
+    <insert id="insertMzcOrderFeedback" parameterType="MzcOrderFeedback" useGeneratedKeys="true" keyProperty="feedbackId" keyColumn="id">
+        insert into mzc_order_feedback
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="maintenanceStartTime != null">maintenance_start_time,</if>
+            <if test="maintenanceEndTime != null">maintenance_end_time,</if>
+            <if test="warrantyPeriod != null">warranty_period,</if>
+            <if test="equipmentInspection != null">equipment_inspection,</if>
+            <if test="totalPrice != null">total_price,</if>
+            <if test="quotationDate != null">quotation_date,</if>
+            <if test="offeror != null">offeror,</if>
+            <if test="deleteBy != null">delete_by,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="maintenanceStartTime != null">#{maintenanceStartTime},</if>
+            <if test="maintenanceEndTime != null">#{maintenanceEndTime},</if>
+            <if test="warrantyPeriod != null">#{warrantyPeriod},</if>
+            <if test="equipmentInspection != null">#{equipmentInspection},</if>
+            <if test="totalPrice != null">#{totalPrice},</if>
+            <if test="quotationDate != null">#{quotationDate},</if>
+            <if test="offeror != null">#{offeror},</if>
+            <if test="deleteBy != null">#{deleteBy},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateMzcOrderFeedback" parameterType="MzcOrderFeedback">
+        update mzc_order_feedback
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="maintenanceStartTime != null">maintenance_start_time = #{maintenanceStartTime},</if>
+            <if test="maintenanceEndTime != null">maintenance_end_time = #{maintenanceEndTime},</if>
+            <if test="warrantyPeriod != null">warranty_period = #{warrantyPeriod},</if>
+            <if test="equipmentInspection != null">equipment_inspection = #{equipmentInspection},</if>
+            <if test="totalPrice != null">total_price = #{totalPrice},</if>
+            <if test="quotationDate != null">quotation_date = #{quotationDate},</if>
+            <if test="offeror != null">offeror = #{offeror},</if>
+            <if test="deleteBy != null">delete_by = #{deleteBy},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where feedback_id = #{feedbackId} and del_flag = '0'
+    </update>
+
+    <delete id="deleteMzcOrderFeedbackByFeedbackId" parameterType="Long">
+        update mzc_order_feedback set del_flag = '2', delete_by = #{deleteByName} where feedback_id = #{feedbackId}
+    </delete>
+
+    <delete id="deleteMzcOrderFeedbackByFeedbackIds" parameterType="String">
+      update mzc_order_feedback set del_flag = '2', delete_by = #{deleteByName} where feedback_id in
+        <foreach item="feedbackId" collection="feedbackIds" open="(" separator="," close=")">
+            #{feedbackId}
+        </foreach>
+    </delete>
+</mapper>

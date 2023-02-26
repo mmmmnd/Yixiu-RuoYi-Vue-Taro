@@ -5,7 +5,7 @@
  * @version: 1.0.0
  * @Date: 2021-06-15 17:58:34
  * @LastEditors: 莫卓才
- * @LastEditTime: 2022-10-09 17:04:38
+ * @LastEditTime: 2023-02-16 10:04:20
  */
 export const WHITE_PATH = 'pages/home/index';
 
@@ -13,7 +13,7 @@ export const WHITELIST_ROUTES = ['/foreign/login/getPhoneNumber', '/foreign/logi
 
 export const IS_DEV = process.env.NODE_ENV === 'development';
 
-export const BASE_URL = IS_DEV ? 'https://xcx.ylqx.top' : 'https://xcx.ylqx.top';
+export const BASE_URL = IS_DEV ? 'http://localhost:8080' : 'http://localhost:8080';
 
 export const HTTP_ERROR = {
   200: '服务器成功返回请求数据',

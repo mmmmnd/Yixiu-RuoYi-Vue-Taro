@@ -1,5 +1,6 @@
 package com.ruoyi.yixiu.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -10,11 +11,20 @@ import com.ruoyi.common.utils.DateUtils;
 import static com.ruoyi.common.utils.SecurityUtils.getUsername;
 
 import com.ruoyi.common.utils.SecurityUtils;
+import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.common.utils.bean.BeanUtils;
+import com.ruoyi.yixiu.domain.MzcOrderFeedback;
+import com.ruoyi.yixiu.domain.MzcOrderParts;
+import com.ruoyi.yixiu.domain.dto.order.MzcOrderReportDTO;
+import com.ruoyi.yixiu.domain.vo.MzcOrderOfferVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.ruoyi.yixiu.mapper.MzcOrderMapper;
 import com.ruoyi.yixiu.domain.MzcOrder;
 import com.ruoyi.yixiu.service.IMzcOrderService;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.annotation.Resource;
 
 /**
  * 订单Service业务层处理
@@ -27,6 +37,12 @@ public class MzcOrderServiceImpl implements IMzcOrderService
 {
     @Autowired
     private MzcOrderMapper mzcOrderMapper;
+
+    @Resource
+    private MzcOrderFeedbackServiceImpl mzcOrderFeedbackService;
+
+    @Resource
+    private MzcOrderPartsServiceImpl mzcOrderPartsService;
 
     /**
      * 查询订单
@@ -91,6 +107,7 @@ public class MzcOrderServiceImpl implements IMzcOrderService
      * @return 结果
      */
     @Override
+    @Transactional
     public int updateMzcOrder(MzcOrder mzcOrder)
     {
         mzcOrder.setUpdateTime(DateUtils.getNowDate());
@@ -132,11 +149,22 @@ public class MzcOrderServiceImpl implements IMzcOrderService
      */
     @Override
     public int pickOrder(MzcOrder mzcOrder) {
-        mzcOrder.setOrderType(2);
-        mzcOrder.setDateTime(DateUtils.getNowDate());
-        mzcOrder.setStatus("2");
+        MzcOrder order = selectMzcOrderByOrderId(mzcOrder.getOrderId());
 
-        return updateMzcOrder(mzcOrder);
+        if (StringUtils.isNotNull(order)){
+            if (order.getStatus().equals("0")) {
+                order.setOrderType(2);
+                order.setDateTime(DateUtils.getNowDate());
+                order.setStatus("2");
+
+                return updateMzcOrder(order);
+            } else {
+                throw new ServiceException("非法参数！");
+            }
+        } else {
+            throw new ServiceException("订单不存在！");
+        }
+
     }
 
     /**
@@ -147,11 +175,21 @@ public class MzcOrderServiceImpl implements IMzcOrderService
      */
     @Override
     public int sendOrder(MzcOrder mzcOrder) {
-        mzcOrder.setOrderType(1);
-        mzcOrder.setDateTime(DateUtils.getNowDate());
-        mzcOrder.setStatus("1");
+        MzcOrder order = selectMzcOrderByOrderId(mzcOrder.getOrderId());
 
-        return updateMzcOrder(mzcOrder);
+        if (StringUtils.isNotNull(order)){
+            if (order.getStatus().equals("0")) {
+                mzcOrder.setOrderType(1);
+                mzcOrder.setDateTime(DateUtils.getNowDate());
+                mzcOrder.setStatus("1");
+
+                return updateMzcOrder(mzcOrder);
+            } else {
+                throw new ServiceException("非法参数！");
+            }
+        } else {
+            throw new ServiceException("订单不存在！");
+        }
     }
 
     /**
@@ -164,16 +202,75 @@ public class MzcOrderServiceImpl implements IMzcOrderService
     public int detectionOrder(Long orderId) {
         MzcOrder mzcOrder = selectMzcOrderByOrderId(orderId);
 
-        /*订单为接单或派单才进行操作*/
-        if (mzcOrder.getStatus().equals("1") || mzcOrder.getStatus().equals("2")) {
-            mzcOrder.setStatus("3");
-            /*创建订单反馈*/
+        if (StringUtils.isNotNull(mzcOrder)){
+            if (mzcOrder.getStatus().equals("1") || mzcOrder.getStatus().equals("2")) {
+                mzcOrder.setStatus("3");
+            } else {
+                throw new ServiceException("非法参数！");
+            }
         } else {
-            throw new ServiceException("非法参数！");
+            throw new ServiceException("订单不存在！");
         }
 
         return updateMzcOrder(mzcOrder);
     }
 
+    /**
+     * 检测报告
+     *
+     * @param mzcOrderReportDTO 配件信息
+     */
+    @Override
+    @Transactional
+    public void reportOrder(MzcOrderReportDTO mzcOrderReportDTO) {
+        MzcOrder mzcOrder = selectMzcOrderByOrderId(mzcOrderReportDTO.getOrderId());
 
+        if (StringUtils.isNotNull(mzcOrder)){
+            if (mzcOrder.getStatus().equals("3")) {
+
+                /*反馈单*/
+                MzcOrderFeedback mzcOrderFeedback = new MzcOrderFeedback();
+                mzcOrderFeedback.setEquipmentInspection(mzcOrderReportDTO.getEquipmentInspection());
+                /*主键*/
+                mzcOrderFeedbackService.insertMzcOrderFeedback(mzcOrderFeedback);
+                Long feedbackId = mzcOrderFeedback.getFeedbackId();
+
+                /*记录反馈单*/
+                mzcOrder.setFeedbackId(feedbackId);
+                mzcOrder.setStatus("4");
+                updateMzcOrder(mzcOrder);
+
+                /*设备单*/
+                List<MzcOrderParts> orderParts = mzcOrderReportDTO.getOrderParts();
+                mzcOrderPartsService.batchMzcParts(orderParts,feedbackId);
+            }
+        } else {
+            throw new ServiceException("订单不存在！");
+        }
+    }
+
+    /**
+     * 检测报告
+     *
+     * @param feedbackId 反馈单id
+     * @return 结果
+     */
+    @Override
+    public List<MzcOrderOfferVO> reportOffer(Long feedbackId) {
+        MzcOrderParts mzcOrderParts = new MzcOrderParts();
+        mzcOrderParts.setFeedbackId(feedbackId);
+
+        List<MzcOrderOfferVO> mzcOrderOfferVO = new ArrayList<>();
+        List<MzcOrderParts> orderParts = mzcOrderPartsService.selectMzcOrderPartsList(mzcOrderParts);
+
+        if (StringUtils.isNotNull(orderParts)){
+            for (MzcOrderParts orderPart:orderParts) {
+                MzcOrderOfferVO orderOfferVO = new MzcOrderOfferVO();
+                BeanUtils.copyBeanProp(orderOfferVO,orderPart);
+                mzcOrderOfferVO.add(orderOfferVO);
+            }
+        }
+
+        return mzcOrderOfferVO;
+    }
 }

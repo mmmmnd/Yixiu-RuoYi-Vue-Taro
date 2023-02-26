@@ -5,7 +5,7 @@
  * @version: 1.0.0
  * @Date: 2022-08-24 15:40:40
  * @LastEditors: 莫卓才
- * @LastEditTime: 2022-10-14 14:53:22
+ * @LastEditTime: 2023-02-16 16:06:17
  */
 import { User } from '@/interfaces/';
 import { EnumStorageKey } from '@/enum';
@@ -53,7 +53,8 @@ export function getUserInfo() {
     tabbarList: [],
     gridList: [],
     role_group: 0,
-    myInfo: {}
+    myInfo: {},
+    openId: ''
   };
   const userInfo: User.IUserInfo = getLocal<User.IUserInfo>(EnumStorageKey['user-info']) || emptyInfo;
   return userInfo;

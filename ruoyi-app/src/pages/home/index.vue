@@ -5,7 +5,7 @@
   * @version: 1.0.0
   * @Date: 2022-09-06 09:47:23
  * @LastEditors: 莫卓才
- * @LastEditTime: 2022-12-01 15:59:52
+ * @LastEditTime: 2023-02-26 14:51:34
  -->
  <template>
   <view class="home">
@@ -21,7 +21,7 @@
                   class="swiper">
         <nut-swiper-item v-for="swiperItem in swiperList"
                          :key="swiperItem">
-          <image :src="swiperItem.remote_path"
+          <image :src="BASE_URL+swiperItem.filePath"
                  class="w-100 h-100"
                  mode="scaleToFill	" />
         </nut-swiper-item>
@@ -30,7 +30,7 @@
       <nut-sticky :top="marginTop"
                   z-index="100">
         <nut-grid :border="false"
-                  :column-num="4"
+                  :column-number="4"
                   class="navGrid">
           <nut-grid-item v-for="(item,index) in gridList"
                          :key="index"
@@ -49,7 +49,7 @@
 
     <!-- 工程师 -->
     <view class="body p-2"
-          v-if="authStore.userInfo.role_group == 2">
+          v-if="authStore.userInfo.roleId == 104 || authStore.userInfo.roleId == 110 || authStore.userInfo.roleId == 1">
       <view class="repair-wrapper">
         <view class="repair-nav">
           <nut-tabs v-model="tabActive"
@@ -71,35 +71,35 @@
                 <view class="flex-grow-1 content">
                   <view class="d-flex py-1">
                     <view class="name text-right text-subtitle">设备名称：</view>
-                    <view class="text text-theme">{{item.facility_name || "暂无数据"}}</view>
+                    <view class="text text-theme">{{item.equipment.equipmentName || "暂无数据"}}</view>
                   </view>
                   <view class="d-flex py-1">
                     <view class="name text-right text-subtitle">医院名称：</view>
-                    <view class="text">{{item.company_name || "暂无数据"}}</view>
+                    <view class="text">{{item.dept.parentName || "暂无数据"}}</view>
                   </view>
                   <view class="d-flex py-1">
                     <view class="name text-right text-subtitle">医院科室：</view>
-                    <view class="text">{{item.department_name || "暂无数据"}}</view>
+                    <view class="text">{{item.dept.deptName || "暂无数据"}}</view>
                   </view>
                   <view class="d-flex py-1">
                     <view class="name text-right text-subtitle">联系方式：</view>
-                    <view class="text">{{item.creater_phone || "暂无数据"}}</view>
+                    <view class="text">{{item.repairPhone || "暂无数据"}}</view>
                   </view>
                   <view class="d-flex py-1">
                     <view class="name text-right text-subtitle">维修类型：</view>
-                    <view class="text">{{item.type_name || "暂无数据"}}</view>
+                    <view class="text">{{getOrderType(item.workType) || "暂无数据"}}</view>
                   </view>
                   <view class="d-flex py-1">
                     <view class="name text-right text-subtitle">期望时间：</view>
-                    <view class="text">{{item.expect_time || "暂无数据"}}</view>
+                    <view class="text">{{item.expectationTime || "暂无数据"}}</view>
                   </view>
                   <view class="d-flex py-1">
                     <view class="name text-right text-subtitle">订单状态：</view>
-                    <view class="text text-red">{{item.order_status_text || "暂无数据"}}</view>
+                    <view class="text text-red">{{getOrderStatusType(item.status) || "暂无数据"}}</view>
                   </view>
                 </view>
                 <view class="flex-grow-0 position d-flex flex-column jc-center ai-center"
-                      v-if="item.status == 'putin'">
+                      v-if="item.status == '0'">
                   <nut-button size="small"
                               color="#FFB800"
                               type="info"
@@ -112,13 +112,13 @@
                               type="info"
                               @click="popupOrderInfo(item)">详情明细</nut-button>
                   <nut-button size="small"
-                              :color="item.status == 'assigned'?'#007CCC':'#BBBBBB'"
+                              :color="item.status == '1' || item.status == '2' ?'#007CCC':'#BBBBBB'"
                               type="info"
-                              @click="item.status == 'assigned'?detection(item):''">立即检测</nut-button>
+                              @click="item.status == '1' || item.status == '2' ?detection(item):''">立即检测</nut-button>
                   <nut-button size="small"
-                              :color="item.status == 'checking'?'#09C160':'#BBBBBB'"
+                              :color="item.status == '3'?'#09C160':'#BBBBBB'"
                               type="info"
-                              @click="item.status == 'checking'?popupReport(item):''">检测报告</nut-button>
+                              @click="item.status == '3'?popupReport(item):''">检测报告</nut-button>
                   <nut-button size="small"
                               :color="item.status == 'examine_approval'?'#5FB878':'#BBBBBB'"
                               type="info"
@@ -139,7 +139,7 @@
 
     <!-- 业务员 -->
     <view class="body p-2"
-          v-else-if="authStore.userInfo.role_group == 3">
+          v-else-if="authStore.userInfo.roleId == 100">
       <view class="repair-wrapper">
         <view class="repair-nav">
           <view class="repair-title d-flex ai-center pb-2">
@@ -321,6 +321,7 @@
   </view>
 </template>
 <script lang="ts" setup>
+import { BASE_URL } from '@/config';
 import * as Taro from '@tarojs/taro';
 import { reactive, toRefs, computed, h } from 'vue';
 import { useAuthStore, useTabbarStore } from '@/store';
@@ -336,7 +337,9 @@ import {
   footerBanner,
   offerSubmit,
   repairComplete,
-  orderInfo
+  orderInfo,
+  orderStatus,
+  orderTypeArr
 } from '@/api/';
 import { Vo } from '@/interfaces/';
 import { getViewStyle } from '@/utils/util';
@@ -378,9 +381,9 @@ const state = reactive({
   formDataOrderInfo: {
     facility_name: '',
     serial_number: '',
-    model_number: '',
+    partsModel: '',
     department_name: '',
-    num: 0,
+    number: 0,
     unit: 0,
     unit_price: null,
     discount_pirce: null,
@@ -408,17 +411,17 @@ const state = reactive({
     partsTitle: [
       {
         align: 'center',
-        key: 'model_number',
+        key: 'partsModel',
         title: '型号'
       },
       {
         align: 'center',
-        key: 'parts_name',
+        key: 'partsName',
         title: '配件名'
       },
       {
         align: 'center',
-        key: 'num',
+        key: 'number',
         title: '数量'
       },
       {
@@ -428,12 +431,12 @@ const state = reactive({
       },
       {
         align: 'center',
-        key: 'parts_price',
+        key: 'partsPrice',
         title: '部件费'
       },
       {
         align: 'center',
-        key: 'repair_price',
+        key: 'maintenancePrice',
         title: '维修费'
       },
       {
@@ -443,12 +446,12 @@ const state = reactive({
     ],
     partsList: [
       {
-        model_number: '',
-        parts_name: '',
-        num: '',
+        partsModel: '',
+        partsName: '',
+        number: '',
         unit: '',
-        parts_price: '',
-        repair_price: ''
+        partsPrice: '',
+        maintenancePrice: ''
       }
     ]
   },
@@ -456,12 +459,12 @@ const state = reactive({
   tableData: {
     index: 0,
     flag: true,
-    model_number: '',
-    parts_name: '',
-    num: 0,
+    partsModel: '',
+    partsName: '',
+    number: 0,
     unit: '',
-    parts_price: '',
-    repair_price: ''
+    partsPrice: '',
+    maintenancePrice: ''
   },
   showStart: false, //开始维修
   formDataStart: {
@@ -493,7 +496,9 @@ const state = reactive({
     status_offer: 0,
     partsData: [],
     total_price: ''
-  }
+  },
+  orderStatusArr: [],
+  orderType: []
 });
 
 const {
@@ -518,7 +523,9 @@ const {
   showOffer,
   formDataOffer,
   showOrderInfo,
-  formDataOrderInfo
+  formDataOrderInfo,
+  orderStatusArr,
+  orderType
 } = toRefs(state);
 
 const gridList = computed(() =>
@@ -584,6 +591,23 @@ const getStatusCoceImgType = computed(() => (index: number, type: string) => {
   return type === 'path' ? O[A] : A;
 });
 
+const getOrderStatusType = computed(() => (index: string) => {
+  if (index != null && index != '') {
+    const e = orderStatusArr.value.find(item => item.dictValue == index);
+    return e.dictLabel;
+  } else {
+    return '';
+  }
+});
+
+const getOrderType = computed(() => (index: string) => {
+  if (index != null && index != '') {
+    const e = orderType.value.find(item => item.dictValue == index);
+    return e.dictLabel;
+  } else {
+    return '';
+  }
+});
 /** 扫码 */
 const scanCode = () => {
   Taro.scanCode({
@@ -616,8 +640,10 @@ const order = e => {
     success: function (res) {
       if (res.confirm) {
         Taro.showLoading({ title: '正在提交' });
+        const myInfo = authStore.userInfos.myInfo;
+        const param = { orderId: e.orderId, engineerId: myInfo.userId };
 
-        takeUp({ id: e.id }).then(res => {
+        takeUp(param).then(res => {
           Taro.showToast({ title: res.msg });
           asyncInitScrollList();
         });
@@ -628,10 +654,12 @@ const order = e => {
 
 /**详情明细popup */
 const popupOrderInfo = e => {
-  orderInfo({ order_id: e.id }).then(res => {
-    formDataOrderInfo.value = res.data;
-    showOrderInfo.value = true;
-  });
+  console.log(e);
+
+  // orderInfo({ order_id: e.id }).then(res => {
+  //   formDataOrderInfo.value = res.data;
+  //   showOrderInfo.value = true;
+  // });
 };
 
 /**立即检测 */
@@ -643,7 +671,7 @@ const detection = e => {
       if (res.confirm) {
         Taro.showLoading({ title: '正在提交' });
 
-        handling({ id: e.id }).then(res => {
+        handling(e.orderId).then(res => {
           Taro.showToast({ title: res.msg });
           asyncInitScrollList();
         });
@@ -655,9 +683,9 @@ const detection = e => {
 /**检测报告popup */
 const popupReport = e => {
   tableData.value.index = 0;
-  formDataReport.value.order_id = e.id;
-  formDataReport.value.facility_name = e.facility_name;
-  formDataReport.value.failure_describe = e.failure_describe;
+  formDataReport.value.order_id = e.orderId;
+  formDataReport.value.facility_name = e.equipment.equipmentName;
+  formDataReport.value.failure_describe = e.errorDescription;
   formDataReport.value.failure_cause = '';
   formDataReport.value.partsList.length = 0;
   showReport.value = true;
@@ -668,9 +696,9 @@ const submitReport = () => {
   Taro.showLoading({ title: '加载中' });
 
   report({
-    id: formDataReport.value.order_id,
-    failure_cause: formDataReport.value.failure_cause,
-    partsArr: formDataReport.value.partsList
+    orderId: formDataReport.value.order_id,
+    equipmentInspection: formDataReport.value.failure_cause,
+    orderParts: formDataReport.value.partsList
   }).then(res => {
     showReport.value = false;
     Taro.showToast({ title: res.msg });
@@ -683,12 +711,12 @@ const showTableDataFun = () => {
   showTableData.value = true;
 
   tableData.value.flag = true;
-  tableData.value.model_number = '';
-  tableData.value.parts_name = '';
-  tableData.value.num = 0;
+  tableData.value.partsModel = '';
+  tableData.value.partsName = '';
+  tableData.value.number = 0;
   tableData.value.unit = '';
-  tableData.value.parts_price = '';
-  tableData.value.repair_price = '';
+  tableData.value.partsPrice = '';
+  tableData.value.maintenancePrice = '';
 };
 
 /**检测报告=> 显示修改配件*/
@@ -697,17 +725,17 @@ const editTableDataFun = e => {
 
   tableData.value.flag = false;
   tableData.value.index = e.index;
-  tableData.value.model_number = e.model_number;
-  tableData.value.parts_name = e.parts_name;
-  tableData.value.num = e.num;
+  tableData.value.partsModel = e.partsModel;
+  tableData.value.partsName = e.partsName;
+  tableData.value.number = e.number;
   tableData.value.unit = e.unit;
-  tableData.value.parts_price = e.parts_price;
-  tableData.value.repair_price = e.repair_price;
+  tableData.value.partsPrice = e.partsPrice;
+  tableData.value.maintenancePrice = e.maintenancePrice;
 };
 
 /**检测报告=> 增加配件*/
 const addTableData = () => {
-  if (tableData.value.parts_name == '' && tableData.value.parts_price == '') {
+  if (tableData.value.partsName == '' && tableData.value.partsPrice == '') {
     Taro.showToast({ title: '配件名和部件费不能为空！', icon: 'none' });
     return false;
   }
@@ -735,28 +763,28 @@ const addTableData = () => {
   };
   formDataReport.value.partsList.unshift(D);
 
-  tableData.value.model_number = '';
-  tableData.value.parts_name = '';
-  tableData.value.num = 0;
+  tableData.value.partsModel = '';
+  tableData.value.partsName = '';
+  tableData.value.number = 0;
   tableData.value.unit = '';
-  tableData.value.parts_price = '';
-  tableData.value.repair_price = '';
+  tableData.value.partsPrice = '';
+  tableData.value.maintenancePrice = '';
 };
 
 /**检测报告=> 修改配件*/
 const editTableData = e => {
-  if (tableData.value.parts_name == '' && tableData.value.parts_price == '') {
+  if (tableData.value.partsName == '' && tableData.value.partsPrice == '') {
     Taro.showToast({ title: '配件名和部件费不能为空！', icon: 'none' });
     return false;
   }
   formDataReport.value.partsList.find((item: any) => {
     if (item.index == tableData.value.index) {
-      item.model_number = tableData.value.model_number;
-      item.parts_name = tableData.value.parts_name;
-      item.num = tableData.value.num;
+      item.partsModel = tableData.value.partsModel;
+      item.partsName = tableData.value.partsName;
+      item.number = tableData.value.number;
       item.unit = tableData.value.unit;
-      item.parts_price = tableData.value.parts_price;
-      item.repair_price = tableData.value.repair_price;
+      item.partsPrice = tableData.value.partsPrice;
+      item.maintenancePrice = tableData.value.maintenancePrice;
       showTableData.value = false;
     }
   });
@@ -874,19 +902,26 @@ Taro.useDidShow(() => {
   fooBanner.value = [];
 
   /**登录再去请求医院信息 */
-  Promise.all([slideList({}), footerBanner({})]).then(res => {
-    swiperList.value.push(...res[0].data);
-    fooBanner.value.push(...res[1].data);
+  // Promise.all([slideList({}), footerBanner({})]).then(res => {
+  //   swiperList.value.push(...res[0].data);
+  //   fooBanner.value.push(...res[1].data);
+  // });
+
+  slideList({}).then(res => {
+    swiperList.value.push(...res.rows);
   });
 
   /**登录再去请求登录后的信息 */
   if (authStore.isLogin) {
     Taro.showLoading({ title: '加载中' });
-    Promise.all([myInfo({}), headerMenu({})]).then(res => {
-      userInfo.NavBarName = '欢迎登录:' + res[0].data.nickname;
-      userInfo.role_group = res[0].data.role_group;
+    Promise.all([myInfo({}), headerMenu({}), orderStatus({}), orderTypeArr({})]).then(res => {
+      userInfo.NavBarName = '欢迎登录:' + res[0].user.nickName;
       userInfo.gridList = res[1].data;
-      userInfo.myInfo = res[0].data;
+      userInfo.myInfo = res[0].user;
+      userInfo.roleId = res[0].user.roleId;
+      orderStatusArr.value = res[2].data;
+      orderType.value = res[3].data;
+
       authStore.setMyInfo(userInfo);
       authStore.setGridList(userInfo);
     });
@@ -910,42 +945,37 @@ const setTabsActive = e => {
   /**工程师端 获取列表 */
   engineerList.value = [];
 
-  orderList({ assign_type: index, type: 'home' }).then(res => {
-    engineerList.value.push(...res.data.data);
+  orderList({ orderType: index }).then(res => {
+    engineerList.value.push(...res.rows);
     Taro.hideLoading();
   });
 };
 
 /** 初始化数据 */
 const asyncInitScrollList = () => {
-  switch (authStore.userInfo.role_group) {
-    case 1:
-      console.log('用户端');
-      Taro.showLoading({ title: '加载中' });
+  if (authStore.userInfo.roleId == 104 || authStore.userInfo.roleId == 110) {
+    setTabsActive(null);
+    console.log('工程师');
+  } else if (authStore.userInfo.roleId == 100) {
+    console.log('业务员端');
+    Taro.showLoading({ title: '加载中' });
 
-      /**用户端 获取列表 */
-      repairList.value = [];
-      orderList({ type: 'home' }).then(res => {
-        repairList.value = res.data.data;
-        Taro.hideLoading();
-      });
-      break;
+    /**业务员端 获取列表 */
+    offerList.value = [];
+    orderList({}).then(res => {
+      offerList.value = res.rows;
+      Taro.hideLoading();
+    });
+  } else {
+    console.log('用户端');
+    Taro.showLoading({ title: '加载中' });
 
-    case 2:
-      setTabsActive(null);
-
-      break;
-    case 3:
-      console.log('业务员端');
-      Taro.showLoading({ title: '加载中' });
-
-      /**业务员端 获取列表 */
-      offerList.value = [];
-      orderList({ type: 'home' }).then(res => {
-        offerList.value = res.data.data;
-        Taro.hideLoading();
-      });
-      break;
+    /**用户端 获取列表 */
+    repairList.value = [];
+    orderList({}).then(res => {
+      repairList.value = res.rows;
+      Taro.hideLoading();
+    });
   }
 };
 </script>

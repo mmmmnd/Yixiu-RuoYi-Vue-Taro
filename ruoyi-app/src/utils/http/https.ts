@@ -5,7 +5,7 @@
  * @version: 1.0.0
  * @Date: 2021-07-02 16:47:37
  * @LastEditors: 莫卓才
- * @LastEditTime: 2022-11-21 09:03:45
+ * @LastEditTime: 2023-02-16 15:58:15
  */
 const config = Symbol('config');
 import * as Taro from '@tarojs/taro';
@@ -71,16 +71,8 @@ const Https: any = (function(o) {
       Taro.request(option);
     })
       .then((res: Service.BackendResultConfig) => {
-        if (res && !res.code) {
+        if (res && res.code == 200) {
           return res;
-        } else if (res) {
-          console.log('res', res);
-
-          Taro.showToast({
-            title: res.msg,
-            icon: 'none',
-            duration: 3000
-          });
         } else throw new Error('服务器异常');
       })
       .catch(err => {

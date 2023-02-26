@@ -5,7 +5,7 @@
  * @version: 1.0.0
  * @Date: 2022-09-09 10:38:35
  * @LastEditors: 莫卓才
- * @LastEditTime: 2022-11-21 09:50:35
+ * @LastEditTime: 2023-02-16 16:04:53
  */
 import { User } from '@/interfaces/';
 import { defineStore } from 'pinia';
@@ -16,20 +16,26 @@ interface AuthState {
   userInfo: User.IUserInfo;
   /** 用户token */
   token: string;
+  phone: string;
+  openId: string;
 }
 
 export const useAuthStore = defineStore('authStore', {
   state: (): AuthState => ({
     userInfo: getUserInfo(),
-    token: getToken()
+    token: getToken(),
+    phone: getUserInfo().phone,
+    openId: getUserInfo().openId
   }),
   getters: {
     /** 是否登录 */
     isLogin: state => Boolean(state.token),
+    /** 获取用户信息 */
+    userInfos: state => state.userInfo,
     /** 是否绑定手机号码 */
     isPhone: state => Boolean(state.userInfo.phone),
-    /** 获取用户信息 */
-    userInfos: state => state.userInfo
+
+    isOpenId: state => Boolean(state.userInfo.openId)
   },
   actions: {
     /** 重置auth状态 */
@@ -37,6 +43,8 @@ export const useAuthStore = defineStore('authStore', {
       clearAuthStorage();
       this.userInfo = getUserInfo();
       this.token = getToken();
+      this.phone = getUserInfo().phone;
+      this.openId = getUserInfo().openId;
     },
     /** 设置auto状态 */
     setAuthStore(userInfo) {
@@ -44,6 +52,8 @@ export const useAuthStore = defineStore('authStore', {
       setToken(userInfo.token);
       this.userInfo = userInfo;
       this.token = userInfo.token;
+      this.phone = userInfo.phone;
+      this.openId = userInfo.openId;
     },
     /**保存Tabbar导航栏 */
     setTabbarList(userInfo) {

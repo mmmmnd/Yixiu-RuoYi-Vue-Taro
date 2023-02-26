@@ -5,7 +5,7 @@
  * @version: 1.0.0
  * @Date: 2021-11-05 10:18:01
  * @LastEditors: 莫卓才
- * @LastEditTime: 2022-11-21 10:04:22
+ * @LastEditTime: 2023-02-16 15:05:36
  */
 import * as Taro from '@tarojs/taro';
 import { codeback, getPhoneNumber } from '@/api/';
@@ -23,21 +23,7 @@ export function getLogin(callback: Function) {
               Taro.showToast({ icon: 'none', title: '用户取消授权' });
             } else {
               codeback({ code: res.code }).then((e: Service.BackendResultConfig<Wx.IUserDeteil>) => {
-                Taro.showLoading({ title: '授权中' });
-                Taro.getUserProfile({
-                  desc: '获取你的昵称、头像、地区及性别',
-                  success: (r: Wx.IWxDeteil) => {
-                    r.userInfo.token = e.data.token;
-                    r.userInfo.phone = e.data.phone;
-                    r.userInfo.openid = e.data.openid;
-                    r.userInfo.role_group = e.data.role_group;
-                    callback(r.userInfo);
-                  },
-                  fail: () => {
-                    Taro.hideLoading();
-                    Taro.showToast({ icon: 'none', title: '用户拒绝授权' });
-                  }
-                });
+                callback(e);
               });
             }
           }

@@ -175,6 +175,12 @@
                      v-hasPermi="['yixiu:equipment:edit']">接单</el-button>
           <el-button size="mini"
                      type="text"
+                     icon="el-icon-bank-card"
+                     v-if="checkRole(['business']) && scope.row.status == 4"
+                     @click="orderOffer(scope.row)"
+                     v-hasPermi="['yixiu:equipment:edit']">报价</el-button>
+          <el-button size="mini"
+                     type="text"
                      icon="el-icon-delete"
                      v-if="checkRole(['admin'])"
                      @click="handleDelete(scope.row)"
@@ -251,6 +257,36 @@
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
+
+    <!-- 添加或修改订单对话框 -->
+    <el-dialog :title="title"
+               :visible.sync="open"
+               width="800px"
+               append-to-body>
+      <el-table :data="tableData"
+                border
+                height="200"
+                :summary-method="getSummaries"
+                show-summary
+                style="width: 100%; margin-top: 20px">
+        <el-table-column prop="id"
+                         label="ID"
+                         width="180">
+        </el-table-column>
+        <el-table-column prop="name"
+                         label="姓名">
+        </el-table-column>
+        <el-table-column prop="amount1"
+                         label="数值 1（元）">
+        </el-table-column>
+        <el-table-column prop="amount2"
+                         label="数值 2（元）">
+        </el-table-column>
+        <el-table-column prop="amount3"
+                         label="数值 3（元）">
+        </el-table-column>
+      </el-table>
+    </el-dialog>
   </div>
 </template>
 
@@ -299,7 +335,38 @@ export default {
       // 表单校验
       rules: {},
       dropdownMenuArr: [],
-      userInfo: cache.session.getJSON("userInfo")
+      userInfo: cache.session.getJSON("userInfo"),
+      tableData: [{
+        id: '12987122',
+        name: '王小虎',
+        amount1: '234',
+        amount2: '3.2',
+        amount3: 10
+      }, {
+        id: '12987123',
+        name: '王小虎',
+        amount1: '165',
+        amount2: '4.43',
+        amount3: 12
+      }, {
+        id: '12987124',
+        name: '王小虎',
+        amount1: '324',
+        amount2: '1.9',
+        amount3: 9
+      }, {
+        id: '12987125',
+        name: '王小虎',
+        amount1: '621',
+        amount2: '2.2',
+        amount3: 17
+      }, {
+        id: '12987126',
+        name: '王小虎',
+        amount1: '539',
+        amount2: '4.1',
+        amount3: 15
+      }]
     };
   },
   created () {
@@ -318,6 +385,32 @@ export default {
         this.dropdownMenuArr = res[1].data;
         this.loading = false;
       })
+    },
+    getSummaries (param) {
+      const { columns, data } = param;
+      const sums = [];
+      columns.forEach((column, index) => {
+        if (index === 0) {
+          sums[index] = '总价';
+          return;
+        }
+        const values = data.map(item => Number(item[column.property]));
+        if (!values.every(value => isNaN(value))) {
+          sums[index] = values.reduce((prev, curr) => {
+            const value = Number(curr);
+            if (!isNaN(value)) {
+              return prev + curr;
+            } else {
+              return prev;
+            }
+          }, 0);
+          sums[index] += ' 元';
+        } else {
+          sums[index] = 'N/A';
+        }
+      });
+
+      return sums;
     },
     // 取消按钮
     cancel () {
@@ -457,8 +550,9 @@ export default {
         this.getList();
         this.$modal.msgSuccess("接单成功");
       })
-
-
+    },
+    orderOffer (e) {
+      console.log(e);
     }
   },
 };
