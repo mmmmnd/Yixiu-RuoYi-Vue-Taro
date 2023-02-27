@@ -15,7 +15,11 @@ import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.bean.BeanUtils;
 import com.ruoyi.yixiu.domain.MzcOrderFeedback;
 import com.ruoyi.yixiu.domain.MzcOrderParts;
+import com.ruoyi.yixiu.domain.dto.order.MzcOrderAuditDTO;
+import com.ruoyi.yixiu.domain.dto.order.MzcOrderEndRepairDTO;
+import com.ruoyi.yixiu.domain.dto.order.MzcOrderFeedbackDTO;
 import com.ruoyi.yixiu.domain.dto.order.MzcOrderReportDTO;
+import com.ruoyi.yixiu.domain.vo.MzcOrderFeedbackInfoVO;
 import com.ruoyi.yixiu.domain.vo.MzcOrderOfferVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -243,6 +247,8 @@ public class MzcOrderServiceImpl implements IMzcOrderService
                 /*设备单*/
                 List<MzcOrderParts> orderParts = mzcOrderReportDTO.getOrderParts();
                 mzcOrderPartsService.batchMzcParts(orderParts,feedbackId);
+            } else {
+                throw new ServiceException("非法参数！");
             }
         } else {
             throw new ServiceException("订单不存在！");
@@ -256,7 +262,7 @@ public class MzcOrderServiceImpl implements IMzcOrderService
      * @return 结果
      */
     @Override
-    public List<MzcOrderOfferVO> reportOffer(Long feedbackId) {
+    public List<MzcOrderOfferVO> partsOrder(Long feedbackId) {
         MzcOrderParts mzcOrderParts = new MzcOrderParts();
         mzcOrderParts.setFeedbackId(feedbackId);
 
@@ -272,5 +278,140 @@ public class MzcOrderServiceImpl implements IMzcOrderService
         }
 
         return mzcOrderOfferVO;
+    }
+
+    /**
+     * 配件报价
+     *
+     * @param mzcOrderFeedbackDTO 配件报价
+     */
+    @Override
+    public void feedbackOrder(MzcOrderFeedbackDTO mzcOrderFeedbackDTO) {
+        MzcOrder mzcOrder = selectMzcOrderByOrderId(mzcOrderFeedbackDTO.getOrderId());
+
+        if (StringUtils.isNotNull(mzcOrder)) {
+            if (mzcOrder.getStatus().equals("4")) {
+
+                /*记录报价信息*/
+                MzcOrderFeedback mzcOrderFeedback = mzcOrderFeedbackService.selectMzcOrderFeedbackByFeedbackId(mzcOrderFeedbackDTO.getFeedbackId());
+                mzcOrderFeedback.setOfferor(getUsername());
+                mzcOrderFeedback.setQuotationDate(DateUtils.getNowDate());
+                mzcOrderFeedback.setTotalPrice(mzcOrderFeedbackDTO.getTotalPrice());
+                mzcOrderFeedbackService.updateMzcOrderFeedback(mzcOrderFeedback);
+
+                /*记录配件价格*/
+                mzcOrderPartsService.batchUpdateMzcParts(mzcOrderFeedbackDTO.getOrderParts());
+
+                mzcOrder.setStatus("5");
+                updateMzcOrder(mzcOrder);
+            } else {
+                throw new ServiceException("非法参数！");
+            }
+        } else {
+            throw new ServiceException("订单不存在！");
+        }
+    }
+
+    /**
+     * 订单审核
+     *
+     * @param mzcOrderAuditDTO 配件报价
+     */
+    @Override
+    public void auditOrder(MzcOrderAuditDTO mzcOrderAuditDTO) {
+        MzcOrder mzcOrder = selectMzcOrderByOrderId(mzcOrderAuditDTO.getOrderId());
+
+        if (StringUtils.isNotNull(mzcOrder)) {
+            if (mzcOrder.getStatus().equals("5")) {
+
+                BeanUtils.copyBeanProp(mzcOrder,mzcOrderAuditDTO);
+                mzcOrder.setStatus("6");
+                updateMzcOrder(mzcOrder);
+            } else {
+                throw new ServiceException("非法参数！");
+            }
+        } else {
+            throw new ServiceException("订单不存在！");
+        }
+    }
+
+    /**
+     * 获取反馈单详情
+     *
+     * @param feedbackId 反馈单id
+     * @return 结果
+     */
+    @Override
+    public MzcOrderFeedbackInfoVO feedbackInfoOrder(Long feedbackId) {
+        MzcOrderFeedbackInfoVO mzcOrderFeedbackInfoVO = new MzcOrderFeedbackInfoVO();
+
+        /*反馈单*/
+        MzcOrderFeedback mzcOrderFeedback = mzcOrderFeedbackService.selectMzcOrderFeedbackByFeedbackId(feedbackId);
+        BeanUtils.copyBeanProp(mzcOrderFeedbackInfoVO, mzcOrderFeedback);
+
+        /*通过反馈单id获取设备详情*/
+        MzcOrderParts mzcOrderParts = new MzcOrderParts();
+        mzcOrderParts.setFeedbackId(feedbackId);
+        List<MzcOrderParts> mzcOrderPartsList = mzcOrderPartsService.selectMzcOrderPartsList(mzcOrderParts);
+        mzcOrderFeedbackInfoVO.setOrderParts(mzcOrderPartsList);
+
+        return mzcOrderFeedbackInfoVO;
+    }
+
+    /**
+     * 开始订单维修
+     *
+     * @param orderId 订单id
+     * @return 结果
+     */
+    @Override
+    public void startRepairOrder(Long orderId) {
+        MzcOrder mzcOrder = selectMzcOrderByOrderId(orderId);
+
+        if (StringUtils.isNotNull(mzcOrder)) {
+            if (mzcOrder.getStatus().equals("6")) {
+
+                /*维修开始时间*/
+                MzcOrderFeedback mzcOrderFeedback = mzcOrderFeedbackService.selectMzcOrderFeedbackByFeedbackId(mzcOrder.getFeedbackId());
+                mzcOrderFeedback.setMaintenanceStartTime(DateUtils.getNowDate());
+                mzcOrderFeedbackService.updateMzcOrderFeedback(mzcOrderFeedback);
+
+                mzcOrder.setStatus("7");
+                updateMzcOrder(mzcOrder);
+            } else {
+                throw new ServiceException("非法参数！");
+            }
+        } else {
+            throw new ServiceException("订单不存在！");
+        }
+    }
+
+    /**
+     * 结束订单维修
+     *
+     * @param mzcOrderEndRepairDTO 反馈单
+     * @return 结果
+     */
+    @Override
+    public void endRepairOrder(MzcOrderEndRepairDTO mzcOrderEndRepairDTO) {
+        MzcOrder mzcOrder = selectMzcOrderByOrderId(mzcOrderEndRepairDTO.getOrderId());
+
+        if (StringUtils.isNotNull(mzcOrder)) {
+            if (mzcOrder.getStatus().equals("7")) {
+
+                /*维修结束时间*/
+                MzcOrderFeedback mzcOrderFeedback = mzcOrderFeedbackService.selectMzcOrderFeedbackByFeedbackId(mzcOrder.getFeedbackId());
+                mzcOrderFeedback.setMaintenanceEndTime(DateUtils.getNowDate());
+                mzcOrderFeedback.setFeedbackResult(mzcOrderEndRepairDTO.getFeedbackResult());
+                mzcOrderFeedbackService.updateMzcOrderFeedback(mzcOrderFeedback);
+
+                mzcOrder.setStatus("8");
+                updateMzcOrder(mzcOrder);
+            } else {
+                throw new ServiceException("非法参数！");
+            }
+        } else {
+            throw new ServiceException("订单不存在！");
+        }
     }
 }

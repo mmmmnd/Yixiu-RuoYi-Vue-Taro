@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.utils.bean.BeanUtils;
 import com.ruoyi.yixiu.domain.dto.order.*;
+import com.ruoyi.yixiu.domain.vo.MzcOrderFeedbackInfoVO;
 import com.ruoyi.yixiu.domain.vo.MzcOrderOfferVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -177,14 +178,78 @@ public class MzcOrderController extends BaseController
     }
 
     /**
+     * 配件列表
+     */
+    @ApiOperation("配件列表")
+    @PreAuthorize("@ss.hasPermi('yixiu:order:parts')")
+    @Log(title = "配件列表", businessType = BusinessType.OTHER)
+    @GetMapping("/parts/{feedbackId}")
+    public  R<List<MzcOrderOfferVO>> parts(@ApiParam(value = "反馈单id", defaultValue = "1", required = true) @PathVariable("feedbackId") Long feedbackId)
+    {
+        return R.ok(mzcOrderService.partsOrder(feedbackId));
+    }
+
+    /**
      * 配件报价
      */
     @ApiOperation("配件报价")
-    @PreAuthorize("@ss.hasPermi('yixiu:order:offer')")
+    @PreAuthorize("@ss.hasPermi('yixiu:order:feedback')")
     @Log(title = "配件报价", businessType = BusinessType.OTHER)
-    @GetMapping("/offer/{feedbackId}")
-    public  R<List<MzcOrderOfferVO>> offer(@ApiParam(value = "订单ID", defaultValue = "1", required = true) @PathVariable("feedbackId") Long feedbackId)
+    @PostMapping("/feedback")
+    public  R<Integer> feedback(@RequestBody MzcOrderFeedbackDTO mzcOrderFeedbackDTO)
     {
-        return R.ok(mzcOrderService.reportOffer(feedbackId));
+        mzcOrderService.feedbackOrder(mzcOrderFeedbackDTO);
+        return R.ok();
+    }
+
+    /**
+     * 订单审核
+     */
+    @ApiOperation("订单审核")
+    @PreAuthorize("@ss.hasPermi('yixiu:order:audit')")
+    @Log(title = "订单审核", businessType = BusinessType.OTHER)
+    @PostMapping("/audit")
+    public  R<Integer> audit(@RequestBody MzcOrderAuditDTO mzcOrderAuditDTO)
+    {
+        mzcOrderService.auditOrder(mzcOrderAuditDTO);
+        return R.ok();
+    }
+
+    /**
+     * 获取反馈单详情
+     */
+    @ApiOperation("获取反馈单详情")
+    @PreAuthorize("@ss.hasPermi('yixiu:order:list')")
+    @Log(title = "订单审核", businessType = BusinessType.OTHER)
+    @GetMapping("/feedbackInfo/{feedbackId}")
+    public  R<MzcOrderFeedbackInfoVO> feedbackInfo(@ApiParam(value = "反馈单id", defaultValue = "1", required = true) @PathVariable("feedbackId") Long feedbackId)
+    {
+        return R.ok(mzcOrderService.feedbackInfoOrder(feedbackId));
+    }
+
+    /**
+     * 开始订单维修
+     */
+    @ApiOperation("开始订单维修")
+    @PreAuthorize("@ss.hasPermi('yixiu:order:startRepair')")
+    @Log(title = "开始订单维修", businessType = BusinessType.OTHER)
+    @GetMapping("/startRepair/{orderId}")
+    public  R<Integer> startRepair(@ApiParam(value = "订单id", defaultValue = "1", required = true) @PathVariable("orderId") Long orderId)
+    {
+        mzcOrderService.startRepairOrder(orderId);
+        return R.ok();
+    }
+
+    /**
+     * 结束订单维修
+     */
+    @ApiOperation("结束订单维修")
+    @PreAuthorize("@ss.hasPermi('yixiu:order:endRepair')")
+    @Log(title = "结束订单维修", businessType = BusinessType.OTHER)
+    @PostMapping("/endRepair")
+    public  R<Integer> endRepair(@RequestBody MzcOrderEndRepairDTO mzcOrderEndRepairDTO)
+    {
+        mzcOrderService.endRepairOrder(mzcOrderEndRepairDTO);
+        return R.ok();
     }
 }

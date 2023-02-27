@@ -121,10 +121,18 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </foreach>
     </delete>
 
-    <insert id="batchMzcParts">
+    <insert id="batchInsertMzcParts">
         insert into mzc_order_parts(feedback_id, parts_model, parts_name, number, unit, parts_price, maintenance_price, unit_price, preferential_price, del_flag, delete_by, create_time, create_by, update_time, update_by) values
         <foreach item="item" index="index" collection="list" separator=",">
             ( #{item.feedbackId}, #{item.partsModel},#{item.partsName}, #{item.number}, #{item.unit}, #{item.partsPrice}, #{item.maintenancePrice}, #{item.unitPrice}, #{item.preferentialPrice}, #{item.delFlag}, #{item.deleteBy}, #{item.createTime}, #{item.createBy}, #{item.updateTime}, #{item.updateBy})
         </foreach>
     </insert>
+
+    <update id="batchUpdateMzcParts" parameterType="java.util.List">
+        <foreach item="item" index="index" collection="list" separator=";">
+            update mzc_order_parts
+            set unit_price = #{item.unitPrice}, preferential_price = #{item.preferentialPrice}, update_by = #{item.updateBy}, update_time = #{item.updateTime}
+            where parts_id = #{item.partsId}
+        </foreach>
+    </update>
 </mapper>

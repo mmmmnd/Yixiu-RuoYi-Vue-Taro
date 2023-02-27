@@ -181,8 +181,14 @@
                      v-hasPermi="['yixiu:equipment:edit']">报价</el-button>
           <el-button size="mini"
                      type="text"
+                     icon="el-icon-s-check"
+                     v-if="checkRole(['business']) && scope.row.status == 5"
+                     @click="orderAudit(scope.row)"
+                     v-hasPermi="['yixiu:equipment:edit']">审核</el-button>
+          <el-button size="mini"
+                     type="text"
                      icon="el-icon-delete"
-                     v-if="checkRole(['admin'])"
+                     v-if="scope.row.status == 0"
                      @click="handleDelete(scope.row)"
                      v-hasPermi="['yixiu:order:remove']">删除</el-button>
         </template>
@@ -195,7 +201,7 @@
                 :limit.sync="queryParams.pageSize"
                 @pagination="getList" />
 
-    <!-- 添加或修改订单对话框 -->
+    <!-- 详情订单对话框 -->
     <el-dialog :title="title"
                :visible.sync="open"
                width="800px"
@@ -203,26 +209,34 @@
       <el-descriptions title="订单详情"
                        :column="3">
         <el-descriptions-item label="医院名称">{{form.dept && form.dept.parentName}}</el-descriptions-item>
-        <el-descriptions-item label="科室名称">{{form.dept && form.dept.deptName}}</el-descriptions-item>
+        <el-descriptions-item label="科室名称"
+                              :span="2">{{form.dept && form.dept.deptName}}</el-descriptions-item>
+        <el-descriptions-item label="
+                              工作类型">
+          <dict-tag :options="dict.type.mzc_order_type"
+                    :value="form.workType" />
+        </el-descriptions-item>
+
         <el-descriptions-item label="订单状态">
           <dict-tag :options="dict.type.mzc_order_status"
                     :value="form.status" />
         </el-descriptions-item>
 
-        <el-descriptions-item label="工作类型">
-          <dict-tag :options="dict.type.mzc_order_type"
-                    :value="form.workType" />
-        </el-descriptions-item>
         <el-descriptions-item label="订单类型">
           <dict-tag :options="dict.type.mzc_order_status"
                     :value="form.orderType" />
         </el-descriptions-item>
 
         <el-descriptions-item label="报修人">{{form.repairman}}</el-descriptions-item>
-        <el-descriptions-item label="联系方式">{{form.repairPhone}}</el-descriptions-item>
+        <el-descriptions-item label="联系方式"
+                              :span="2">{{form.repairPhone}}</el-descriptions-item>
         <el-descriptions-item label="期望上门时间">{{form.expectationTime}}</el-descriptions-item>
-        <el-descriptions-item label="订单处理时间">{{form.dateTime}}</el-descriptions-item>
-        <el-descriptions-item label="描述详情">{{form.errorDescription}}</el-descriptions-item>
+        <el-descriptions-item label="订单处理时间"
+                              :span="2">{{form.dateTime}}</el-descriptions-item>
+        <el-descriptions-item label="维修开始时间"
+                              v-if="form.status>6">{{feedbackInfo.maintenanceStartTime}}</el-descriptions-item>
+        <el-descriptions-item label="维修结束时间"
+                              v-if="form.status>7">{{feedbackInfo.maintenanceEndTime}}</el-descriptions-item>
       </el-descriptions>
 
       <el-descriptions title="设备详情"
@@ -231,6 +245,59 @@
         <el-descriptions-item label="序列号">{{form.equipment && form.equipment.serialNumber}}</el-descriptions-item>
         <el-descriptions-item label="型号">{{form.equipment && form.equipment.modelNumber}}</el-descriptions-item>
         <el-descriptions-item label="出厂编号">{{form.equipment && form.equipment.factoryNumber}}</el-descriptions-item>
+        <el-descriptions-item label="报修详情">{{form.errorDescription || '暂无数据'}}</el-descriptions-item>
+        <el-descriptions-item label="检测详情">{{feedbackInfo.equipmentInspection || '暂无数据'}}</el-descriptions-item>
+        <el-descriptions-item label="反馈结果"
+                              v-if="form.status>7">{{feedbackInfo.feedbackResult}}</el-descriptions-item>
+      </el-descriptions>
+
+      <el-descriptions title="报价详情"
+                       :column="3"
+                       v-if="form.status>5">
+        <el-descriptions-item label="配件"
+                              :span="3">
+          <el-table :data="feedbackInfo.orderParts"
+                    border
+                    :summary-method="getSummaries"
+                    show-summary
+                    style="width: 100%; margin-top: 20px">
+            <el-table-column prop="partsModel"
+                             align="center"
+                             label="配件型号">
+            </el-table-column>
+            <el-table-column prop="partsName"
+                             align="center"
+                             label="配件名">
+            </el-table-column>
+            <el-table-column prop="number"
+                             align="center"
+                             label="数量">
+            </el-table-column>
+            <el-table-column prop="unit"
+                             align="center"
+                             label="单位">
+            </el-table-column>
+            <el-table-column prop="partsPrice"
+                             align="center"
+                             label="配件价格">
+            </el-table-column>
+            <el-table-column prop="maintenancePrice"
+                             align="center"
+                             label="维修价格">
+            </el-table-column>
+            <el-table-column prop="unitPrice"
+                             align="center"
+                             label="单价">
+            </el-table-column>
+            <el-table-column prop="preferentialPrice"
+                             align="center"
+                             label="优惠价">
+            </el-table-column>
+          </el-table>
+        </el-descriptions-item>
+        <el-descriptions-item label="总价">{{feedbackInfo.totalPrice}}元</el-descriptions-item>
+        <el-descriptions-item label="报价人">{{feedbackInfo.offeror}}</el-descriptions-item>
+        <el-descriptions-item label="报价日期">{{feedbackInfo.quotationDate}}</el-descriptions-item>
       </el-descriptions>
 
       <el-descriptions title="审核详情"
@@ -252,40 +319,132 @@
       </el-descriptions>
       <div slot="footer"
            class="dialog-footer">
-        <el-button type="primary"
-                   @click="submitForm">确 定</el-button>
-        <el-button @click="cancel">取 消</el-button>
+        <el-button @click="cancel('open')">取 消</el-button>
       </div>
     </el-dialog>
 
-    <!-- 添加或修改订单对话框 -->
+    <!-- 报价订单对话框 -->
     <el-dialog :title="title"
-               :visible.sync="open"
-               width="800px"
+               :visible.sync="openOffer"
+               width="1200px"
                append-to-body>
-      <el-table :data="tableData"
-                border
-                height="200"
-                :summary-method="getSummaries"
-                show-summary
-                style="width: 100%; margin-top: 20px">
-        <el-table-column prop="id"
-                         label="ID"
-                         width="180">
-        </el-table-column>
-        <el-table-column prop="name"
-                         label="姓名">
-        </el-table-column>
-        <el-table-column prop="amount1"
-                         label="数值 1（元）">
-        </el-table-column>
-        <el-table-column prop="amount2"
-                         label="数值 2（元）">
-        </el-table-column>
-        <el-table-column prop="amount3"
-                         label="数值 3（元）">
-        </el-table-column>
-      </el-table>
+      <el-form label-width="80px">
+        <el-form-item label="活动名称">
+          <el-table :data="orderParts"
+                    border
+                    :summary-method="getSummaries"
+                    show-summary
+                    style="width: 100%; margin-top: 20px">
+            <el-table-column prop="partsModel"
+                             align="center"
+                             label="配件型号">
+            </el-table-column>
+            <el-table-column prop="partsName"
+                             align="center"
+                             label="配件名">
+            </el-table-column>
+            <el-table-column prop="number"
+                             align="center"
+                             label="数量">
+            </el-table-column>
+            <el-table-column prop="unit"
+                             align="center"
+                             label="单位">
+            </el-table-column>
+            <el-table-column prop="partsPrice"
+                             align="center"
+                             label="配件价格">
+            </el-table-column>
+            <el-table-column prop="maintenancePrice"
+                             align="center"
+                             label="维修价格">
+            </el-table-column>
+            <el-table-column prop="unitPrice"
+                             align="center"
+                             label="单价">
+              <template slot-scope="scope">
+                <el-input-number v-model="scope.row.unitPrice"
+                                 style="width: 90px;"
+                                 controls-position="right"
+                                 :min="0"
+                                 size="mini"
+                                 label="请输入单价"></el-input-number>
+              </template>
+            </el-table-column>
+            <el-table-column prop="preferentialPrice"
+                             align="center"
+                             label="优惠价">
+              <template slot-scope="scope">
+                <el-input-number v-model="scope.row.preferentialPrice"
+                                 style="width: 90px;"
+                                 controls-position="right"
+                                 :min="0"
+                                 size="mini"
+                                 label="请输入优惠价"></el-input-number>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-form-item>
+        <el-form-item label="总价">
+          <el-input-number v-model="totalPrice"
+                           :min="0"
+                           label="请输入总价"></el-input-number>
+        </el-form-item>
+      </el-form>
+      <div slot="footer"
+           class="dialog-footer">
+        <el-button type="primary"
+                   @click="submitForm('offer')">确 定</el-button>
+        <el-button @click="cancel('openOffer')">取 消</el-button>
+      </div>
+    </el-dialog>
+
+    <!-- 审核对话框 -->
+    <el-dialog :title="title"
+               :visible.sync="openAudit"
+               width="1200px"
+               append-to-body>
+      <el-form :model="form"
+               label-width="80px">
+        <el-form-item label="申请科室意见">
+          <el-input type="textarea"
+                    placeholder="申请科室意见"
+                    v-model="form.applyDeptOpinion"
+                    maxlength="60"
+                    show-word-limit>
+          </el-input>
+        </el-form-item>
+        <el-form-item label="装备部意见">
+          <el-input type="textarea"
+                    placeholder="装备部意见"
+                    v-model="form.equipmentOpinion"
+                    maxlength="60"
+                    show-word-limit>
+          </el-input>
+        </el-form-item>
+        <el-form-item label="分管院长审批意见">
+          <el-input type="textarea"
+                    placeholder="分管院长审批意见"
+                    v-model="form.subheadOpinion"
+                    maxlength="60"
+                    show-word-limit>
+          </el-input>
+        </el-form-item>
+        <el-form-item label="院长审批意见">
+          <el-input type="textarea"
+                    placeholder="院长审批意见"
+                    v-model="form.deanOpinion"
+                    maxlength="60"
+                    show-word-limit>
+          </el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer"
+           class="dialog-footer">
+        <el-button type="primary"
+                   @click="submitForm('audit')">确 定</el-button>
+        <el-button @click="cancel('openAudit')">取 消</el-button>
+      </div>
     </el-dialog>
   </div>
 </template>
@@ -293,7 +452,7 @@
 <script>
 import cache from '@/plugins/cache'
 import { checkRole } from '@/utils/permission'
-import { listOrder, getOrder, delOrder, addOrder, updateOrder, pickOrder, sendOrder } from "@/api/yixiu/order";
+import { listOrder, getOrder, delOrder, pickOrder, sendOrder, getPartsOrder, feedbackOrder, auditOrder, getFeedbackInfo } from "@/api/yixiu/order";
 import { getBusinessUserInfo } from "@/api/system/user";
 
 export default {
@@ -334,39 +493,13 @@ export default {
       form: {},
       // 表单校验
       rules: {},
+      openOffer: false,
       dropdownMenuArr: [],
       userInfo: cache.session.getJSON("userInfo"),
-      tableData: [{
-        id: '12987122',
-        name: '王小虎',
-        amount1: '234',
-        amount2: '3.2',
-        amount3: 10
-      }, {
-        id: '12987123',
-        name: '王小虎',
-        amount1: '165',
-        amount2: '4.43',
-        amount3: 12
-      }, {
-        id: '12987124',
-        name: '王小虎',
-        amount1: '324',
-        amount2: '1.9',
-        amount3: 9
-      }, {
-        id: '12987125',
-        name: '王小虎',
-        amount1: '621',
-        amount2: '2.2',
-        amount3: 17
-      }, {
-        id: '12987126',
-        name: '王小虎',
-        amount1: '539',
-        amount2: '4.1',
-        amount3: 15
-      }]
+      orderParts: [],
+      totalPrice: 0,
+      openAudit: false,
+      feedbackInfo: {}
     };
   },
   created () {
@@ -390,11 +523,10 @@ export default {
       const { columns, data } = param;
       const sums = [];
       columns.forEach((column, index) => {
-        if (index === 0) {
-          sums[index] = '总价';
-          return;
-        }
+        if (index === 0) return sums[index] = '总价';
+
         const values = data.map(item => Number(item[column.property]));
+
         if (!values.every(value => isNaN(value))) {
           sums[index] = values.reduce((prev, curr) => {
             const value = Number(curr);
@@ -404,7 +536,7 @@ export default {
               return prev;
             }
           }, 0);
-          sums[index] += ' 元';
+          sums[index] = index == 2 ? sums[index] : sums[index] + ' 元';
         } else {
           sums[index] = 'N/A';
         }
@@ -413,8 +545,8 @@ export default {
       return sums;
     },
     // 取消按钮
-    cancel () {
-      this.open = false;
+    cancel (value) {
+      this[value] = false;
       this.reset();
     },
     // 表单重置
@@ -489,27 +621,30 @@ export default {
       this.reset();
       this.form = row;
       this.open = true;
-      this.title = "订单详情";
+      this.title = "详情";
+
+      if (this.form.feedbackId) {
+        getFeedbackInfo(this.form.feedbackId).then(res => {
+          this.feedbackInfo = res.data;
+        })
+      }
     },
     /** 提交按钮 */
-    submitForm () {
-      this.$refs["form"].validate(valid => {
-        if (valid) {
-          if (this.form.orderId != null) {
-            updateOrder(this.form).then(response => {
-              this.$modal.msgSuccess("修改成功");
-              this.open = false;
-              this.getList();
-            });
-          } else {
-            addOrder(this.form).then(response => {
-              this.$modal.msgSuccess("新增成功");
-              this.open = false;
-              this.getList();
-            });
-          }
-        }
-      });
+    submitForm (value) {
+      if (value == 'offer') {
+        const param = {
+          orderId: this.form.orderId, feedbackId: this.form.feedbackId, totalPrice: this.totalPrice, orderParts: this.orderParts,
+        };
+        feedbackOrder(param).then(res => {
+          this.openOffer = false;
+          this.$modal.msgSuccess(res.msg);
+        })
+      } else if (value == 'audit') {
+        auditOrder(this.form).then(res => {
+          this.openAudit = false;
+          this.$modal.msgSuccess(res.msg);
+        })
+      }
     },
     /** 删除按钮操作 */
     handleDelete (row) {
@@ -551,8 +686,22 @@ export default {
         this.$modal.msgSuccess("接单成功");
       })
     },
+    /* 报价 */
     orderOffer (e) {
-      console.log(e);
+      getPartsOrder(e.feedbackId).then(res => {
+        this.title = "配件报价";
+        this.openOffer = true;
+        this.totalPrice = 0;
+        this.orderParts = res.data;
+        this.form.orderId = e.orderId;
+        this.form.feedbackId = e.feedbackId;
+      })
+    },
+    /* 订单审核 */
+    orderAudit (e) {
+      this.openAudit = true;
+      this.title = "订单审核";
+      this.form.orderId = e.orderId
     }
   },
 };

@@ -61,11 +61,17 @@ public interface IMzcOrderPartsService
     public int deleteMzcOrderPartsByPartsId(Long partsId);
 
     /**
-     * 删除订单配件信息
+     * 批量新增配件
      *
      * @param mzcPartsList 订单配件
      * @param feedbackId   反馈单id
-     * @return 结果
      */
     public void batchMzcParts(List<MzcOrderParts> mzcPartsList, Long feedbackId);
+
+    /**
+     * 批量修改配件
+     *
+     * @param mzcPartsList 订单配件
+     */
+    public void batchUpdateMzcParts(List<MzcOrderParts> mzcPartsList);
 }

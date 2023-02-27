@@ -5,9 +5,9 @@
   * @version: 1.0.0
   * @Date: 2022-09-06 09:47:23
  * @LastEditors: 莫卓才
- * @LastEditTime: 2023-02-26 14:51:34
+ * @LastEditTime: 2023-02-27 23:10:37
  -->
- <template>
+<template>
   <view class="home">
     <nav-bar-component class="NavBar"
                        :name="NavBarName" />
@@ -17,11 +17,11 @@
                   pagination-color="#426543"
                   auto-play="5000"
                   height="160"
-                  :style="{marginTop:marginTop+'px'}"
+                  :style="{ marginTop: marginTop + 'px' }"
                   class="swiper">
         <nut-swiper-item v-for="swiperItem in swiperList"
                          :key="swiperItem">
-          <image :src="BASE_URL+swiperItem.filePath"
+          <image :src="BASE_URL + swiperItem.filePath"
                  class="w-100 h-100"
                  mode="scaleToFill	" />
         </nut-swiper-item>
@@ -32,9 +32,9 @@
         <nut-grid :border="false"
                   :column-number="4"
                   class="navGrid">
-          <nut-grid-item v-for="(item,index) in gridList"
+          <nut-grid-item v-for="(item, index) in gridList"
                          :key="index"
-                         @click="item.type === 'fn' ? scanCode() : onToRouter(item.url,item.type,item.activeNum)">
+                         @click="item.type === 'fn' ? scanCode() : onToRouter(item.url, item.type, item.activeNum)">
 
             <image :src="item.icon"
                    mode="aspectFill" />
@@ -64,38 +64,38 @@
 
           <view class="repair-content">
             <view class="repair-list"
-                  v-if="engineerList?.length>0">
+                  v-if="engineerList?.length > 0">
               <view class="repair-item d-flex jc-between px-2 py-2 fs-sm"
                     v-for="item of engineerList"
                     :key="item.id">
                 <view class="flex-grow-1 content">
                   <view class="d-flex py-1">
                     <view class="name text-right text-subtitle">设备名称：</view>
-                    <view class="text text-theme">{{item.equipment.equipmentName || "暂无数据"}}</view>
+                    <view class="text text-theme">{{ item.equipment.equipmentName || "暂无数据" }}</view>
                   </view>
                   <view class="d-flex py-1">
                     <view class="name text-right text-subtitle">医院名称：</view>
-                    <view class="text">{{item.dept.parentName || "暂无数据"}}</view>
+                    <view class="text">{{ item.dept.parentName || "暂无数据" }}</view>
                   </view>
                   <view class="d-flex py-1">
                     <view class="name text-right text-subtitle">医院科室：</view>
-                    <view class="text">{{item.dept.deptName || "暂无数据"}}</view>
+                    <view class="text">{{ item.dept.deptName || "暂无数据" }}</view>
                   </view>
                   <view class="d-flex py-1">
                     <view class="name text-right text-subtitle">联系方式：</view>
-                    <view class="text">{{item.repairPhone || "暂无数据"}}</view>
+                    <view class="text">{{ item.repairPhone || "暂无数据" }}</view>
                   </view>
                   <view class="d-flex py-1">
                     <view class="name text-right text-subtitle">维修类型：</view>
-                    <view class="text">{{getOrderType(item.workType) || "暂无数据"}}</view>
+                    <view class="text">{{ getOrderType(item.workType) || "暂无数据" }}</view>
                   </view>
                   <view class="d-flex py-1">
                     <view class="name text-right text-subtitle">期望时间：</view>
-                    <view class="text">{{item.expectationTime || "暂无数据"}}</view>
+                    <view class="text">{{ item.expectationTime || "暂无数据" }}</view>
                   </view>
                   <view class="d-flex py-1">
                     <view class="name text-right text-subtitle">订单状态：</view>
-                    <view class="text text-red">{{getOrderStatusType(item.status) || "暂无数据"}}</view>
+                    <view class="text text-red">{{ getOrderStatusType(item.status) || "暂无数据" }}</view>
                   </view>
                 </view>
                 <view class="flex-grow-0 position d-flex flex-column jc-center ai-center"
@@ -112,21 +112,21 @@
                               type="info"
                               @click="popupOrderInfo(item)">详情明细</nut-button>
                   <nut-button size="small"
-                              :color="item.status == '1' || item.status == '2' ?'#007CCC':'#BBBBBB'"
+                              :color="item.status == '1' || item.status == '2' ? '#007CCC' : '#BBBBBB'"
                               type="info"
-                              @click="item.status == '1' || item.status == '2' ?detection(item):''">立即检测</nut-button>
+                              @click="item.status == '1' || item.status == '2' ? detection(item) : ''">立即检测</nut-button>
                   <nut-button size="small"
-                              :color="item.status == '3'?'#09C160':'#BBBBBB'"
+                              :color="item.status == '3' ? '#09C160' : '#BBBBBB'"
                               type="info"
-                              @click="item.status == '3'?popupReport(item):''">检测报告</nut-button>
+                              @click="item.status == '3' ? popupReport(item) : ''">检测报告</nut-button>
                   <nut-button size="small"
-                              :color="item.status == 'examine_approval'?'#5FB878':'#BBBBBB'"
+                              :color="item.status == '6' ? '#5FB878' : '#BBBBBB'"
                               type="info"
-                              @click="item.status == 'examine_approval'?popupStart(item):''">开始维修</nut-button>
+                              @click="item.status == '6' ? popupStart(item) : ''">开始维修</nut-button>
                   <nut-button size="small"
-                              :color="item.status == 'repairing'?'#FF5722':'#BBBBBB'"
+                              :color="item.status == '7' ? '#FF5722' : '#BBBBBB'"
                               type="info"
-                              @click="item.status == 'repairing'?popupEnd(item):''">维修完成</nut-button>
+                              @click="item.status == '7' ? popupEnd(item) : ''">维修完成</nut-button>
                 </view>
               </view>
             </view>
@@ -149,42 +149,44 @@
               <text class="pl-2">待报价订单</text>
             </view>
             <view class="flex-grow-0 fs-xs text-subtitle"
-                  @click="onToRouter('/pages/order/index','tabBar',null)">全部 &gt;</view>
+                  @click="onToRouter('/pages/order/index', 'tabBar', null)">全部
+              &gt;
+            </view>
           </view>
           <view class="repair-content">
             <view class="repair-list"
-                  v-if="offerList?.length>0">
+                  v-if="offerList?.length > 0">
               <view class="repair-item d-flex jc-between px-2 py-2 fs-sm"
                     v-for="item of offerList"
                     :key="item.id">
                 <view class="flex-grow-1 content">
                   <view class="d-flex py-1">
                     <view class="name text-right text-subtitle">设备名称：</view>
-                    <view class="text text-theme">{{item.facility_name || "暂无数据"}}</view>
+                    <view class="text text-theme">{{ item.facility_name || "暂无数据" }}</view>
                   </view>
                   <view class="d-flex py-1">
                     <view class="name text-right text-subtitle">工程师：</view>
-                    <view class="text">{{item.engineer_name || "暂无数据"}}</view>
+                    <view class="text">{{ item.engineer_name || "暂无数据" }}</view>
                   </view>
                   <view class="d-flex py-1">
                     <view class="name text-right text-subtitle">医院名称：</view>
-                    <view class="text">{{item.company_name || "暂无数据"}}</view>
+                    <view class="text">{{ item.company_name || "暂无数据" }}</view>
                   </view>
                   <view class="d-flex py-1">
                     <view class="name text-right text-subtitle">医院科室：</view>
-                    <view class="text">{{item.department_name || "暂无数据"}}</view>
+                    <view class="text">{{ item.department_name || "暂无数据" }}</view>
                   </view>
                   <view class="d-flex py-1">
                     <view class="name text-right text-subtitle">联系方式：</view>
-                    <view class="text">{{item.creater_phone || "暂无数据"}}</view>
+                    <view class="text">{{ item.creater_phone || "暂无数据" }}</view>
                   </view>
                   <view class="d-flex py-1">
                     <view class="name text-right text-subtitle">维修类型：</view>
-                    <view class="text">{{item.type_name || "暂无数据"}}</view>
+                    <view class="text">{{ item.type_name || "暂无数据" }}</view>
                   </view>
                   <view class="d-flex py-1">
                     <view class="name text-right text-subtitle">订单状态：</view>
-                    <view class="text text-red">{{item.order_status_text || "暂无数据"}}</view>
+                    <view class="text text-red">{{ item.order_status_text || "暂无数据" }}</view>
                   </view>
                 </view>
                 <view class="flex-grow-0 position d-flex flex-column jc-evenly">
@@ -193,13 +195,13 @@
                               type="info"
                               @click="popupOrderInfo(item)">详情明细</nut-button>
                   <nut-button size="small"
-                              :color="item.status_offer != '1'?'#007CCC':'#BBBBBB'"
+                              :color="item.status_offer != '1' ? '#007CCC' : '#BBBBBB'"
                               type="info"
-                              @click="item.status_offer != '1'?popupOffer(item):''">提交报价单</nut-button>
+                              @click="item.status_offer != '1' ? popupOffer(item) : ''">提交报价单</nut-button>
                   <nut-button size="small"
-                              :color="item.status_offer == '1'?'#09C160':'#BBBBBB'"
+                              :color="item.status_offer == '1' ? '#09C160' : '#BBBBBB'"
                               type="info"
-                              @click="item.status_offer == '1'?popupOffer(item):''">查看报价单</nut-button>
+                              @click="item.status_offer == '1' ? popupOffer(item) : ''">查看报价单</nut-button>
                 </view>
               </view>
             </view>
@@ -222,48 +224,50 @@
               <text class="pl-2">最新报修</text>
             </view>
             <view class="flex-grow-0 fs-xs text-subtitle"
-                  @click="onToRouter('/pages/order/index','tabBar',null)">全部 &gt;</view>
+                  @click="onToRouter('/pages/order/index', 'tabBar', null)">全部
+              &gt;
+            </view>
           </view>
           <view class="repair-content">
             <view class="repair-list"
-                  v-if="repairList?.length>0">
+                  v-if="repairList?.length > 0">
               <view class="repair-item d-flex jc-between px-2 py-2 fs-sm"
                     v-for="item of repairList"
                     :key="item.id">
                 <view class="flex-grow-1 content">
                   <view class="d-flex py-1">
                     <view class="name text-right text-subtitle">设备名称：</view>
-                    <view class="text text-theme">{{item.facility_name || "暂无数据"}}</view>
+                    <view class="text text-theme">{{ item.facility_name || "暂无数据" }}</view>
                   </view>
                   <view class="d-flex py-1 px-2">
                     <view class="name text-right text-subtitle">医院名称：</view>
-                    <view class="text">{{item.company_name || "暂无数据"}}</view>
+                    <view class="text">{{ item.company_name || "暂无数据" }}</view>
                   </view>
                   <view class="d-flex py-1">
                     <view class="name text-right text-subtitle">工程师：</view>
-                    <view class="text">{{item.engineer_name || "暂无数据"}}</view>
+                    <view class="text">{{ item.engineer_name || "暂无数据" }}</view>
                   </view>
                   <view class="d-flex py-1">
                     <view class="name text-right text-subtitle">联系方式：</view>
-                    <view class="text">{{item.creater_phone || "暂无数据"}}</view>
+                    <view class="text">{{ item.creater_phone || "暂无数据" }}</view>
                   </view>
                   <view class="d-flex py-1">
                     <view class="name text-right text-subtitle">维修类型：</view>
-                    <view class="text">{{item.type_name || "暂无数据"}}</view>
+                    <view class="text">{{ item.type_name || "暂无数据" }}</view>
                   </view>
                   <view class="d-flex py-1">
                     <view class="name text-right text-subtitle">报修时间：</view>
-                    <view class="text">{{item.expect_time || "暂无数据"}}</view>
+                    <view class="text">{{ item.expect_time || "暂无数据" }}</view>
                   </view>
                   <view class="d-flex py-1">
                     <view class="name text-right text-subtitle">完成时间：</view>
-                    <view class="text">{{item.finish_time || "暂无数据"}}</view>
+                    <view class="text">{{ item.finish_time || "暂无数据" }}</view>
                   </view>
                 </view>
                 <view class="flex-grow-0 position d-flex flex-column jc-center">
                   <image mode="aspectFill"
-                         :src="getStatusCoceImgType(item.status_code,'path')" />
-                  <text class="fs-xs text-white">{{ getStatusCoceImgType(item.status_code,'name')|| "暂无数据"}}</text>
+                         :src="getStatusCoceImgType(item.status_code, 'path')" />
+                  <text class="fs-xs text-white">{{ getStatusCoceImgType(item.status_code, 'name') || "暂无数据" }}</text>
 
                 </view>
               </view>
@@ -275,13 +279,13 @@
       </view>
     </view>
 
-    <view :style="{marginBottom:!fooBanner[0]?.remote_path?tabbarBottom+'px':'0px'}" />
+    <view :style="{ marginBottom: !fooBanner[0]?.remote_path ? tabbarBottom + 'px' : '0px' }" />
 
     <view class="footer-wrapper p-2"
           v-if="!!fooBanner[0]?.remote_path">
       <image class="w-100 footer-poster"
              :src="fooBanner[0]?.remote_path"
-             :style="{marginBottom:tabbarBottom+'px'}"
+             :style="{ marginBottom: tabbarBottom + 'px' }"
              mode="aspectFill" />
     </view>
 
@@ -339,7 +343,8 @@ import {
   repairComplete,
   orderInfo,
   orderStatus,
-  orderTypeArr
+  orderTypeArr,
+  getFeedbackInfo
 } from '@/api/';
 import { Vo } from '@/interfaces/';
 import { getViewStyle } from '@/utils/util';
@@ -379,28 +384,94 @@ const state = reactive({
   ], //工程师tab列表
   showOrderInfo: false, //详情明细
   formDataOrderInfo: {
-    facility_name: '',
-    serial_number: '',
-    partsModel: '',
+    equipment: {},
+    dept: {},
+    feedbackInfo: {},
+    totalPrice: '',
+    repairman: '',
+    createTime: '',
+    spend_period: '',
+    applyDeptOpinion: '',
+    equipmentOpinion: '',
+    subheadOpinion: '',
+    deanOpinion: '',
+    company_name: '',
     department_name: '',
-    number: 0,
-    unit: 0,
-    unit_price: null,
-    discount_pirce: null,
-    totao_price: null,
-    spend_period: null,
-    warranty_period: null,
-    failure_describe: '',
-    repair_result: '',
-    create_time: null,
-    offerer_name: '',
-    creater_name: '',
-    partsTitle: [],
-    partsList: [],
-    department_opinion: '',
-    equip_opinion: '',
-    dean_opinion: '',
-    dean_branch_opinion: ''
+    accepter_name: '',
+    partsTitle: [
+      {
+        align: 'center',
+        key: 'partsModel',
+        title: '型号'
+      },
+      {
+        align: 'center',
+        key: 'partsName',
+        title: '配件名'
+      },
+      {
+        align: 'center',
+        key: 'number',
+        title: '数量'
+      },
+      {
+        align: 'center',
+        key: 'unit',
+        title: '单位'
+      },
+      {
+        align: 'center',
+        key: 'partsPrice',
+        title: '部件费'
+      },
+      {
+        align: 'center',
+        key: 'maintenancePrice',
+        title: '维修费'
+      }
+    ],
+    payTitle: [
+      {
+        align: 'center',
+        key: 'partsModel',
+        title: '型号'
+      },
+      {
+        align: 'center',
+        key: 'partsName',
+        title: '配件名'
+      },
+      {
+        align: 'center',
+        key: 'number',
+        title: '数量'
+      },
+      {
+        align: 'center',
+        key: 'unit',
+        title: '单位'
+      },
+      {
+        align: 'center',
+        key: 'partsPrice',
+        title: '部件费'
+      },
+      {
+        align: 'center',
+        key: 'maintenancePrice',
+        title: '维修费'
+      },
+      {
+        align: 'center',
+        key: 'unitPrice',
+        title: '单价'
+      },
+      {
+        align: 'center',
+        key: 'preferentialPrice',
+        title: '优惠价'
+      }
+    ]
   },
   showReport: false, //检测报告
   formDataReport: {
@@ -654,12 +725,17 @@ const order = e => {
 
 /**详情明细popup */
 const popupOrderInfo = e => {
-  console.log(e);
+  const { partsTitle, payTitle } = formDataOrderInfo.value;
+  formDataOrderInfo.value = e;
+  formDataOrderInfo.value.partsTitle = partsTitle;
+  formDataOrderInfo.value.payTitle = payTitle;
+  showOrderInfo.value = true;
 
-  // orderInfo({ order_id: e.id }).then(res => {
-  //   formDataOrderInfo.value = res.data;
-  //   showOrderInfo.value = true;
-  // });
+  if (e.feedbackId) {
+    getFeedbackInfo(e.feedbackId).then(res => {
+      formDataOrderInfo.value.feedbackInfo = res.data;
+    });
+  }
 };
 
 /**立即检测 */
@@ -808,10 +884,14 @@ const delTableData = e => {
 
 /**开始维修popup */
 const popupStart = e => {
-  formDataStart.value.order_id = e.id;
-  formDataStart.value.facility_name = e.facility_name;
-  formDataStart.value.failure_describe = e.failure_describe;
-  formDataStart.value.failure_cause = e.failure_cause;
+  formDataStart.value.order_id = e.orderId;
+  formDataStart.value.facility_name = e.equipment.equipmentName;
+  formDataStart.value.failure_describe = e.errorDescription;
+  if (e.feedbackId) {
+    getFeedbackInfo(e.feedbackId).then(res => {
+      formDataStart.value.failure_cause = res.data.equipmentInspection;
+    });
+  }
   formDataEnd.value.repair_time = '';
   formDataEnd.value.repair_result = '';
   showStart.value = true;
@@ -821,7 +901,7 @@ const popupStart = e => {
 const submitStart = () => {
   Taro.showLoading({ title: '加载中' });
 
-  startRepair(formDataStart.value).then(res => {
+  startRepair(formDataStart.value.order_id).then(res => {
     showStart.value = false;
     Taro.showToast({ title: res.msg });
     asyncInitScrollList();
@@ -830,11 +910,15 @@ const submitStart = () => {
 
 /**维修完成popup */
 const popupEnd = e => {
-  formDataEnd.value.order_id = e.id;
-  formDataEnd.value.facility_name = e.facility_name;
-  formDataEnd.value.failure_describe = e.failure_describe;
-  formDataEnd.value.failure_cause = e.failure_cause;
-  formDataEnd.value.repair_time = e.repair_time;
+  formDataEnd.value.order_id = e.orderId;
+  formDataEnd.value.facility_name = e.equipment.equipmentName;
+  formDataEnd.value.failure_describe = e.errorDescription;
+  if (e.feedbackId) {
+    getFeedbackInfo(e.feedbackId).then(res => {
+      formDataEnd.value.failure_cause = res.data.equipmentInspection;
+      formDataEnd.value.repair_time = res.data.maintenanceStartTime;
+    });
+  }
   formDataEnd.value.finish_time = '';
   formDataEnd.value.repair_result = '';
   showEnd.value = true;
@@ -842,7 +926,8 @@ const popupEnd = e => {
 
 /**维修完成提交 */
 const submitEnd = () => {
-  repairComplete(formDataEnd.value).then(res => {
+  const param = { orderId: formDataEnd.value.order_id, feedbackResult: formDataEnd.value.repair_result };
+  repairComplete(param).then(res => {
     showEnd.value = false;
     Taro.showToast({ title: res.msg });
     asyncInitScrollList();
@@ -1041,6 +1126,7 @@ const asyncInitScrollList = () => {
           height: 36px;
           padding: 0;
           border-bottom: 4rpx solid #f0f2f1;
+
           .nut-tabs__titles-item {
             &.active {
               background: #3f7dff;
@@ -1048,17 +1134,22 @@ const asyncInitScrollList = () => {
             }
           }
         }
+
         .nut-tabs__content {
           .nut-tabpane {
             padding: 0;
+
             .repair-item {
               box-sizing: border-box;
+
               .content {
                 width: 75%;
+
                 .name {
                   width: 280rpx !important;
                 }
               }
+
               .position {
                 width: 25%;
               }
@@ -1068,6 +1159,7 @@ const asyncInitScrollList = () => {
       }
     }
   }
+
   .footer-wrapper {
     .footer-poster {
       height: 160px;

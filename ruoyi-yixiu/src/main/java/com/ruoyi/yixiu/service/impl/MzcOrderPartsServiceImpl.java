@@ -6,7 +6,6 @@ import com.ruoyi.common.utils.DateUtils;
 import static com.ruoyi.common.utils.SecurityUtils.getUsername;
 
 import com.ruoyi.common.utils.StringUtils;
-import com.ruoyi.yixiu.domain.MzcParts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.ruoyi.yixiu.mapper.MzcOrderPartsMapper;
@@ -105,11 +104,10 @@ public class MzcOrderPartsServiceImpl implements IMzcOrderPartsService
     }
 
     /**
-     * 删除订单配件信息
+     * 批量新增配件
      *
      * @param mzcPartsList 订单配件
      * @param feedbackId   反馈单id
-     * @return 结果
      */
     @Override
     @Transactional
@@ -125,7 +123,30 @@ public class MzcOrderPartsServiceImpl implements IMzcOrderPartsService
             }
 
             if (list.size() > 0){
-                mzcOrderPartsMapper.batchMzcParts(list);
+                mzcOrderPartsMapper.batchInsertMzcParts(list);
+            }
+        }
+    }
+
+    /**
+     * 批量修改配件
+     *
+     * @param mzcPartsList 订单配件
+     */
+    @Override
+    @Transactional
+    public void batchUpdateMzcParts(List<MzcOrderParts> mzcPartsList) {
+        if (StringUtils.isNotEmpty(mzcPartsList)){
+            List<MzcOrderParts> list = new ArrayList<>();
+
+            for (MzcOrderParts mzcPartsItem:mzcPartsList) {
+                mzcPartsItem.setUpdateBy(getUsername());
+                mzcPartsItem.setUpdateTime(DateUtils.getNowDate());
+                list.add(mzcPartsItem);
+            }
+
+            if (list.size() > 0){
+                mzcOrderPartsMapper.batchUpdateMzcParts(list);
             }
         }
     }

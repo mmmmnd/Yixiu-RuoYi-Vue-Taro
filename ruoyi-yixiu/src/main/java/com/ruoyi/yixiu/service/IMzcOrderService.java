@@ -2,7 +2,11 @@ package com.ruoyi.yixiu.service;
 
 import java.util.List;
 import com.ruoyi.yixiu.domain.MzcOrder;
+import com.ruoyi.yixiu.domain.dto.order.MzcOrderAuditDTO;
+import com.ruoyi.yixiu.domain.dto.order.MzcOrderEndRepairDTO;
+import com.ruoyi.yixiu.domain.dto.order.MzcOrderFeedbackDTO;
 import com.ruoyi.yixiu.domain.dto.order.MzcOrderReportDTO;
+import com.ruoyi.yixiu.domain.vo.MzcOrderFeedbackInfoVO;
 import com.ruoyi.yixiu.domain.vo.MzcOrderOfferVO;
 
 /**
@@ -93,10 +97,43 @@ public interface IMzcOrderService
     public void reportOrder(MzcOrderReportDTO mzcOrderReportDTO);
 
     /**
-     * 检测报告
+     * 配件列表
      *
      * @param feedbackId 反馈单id
      * @return 结果
      */
-    public List<MzcOrderOfferVO> reportOffer(Long feedbackId);
+    public List<MzcOrderOfferVO> partsOrder(Long feedbackId);
+
+    /**
+     * 配件报价
+     * @param mzcOrderFeedbackDTO 配件报价
+     */
+    public void feedbackOrder(MzcOrderFeedbackDTO mzcOrderFeedbackDTO);
+
+    /**
+     * 订单审核
+     * @param mzcOrderAuditDTO 配件报价
+     */
+    public void auditOrder(MzcOrderAuditDTO mzcOrderAuditDTO);
+
+    /**
+     * 获取反馈单详情
+     * @param feedbackId 反馈单id
+     * @return 结果
+     */
+    public MzcOrderFeedbackInfoVO feedbackInfoOrder(Long feedbackId);
+
+    /**
+     * 开始订单维修
+     * @param orderId 订单id
+     * @return 结果
+     */
+    public void startRepairOrder(Long orderId);
+
+    /**
+     * 结束订单维修
+     * @param mzcOrderEndRepairDTO 反馈单
+     * @return 结果
+     */
+    public void endRepairOrder(MzcOrderEndRepairDTO mzcOrderEndRepairDTO);
 }

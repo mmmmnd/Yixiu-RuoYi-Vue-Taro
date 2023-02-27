@@ -64,10 +64,18 @@ public interface MzcOrderPartsMapper
     public int deleteMzcOrderPartsByPartsIds(@Param("partsIds") Long[] partsIds, @Param("deleteByName") String deleteByName);
 
     /**
-     * 批量新增配件申请
+     * 批量新增配件
      *
-     * @param mzcPartsList 配件申请列表
+     * @param mzcPartsList 配件列表
      * @return 结果
      */
-    public int batchMzcParts(List<MzcOrderParts> mzcPartsList);
+    public int batchInsertMzcParts(List<MzcOrderParts> mzcPartsList);
+
+    /**
+     * 批量修改配件
+     *
+     * @param mzcPartsList 配件列表
+     * @return 结果
+     */
+    public int batchUpdateMzcParts(List<MzcOrderParts> mzcPartsList);
 }

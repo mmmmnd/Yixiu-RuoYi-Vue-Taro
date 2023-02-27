@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 
 public class MzcOrderOfferVO {
 
+    private Long partsId;
+
     private String partsModel;
 
     private String partsName;
@@ -19,6 +21,14 @@ public class MzcOrderOfferVO {
     private BigDecimal unitPrice;
 
     private BigDecimal preferentialPrice;
+
+    public Long getPartsId() {
+        return partsId;
+    }
+
+    public void setPartsId(Long partsId) {
+        this.partsId = partsId;
+    }
 
     public String getPartsModel() {
         return partsModel;

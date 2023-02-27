@@ -5,7 +5,7 @@
  * @version: 1.0.0
  * @Date: 2022-09-09 16:33:27
  * @LastEditors: 莫卓才
- * @LastEditTime: 2023-02-26 14:48:05
+ * @LastEditTime: 2023-02-27 23:09:30
  */
 import { Product, Work, Engineer, Table, Hospital, Order, Accessories } from '@/interfaces/';
 import Https from '@/utils/http/https';
@@ -66,13 +66,13 @@ export function report(params): Promise<Service.BackendResultConfig> {
 }
 
 /**开始维修 */
-export function startRepair(params): Promise<Service.BackendResultConfig> {
-  return https.post('/foreign/repair/startRepair', params);
+export function startRepair(orderId): Promise<Service.BackendResultConfig<User.IMyInfo>> {
+  return https.get('/yixiu/order/startRepair/' + orderId);
 }
 
 /**维修完成 */
 export function repairComplete(params): Promise<Service.BackendResultConfig> {
-  return https.post('/foreign/repair/repairComplete', params);
+  return https.post('/yixiu/order/endRepair', params);
 }
 
 /**报价单提交 */

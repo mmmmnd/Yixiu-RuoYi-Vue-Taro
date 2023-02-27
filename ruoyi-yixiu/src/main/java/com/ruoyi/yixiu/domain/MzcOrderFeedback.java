@@ -40,6 +40,9 @@ public class MzcOrderFeedback extends BaseEntity
     @Excel(name = "设备检测")
     private String equipmentInspection;
 
+    /*处理结果*/
+    private String feedbackResult;
+
     /** 总价 */
     @Excel(name = "总价")
     private BigDecimal totalPrice;
@@ -105,7 +108,16 @@ public class MzcOrderFeedback extends BaseEntity
     {
         return equipmentInspection;
     }
-    public void setTotalPrice(BigDecimal totalPrice) 
+
+    public String getFeedbackResult() {
+        return feedbackResult;
+    }
+
+    public void setFeedbackResult(String feedbackResult) {
+        this.feedbackResult = feedbackResult;
+    }
+
+    public void setTotalPrice(BigDecimal totalPrice)
     {
         this.totalPrice = totalPrice;
     }

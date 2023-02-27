@@ -60,3 +60,37 @@ export function sendOrder (data) {
     data: data
   })
 }
+
+// 配件
+export function getPartsOrder (feedbackId) {
+  return request({
+    url: '/yixiu/order/parts/' + feedbackId,
+    method: 'get'
+  })
+}
+
+// 报价
+export function feedbackOrder (data) {
+  return request({
+    url: '/yixiu/order/feedback',
+    method: 'post',
+    data: data
+  })
+}
+
+// 审核
+export function auditOrder (data) {
+  return request({
+    url: '/yixiu/order/audit',
+    method: 'post',
+    data: data
+  })
+}
+
+// 获取反馈单详情
+export function getFeedbackInfo (feedbackId) {
+  return request({
+    url: '/yixiu/order/feedbackInfo/' + feedbackId,
+    method: 'get'
+  })
+}
