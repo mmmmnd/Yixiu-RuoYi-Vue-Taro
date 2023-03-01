@@ -5,7 +5,7 @@
  * @version: 1.0.0
  * @Date: 2022-09-06 09:47:23
  * @LastEditors: 莫卓才
- * @LastEditTime: 2023-03-01 10:49:41
+ * @LastEditTime: 2023-03-01 22:32:39
 -->
 <template >
   <view class="home">
@@ -41,9 +41,9 @@
                   <view class="text">{{scroll.nickname || '暂无数据'}}</view>
                 </view>
                 <view class="d-flex py-1 px-2"
-                      v-if="scroll.serial_number">
+                      v-if="!!scroll.equipmentId">
                   <view class="name text-right text-subtitle">所属订单：</view>
-                  <view class="text">{{scroll.serial_number || '暂无数据'}}</view>
+                  <view class="text">{{scroll.equipmentName || '暂无数据'}}</view>
                 </view>
                 <view class="d-flex py-1 px-2">
                   <view class="name text-right text-subtitle">投诉原因：</view>
@@ -64,7 +64,7 @@
                 <view class="d-flex py-1 px-2"
                       v-if="scroll.status == 1">
                   <view class="name text-right text-subtitle">系统回复：</view>
-                  <view class="text text-red">{{scroll.reply || '暂无数据'}}</view>
+                  <view class="text text-red">{{scroll.remark || '暂无数据'}}</view>
                 </view>
               </view>
               <nut-divider v-show="lastPageList == currentPageList || flagPageList">我是有底线的~</nut-divider>

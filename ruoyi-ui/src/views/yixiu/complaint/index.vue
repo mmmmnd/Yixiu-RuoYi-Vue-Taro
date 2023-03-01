@@ -42,32 +42,6 @@
     <el-row :gutter="10"
             class="mb8">
       <el-col :span="1.5">
-        <el-button type="primary"
-                   plain
-                   icon="el-icon-plus"
-                   size="mini"
-                   @click="handleAdd"
-                   v-hasPermi="['yixiu:complaint:add']">新增</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button type="success"
-                   plain
-                   icon="el-icon-edit"
-                   size="mini"
-                   :disabled="single"
-                   @click="handleUpdate"
-                   v-hasPermi="['yixiu:complaint:edit']">修改</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button type="danger"
-                   plain
-                   icon="el-icon-delete"
-                   size="mini"
-                   :disabled="multiple"
-                   @click="handleDelete"
-                   v-hasPermi="['yixiu:complaint:remove']">删除</el-button>
-      </el-col>
-      <el-col :span="1.5">
         <el-button type="warning"
                    plain
                    icon="el-icon-download"
@@ -125,14 +99,10 @@
         <template slot-scope="scope">
           <el-button size="mini"
                      type="text"
-                     icon="el-icon-edit"
+                     icon="el-icon-warning"
+                     v-if="scope.row.status == 0"
                      @click="handleUpdate(scope.row)"
-                     v-hasPermi="['yixiu:complaint:edit']">修改</el-button>
-          <el-button size="mini"
-                     type="text"
-                     icon="el-icon-delete"
-                     @click="handleDelete(scope.row)"
-                     v-hasPermi="['yixiu:complaint:remove']">删除</el-button>
+                     v-hasPermi="['yixiu:complaint:edit']">处理</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -152,6 +122,38 @@
                :model="form"
                :rules="rules"
                label-width="80px">
+        <el-form-item label="投诉类型 "
+                      prop="complaintType">
+          <template slot-scope="scope">
+            <dict-tag :options="dict.type.mzc_complaint_type"
+                      :value="form.complaintType" />
+          </template>
+        </el-form-item>
+        <el-form-item label="设备名"
+                      prop="equipmentName"
+                      v-if="!!form.equipmentId">
+          <el-input v-model="form.equipmentName"
+                    disabled
+                    placeholder="请输入设备名" />
+        </el-form-item>
+        <el-form-item label="投诉人"
+                      prop="nickname">
+          <el-input v-model="form.nickname"
+                    disabled
+                    placeholder="请输入投诉人" />
+        </el-form-item>
+        <el-form-item label="联系电话"
+                      prop="nickname">
+          <el-input v-model="form.phone"
+                    disabled
+                    placeholder="请输入联系电话" />
+        </el-form-item>
+        <el-form-item label="系统反馈"
+                      prop="remark">
+          <el-input v-model="form.remark"
+                    type="textarea"
+                    placeholder="请输入系统反馈" />
+        </el-form-item>
       </el-form>
       <div slot="footer"
            class="dialog-footer">
@@ -269,7 +271,7 @@ export default {
       getComplaint(complaintId).then(response => {
         this.form = response.data;
         this.open = true;
-        this.title = "修改投诉";
+        this.title = "处理投诉";
       });
     },
     /** 提交按钮 */
