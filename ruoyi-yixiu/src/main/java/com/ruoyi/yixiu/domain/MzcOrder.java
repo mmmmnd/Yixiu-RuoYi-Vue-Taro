@@ -85,8 +85,8 @@ public class MzcOrder extends BaseEntity
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date dateTime;
 
-    /** 状态（0等待处理 1系统派单 2工程师接单 3开始检测 4出具报告 5提供报价 6审核 7 开始维修 8维修完成 9 验收） */
-    @Excel(name = "状态", readConverterExp = "0=等待处理,1=系统派单,2=工程师接单,3=开始检测,4=出具报告,5=提供报价,6=审核,7=,开=始维修,8=维修完成,9=,验=收")
+    /** 状态（0等待处理 1系统派单 2工程师接单 3开始检测 4出具报告 5提供报价 6审核 7 开始维修 8维修完成 9 验收 10评价） */
+    @Excel(name = "状态", readConverterExp = "0=等待处理,1=系统派单,2=工程师接单,3=开始检测,4=出具报告,5=提供报价,6=审核,7=,开=始维修,8=维修完成,9=,验=收,10=,评=价")
     private String status;
 
     /** 评价意见 */
@@ -97,7 +97,7 @@ public class MzcOrder extends BaseEntity
     private Integer appraise;
 
     /** 评价人（用户id） */
-    private Long appraiseId;
+    private String appraiseName;
 
     /** 创建人id */
     private Long userId;
@@ -111,6 +111,8 @@ public class MzcOrder extends BaseEntity
     private MzcEquipment equipment;
 
     private SysDept dept;
+
+    private MzcOrderFeedback orderFeedback;
 
     public void setOrderId(Long orderId) 
     {
@@ -311,12 +313,12 @@ public class MzcOrder extends BaseEntity
         return userId;
     }
 
-    public Long getAppraiseId() {
-        return appraiseId;
+    public String getAppraiseName() {
+        return appraiseName;
     }
 
-    public void setAppraiseId(Long appraiseId) {
-        this.appraiseId = appraiseId;
+    public void setAppraiseName(String appraiseName) {
+        this.appraiseName = appraiseName;
     }
 
     public void setDeleteBy(String deleteBy)
@@ -352,6 +354,14 @@ public class MzcOrder extends BaseEntity
 
     public void setDept(SysDept dept) {
         this.dept = dept;
+    }
+
+    public MzcOrderFeedback getOrderFeedback() {
+        return orderFeedback;
+    }
+
+    public void setOrderFeedback(MzcOrderFeedback orderFeedback) {
+        this.orderFeedback = orderFeedback;
     }
 
     @Override

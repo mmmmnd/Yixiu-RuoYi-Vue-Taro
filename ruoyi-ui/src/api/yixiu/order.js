@@ -94,3 +94,11 @@ export function getFeedbackInfo (feedbackId) {
     method: 'get'
   })
 }
+
+// 订单验收
+export function acceptanceOrder (orderId) {
+  return request({
+    url: '/yixiu/order/acceptance/' + orderId,
+    method: 'get'
+  })
+}

@@ -87,6 +87,9 @@ public class BaseController
         rspData.setMsg("查询成功");
         rspData.setRows(list);
         rspData.setTotal(new PageInfo(list).getTotal());
+        rspData.setCurrentPage(new PageInfo(list).getPageNum());
+        rspData.setTotalPages(new PageInfo(list).getPages());
+
         return rspData;
     }
 

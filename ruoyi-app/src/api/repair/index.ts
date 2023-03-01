@@ -5,7 +5,7 @@
  * @version: 1.0.0
  * @Date: 2022-09-09 16:33:27
  * @LastEditors: 莫卓才
- * @LastEditTime: 2023-02-27 23:09:30
+ * @LastEditTime: 2023-02-28 17:09:19
  */
 import { Product, Work, Engineer, Table, Hospital, Order, Accessories } from '@/interfaces/';
 import Https from '@/utils/http/https';
@@ -47,7 +47,7 @@ export function acceptConfirm(params): Promise<Service.BackendResultConfig> {
 
 /**评价 */
 export function comment(params): Promise<Service.BackendResultConfig<Order.IAssess>> {
-  return https.post('/foreign/repair/comment', params);
+  return https.post('/yixiu/order/evaluation', params);
 }
 
 /**接单 */

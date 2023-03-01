@@ -15,10 +15,7 @@ import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.bean.BeanUtils;
 import com.ruoyi.yixiu.domain.MzcOrderFeedback;
 import com.ruoyi.yixiu.domain.MzcOrderParts;
-import com.ruoyi.yixiu.domain.dto.order.MzcOrderAuditDTO;
-import com.ruoyi.yixiu.domain.dto.order.MzcOrderEndRepairDTO;
-import com.ruoyi.yixiu.domain.dto.order.MzcOrderFeedbackDTO;
-import com.ruoyi.yixiu.domain.dto.order.MzcOrderReportDTO;
+import com.ruoyi.yixiu.domain.dto.order.*;
 import com.ruoyi.yixiu.domain.vo.MzcOrderFeedbackInfoVO;
 import com.ruoyi.yixiu.domain.vo.MzcOrderOfferVO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,27 +60,57 @@ public class MzcOrderServiceImpl implements IMzcOrderService
     /**
      * 查询订单列表
      *
-     * @param mzcOrder 订单
+     * @param mzcOrderListDTO 订单
      * @return 订单
      */
     @Override
     @DataScope(deptAlias = "o",userAlias = "o")
-    public List<MzcOrder> selectMzcOrderList(MzcOrder mzcOrder)
+    public List<MzcOrder> selectMzcOrderList(MzcOrderListDTO mzcOrderListDTO)
     {
+
+        MzcOrder mzcOrder = new MzcOrder();
+        BeanUtils.copyBeanProp(mzcOrder, mzcOrderListDTO);
+
 
         /*自主接单不显示派单 其他都显示*/
          if (mzcOrder.getOrderType() != null && mzcOrder.getOrderType() == 2){
              mzcOrder.setOrderType(null);
          }
 
-        List<MzcOrder> mzcOrders = mzcOrderMapper.selectMzcOrderList(mzcOrder);
+        /*小程序类型*/
+        Integer type = mzcOrderListDTO.getStatusType();
+        if (type != null){
+            switch (type){
+                case 0:
+                    mzcOrder.setStatus(null);
+                    break;
+                case 1:
+                    mzcOrder.setStatus("2");
+                    break;
+                case 2:
+                    mzcOrder.setStatus("1");
+                    break;
+                case 3:
+                    mzcOrder.setStatus("5");
+                    break;
+                case 4:
+                    mzcOrder.setStatus("7");
+                    break;
+                case 5:
+                    mzcOrder.setStatus("8");
+                    break;
+            }
+        }
 
-        /*系统派单*/
-        if (mzcOrder.getOrderType() != null && mzcOrder.getOrderType() == 1) {
-            mzcOrders = mzcOrders.stream().filter(order -> order.getOrderType() == 1).collect(Collectors.toList());
-        /*自主接单*/
-        } else {
-            mzcOrders = mzcOrders.stream().filter(order -> order.getOrderType() == null || order.getOrderType() == 2).collect(Collectors.toList());
+        List<MzcOrder> mzcOrders = mzcOrderMapper.selectMzcOrderList(mzcOrder);
+        if (type == null){
+            /*系统派单*/
+            if (mzcOrder.getOrderType() != null && mzcOrder.getOrderType() == 1) {
+                mzcOrders = mzcOrders.stream().filter(order -> order.getOrderType() == 1).collect(Collectors.toList());
+            /*自主接单*/
+            } else {
+                mzcOrders = mzcOrders.stream().filter(order -> order.getOrderType() == null || order.getOrderType() == 2).collect(Collectors.toList());
+            }
         }
 
         return mzcOrders;
@@ -362,7 +389,6 @@ public class MzcOrderServiceImpl implements IMzcOrderService
      * 开始订单维修
      *
      * @param orderId 订单id
-     * @return 结果
      */
     @Override
     public void startRepairOrder(Long orderId) {
@@ -390,7 +416,6 @@ public class MzcOrderServiceImpl implements IMzcOrderService
      * 结束订单维修
      *
      * @param mzcOrderEndRepairDTO 反馈单
-     * @return 结果
      */
     @Override
     public void endRepairOrder(MzcOrderEndRepairDTO mzcOrderEndRepairDTO) {
@@ -406,6 +431,51 @@ public class MzcOrderServiceImpl implements IMzcOrderService
                 mzcOrderFeedbackService.updateMzcOrderFeedback(mzcOrderFeedback);
 
                 mzcOrder.setStatus("8");
+                updateMzcOrder(mzcOrder);
+            } else {
+                throw new ServiceException("非法参数！");
+            }
+        } else {
+            throw new ServiceException("订单不存在！");
+        }
+    }
+
+    /**
+     * 订单验收
+     *
+     * @param orderId 订单ID
+     */
+    @Override
+    public void acceptanceOrder(Long orderId) {
+        MzcOrder mzcOrder = selectMzcOrderByOrderId(orderId);
+
+        if (StringUtils.isNotNull(mzcOrder)) {
+            if (mzcOrder.getStatus().equals("8")) {
+
+                mzcOrder.setStatus("9");
+                updateMzcOrder(mzcOrder);
+            } else {
+                throw new ServiceException("非法参数！");
+            }
+        } else {
+            throw new ServiceException("订单不存在！");
+        }
+    }
+
+    /**
+     * 评价
+     *
+     * @param mzcOrderEvaluationDTO 评价
+     */
+    @Override
+    public void evaluationOrder(MzcOrderEvaluationDTO mzcOrderEvaluationDTO) {
+        MzcOrder mzcOrder = selectMzcOrderByOrderId(mzcOrderEvaluationDTO.getOrderId());
+
+        if (StringUtils.isNotNull(mzcOrder)) {
+            if (mzcOrder.getStatus().equals("9")) {
+
+                BeanUtils.copyBeanProp(mzcOrder, mzcOrderEvaluationDTO);
+                mzcOrder.setStatus("10");
                 updateMzcOrder(mzcOrder);
             } else {
                 throw new ServiceException("非法参数！");

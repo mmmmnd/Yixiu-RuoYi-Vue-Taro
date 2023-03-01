@@ -116,14 +116,10 @@
         },
         {
           "name": "",
-          "pathName": "pages/invoice/index",
+          "pathName": "pages/complaint/index",
           "query": "",
           "launchMode": "default",
-          "scene": null,
-          "partialCompile": {
-            "enabled": true,
-            "pages": []
-          }
+          "scene": null
         }
       ]
     }

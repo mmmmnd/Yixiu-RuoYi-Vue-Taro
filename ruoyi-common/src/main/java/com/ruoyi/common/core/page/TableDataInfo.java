@@ -1,6 +1,5 @@
 package com.ruoyi.common.core.page;
 
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import java.io.Serializable;
@@ -18,6 +17,14 @@ public class TableDataInfo<T> implements Serializable
     /** 总记录数 */
     @ApiModelProperty(value = "总记录数")
     private long total;
+
+    /*当前页*/
+    @ApiModelProperty(value = "当前页")
+    private Integer currentPage;
+
+    /*总计页面*/
+    @ApiModelProperty(value = "总计页面")
+    private Integer totalPages;
 
     /** 列表数据 */
     @ApiModelProperty(value = "列表数据")
@@ -58,6 +65,22 @@ public class TableDataInfo<T> implements Serializable
     public void setTotal(long total)
     {
         this.total = total;
+    }
+
+    public Integer getCurrentPage() {
+        return currentPage;
+    }
+
+    public void setCurrentPage(Integer currentPage) {
+        this.currentPage = currentPage;
+    }
+
+    public Integer getTotalPages() {
+        return totalPages;
+    }
+
+    public void setTotalPages(Integer totalPages) {
+        this.totalPages = totalPages;
     }
 
     public List<T> getRows()

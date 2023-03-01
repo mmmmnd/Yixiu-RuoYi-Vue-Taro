@@ -5,7 +5,7 @@
   * @version: 1.0.0
   * @Date: 2022-09-06 09:47:23
  * @LastEditors: 莫卓才
- * @LastEditTime: 2023-02-27 23:10:37
+ * @LastEditTime: 2023-02-28 09:16:48
  -->
 <template>
   <view class="home">
@@ -632,10 +632,6 @@ const gridList = computed(() =>
 
 const NavBarName = computed(() => authStore.userInfo.NavBarName);
 
-Taro.useDidShow(() => {
-  asyncInitScrollList();
-});
-
 // 设置高度
 Taro.useReady(() => {
   Taro.nextTick(() => {
@@ -679,6 +675,7 @@ const getOrderType = computed(() => (index: string) => {
     return '';
   }
 });
+
 /** 扫码 */
 const scanCode = () => {
   Taro.scanCode({
@@ -899,7 +896,7 @@ const popupStart = e => {
 
 /**开始维修提交 */
 const submitStart = () => {
-  Taro.showLoading({ title: '加载中' });
+  Taro.showLoading({ title: '正在提交' });
 
   startRepair(formDataStart.value.order_id).then(res => {
     showStart.value = false;
@@ -1009,6 +1006,7 @@ Taro.useDidShow(() => {
 
       authStore.setMyInfo(userInfo);
       authStore.setGridList(userInfo);
+      asyncInitScrollList();
     });
   }
 });

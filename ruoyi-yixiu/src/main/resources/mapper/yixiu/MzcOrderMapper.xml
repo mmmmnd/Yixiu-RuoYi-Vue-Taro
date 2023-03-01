@@ -26,7 +26,7 @@
         <result property="status"    column="status"    />
         <result property="appraiseOpinion"    column="appraise_opinion"    />
         <result property="appraise"    column="appraise"    />
-        <result property="appraiseId"    column="appraise_id"    />
+        <result property="appraiseName"    column="appraise_name"    />
         <result property="userId"    column="user_id"    />
         <result property="deleteBy"    column="delete_by"    />
         <result property="delFlag"    column="del_flag"    />
@@ -36,6 +36,7 @@
         <result property="updateTime"    column="update_time"    />
         <association property="equipment"    column="dept_id" javaType="MzcEquipment" resultMap="equipmentResult" />
         <association property="dept"    column="dept_id" javaType="SysDept" resultMap="deptResult" />
+        <association property="orderFeedback"    column="feedback_id" javaType="MzcOrderFeedback" resultMap="orderFeedbackResult" />
     </resultMap>
 
     <resultMap id="equipmentResult" type="MzcEquipment">
@@ -71,15 +72,35 @@
         <result property="status"     column="status" />
     </resultMap>
 
+    <resultMap id="orderFeedbackResult" type="MzcOrderFeedback">
+        <result property="feedbackId"    column="feedback_id"    />
+        <result property="maintenanceStartTime"    column="maintenance_start_time"    />
+        <result property="maintenanceEndTime"    column="maintenance_end_time"    />
+        <result property="warrantyPeriod"    column="warranty_period"    />
+        <result property="equipmentInspection"    column="equipment_inspection"    />
+        <result property="feedbackResult"    column="feedback_result"    />
+        <result property="totalPrice"    column="total_price"    />
+        <result property="quotationDate"    column="quotation_date"    />
+        <result property="offeror"    column="offeror"    />
+        <result property="deleteBy"    column="delete_by"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
     <sql id="selectMzcOrderVo">
-        select order_id, o.dept_id, o.equipment_id, o.feedback_id, o.repairman, o.repair_phone, o.work_type, o.expectation_time, o.error_description, o.apply_dept_opinion, o.equipment_opinion, o.subhead_opinion, o.dean_opinion, o.engineer_id, o.order_type, o.send_orders, o.date_time, o.status, o.appraise_opinion, o.appraise, o.appraise_id, o.user_id, o.delete_by, o.del_flag, o.create_by, o.create_time, o.update_by, o.update_time,
+        select order_id, o.dept_id, o.equipment_id, o.feedback_id, o.repairman, o.repair_phone, o.work_type, o.expectation_time, o.error_description, o.apply_dept_opinion, o.equipment_opinion, o.subhead_opinion, o.dean_opinion, o.engineer_id, o.order_type, o.send_orders, o.date_time, o.status, o.appraise_opinion, o.appraise, o.appraise_name, o.user_id, o.delete_by, o.del_flag, o.create_by, o.create_time, o.update_by, o.update_time,
         e.*,
         d.*,
+        f.*,
         (select dept_name from sys_dept where dept_id = d.parent_id) parent_name,
         (select nick_name from sys_user where user_id = o.engineer_id) engineer_name
         from mzc_order o
         left JOIN mzc_equipment e on o.equipment_id = e.equipment_id
         left join sys_dept d  on o.dept_id = d.dept_id
+        left join mzc_order_feedback f on f.feedback_id = o.feedback_id
     </sql>
 
     <select id="selectMzcOrderList" parameterType="MzcOrder" resultMap="MzcOrderResult">
@@ -89,7 +110,7 @@
             <if test="equipmentId != null "> and equipment_id = #{equipmentId}</if>
             <if test="workType != null  and workType != ''"> and work_type = #{workType}</if>
             <if test="orderType != null "> and order_type = #{orderType}</if>
-            <if test="status != null  and status != ''"> and status = #{status}</if>
+            <if test="status != null  and status != ''"> and o.status = #{status}</if>
             <if test="appraise != null "> and appraise = #{appraise}</if>
             and o.del_flag = '0'
         </where>
@@ -125,7 +146,7 @@
             <if test="status != null">status,</if>
             <if test="appraiseOpinion != null">appraise_opinion,</if>
             <if test="appraise != null">appraise,</if>
-            <if test="appraiseId != null">appraise_id,</if>
+            <if test="appraiseName != null">appraise_name,</if>
             <if test="userId != null">user_id,</if>
             <if test="deleteBy != null">delete_by,</if>
             <if test="delFlag != null">del_flag,</if>
@@ -186,7 +207,7 @@
             <if test="status != null">status = #{status},</if>
             <if test="appraiseOpinion != null">appraise_opinion = #{appraiseOpinion},</if>
             <if test="appraise != null">appraise = #{appraise},</if>
-            <if test="appraiseId != null">appraise_id = #{appraiseId},</if>
+            <if test="appraiseName != null">appraise_name = #{appraiseName},</if>
             <if test="userId != null">user_id = #{userId},</if>
             <if test="deleteBy != null">delete_by = #{deleteBy},</if>
             <if test="delFlag != null">del_flag = #{delFlag},</if>

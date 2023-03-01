@@ -244,12 +244,12 @@ Taro.useDidShow(() => {
 
   Taro.showLoading({ title: '加载中' });
   myInfo({}).then(res => {
-    userInfo.myInfo = res.data;
+    userInfo.myInfo = res.user;
 
-    formData.value.nickname = res.data.nickname;
-    formData.value.department_name = res.data.department_name;
-    formData.value.phone = res.data.phone;
-    formData.value.company_address = res.data.company_address;
+    formData.value.nickname = res.user.nickName;
+    formData.value.department_name = res.user.dept.deptName;
+    formData.value.phone = res.user.phonenumber;
+    formData.value.company_address = res.user.dept.address;
     formData.value.company_name = res.data.company_name;
     formData.value.company_id = res.data.company_id;
 

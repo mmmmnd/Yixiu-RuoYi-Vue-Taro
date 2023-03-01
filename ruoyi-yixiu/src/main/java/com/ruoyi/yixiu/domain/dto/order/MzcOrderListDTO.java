@@ -28,6 +28,9 @@ public class MzcOrderListDTO {
     @ApiModelProperty(value = "评价 （1很差，2差，3一般，4好，5很好）")
     private Integer appraise;
 
+    @ApiModelProperty(value = "类型 （0 全部，1已提交，2派件中，3待审核，4维修中，5完成）")
+    private Integer statusType;
+
     public Integer getPageNum() {
         return pageNum;
     }
@@ -90,5 +93,13 @@ public class MzcOrderListDTO {
 
     public void setAppraise(Integer appraise) {
         this.appraise = appraise;
+    }
+
+    public Integer getStatusType() {
+        return statusType;
+    }
+
+    public void setStatusType(Integer statusType) {
+        this.statusType = statusType;
     }
 }

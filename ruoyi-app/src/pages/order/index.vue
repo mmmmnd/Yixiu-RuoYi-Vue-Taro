@@ -5,7 +5,7 @@
  * @version: 1.0.0
  * @Date: 2022-09-06 09:47:23
  * @LastEditors: 莫卓才
- * @LastEditTime: 2022-11-21 11:18:32
+ * @LastEditTime: 2023-02-28 17:24:47
 -->
 <template >
   <view class="home">
@@ -43,7 +43,7 @@
                     :key="scroll">
                 <view class="d-flex py-1 px-2">
                   <view class="name text-right text-subtitle">设备名称：</view>
-                  <view class="text text-theme">{{scroll.facility_name || '暂无数据'}}</view>
+                  <view class="text text-theme">{{scroll.equipment?.equipmentName  || '暂无数据'}}</view>
                 </view>
                 <view class="d-flex py-1 px-2">
                   <view class="name text-right text-subtitle">工程师：</view>
@@ -51,31 +51,31 @@
                 </view>
                 <view class="d-flex py-1 px-2">
                   <view class="name text-right text-subtitle">医院名称：</view>
-                  <view class="text">{{scroll.company_name || "暂无数据"}}</view>
+                  <view class="text">{{scroll.dept?.parentName  || "暂无数据"}}</view>
                 </view>
                 <view class="d-flex py-1 px-2">
                   <view class="name text-right text-subtitle">医院科室：</view>
-                  <view class="text">{{scroll.department_name || "暂无数据"}}</view>
+                  <view class="text">{{scroll.dept?.deptName  || "暂无数据"}}</view>
                 </view>
                 <view class="d-flex py-1 px-2">
                   <view class="name text-right text-subtitle">联系方式：</view>
-                  <view class="text">{{scroll.creater_phone || '暂无数据'}}</view>
+                  <view class="text">{{scroll.repairPhone || '暂无数据'}}</view>
                 </view>
                 <view class="d-flex py-1 px-2">
                   <view class="name text-right text-subtitle">维修类型：</view>
-                  <view class="text">{{scroll.type_name || '暂无数据'}}</view>
+                  <view class="text">{{getOrderType(scroll.workType) || '暂无数据'}}</view>
                 </view>
                 <view class="d-flex py-1 px-2">
                   <view class="name text-right text-subtitle">订单状态：</view>
-                  <view class="text text-red">{{scroll.order_status_text || '暂无数据'}}</view>
+                  <view class="text text-red">{{getOrderStatusType(scroll.status) || '暂无数据'}}</view>
                 </view>
                 <view class="d-flex py-1 px-2">
                   <view class="name text-right text-subtitle">故障描述：</view>
-                  <view class="text">{{scroll.failure_describe || '暂无数据'}}</view>
+                  <view class="text">{{scroll.errorDescription || '暂无数据'}}</view>
                 </view>
                 <view class="d-flex py-1 px-2">
                   <view class="name text-right text-subtitle">故障原因：</view>
-                  <view class="text">{{scroll.failure_cause || '暂无数据'}}</view>
+                  <view class="text">{{scroll.orderFeedback.equipmentInspection || '暂无数据'}}</view>
                 </view>
                 <!-- <view class="d-flex py-1 px-2">
                   <view class="name text-right text-subtitle">配件：</view>
@@ -85,70 +85,55 @@
                               @click="showTableFun(scroll)">查看明细</nut-button>
                 </view> -->
                 <view class="d-flex py-1 px-2"
-                      v-if="authStore.userInfo.role_group == 1 && scroll.comment_level">
+                      v-if="scroll.status == 10">
                   <view class="flex-grow-0 name text-right text-subtitle assess-label">订单评分：</view>
                   <nut-rate active-color="#0066CC"
                             readonly
-                            v-model="scroll.comment_level" />
+                            v-model="scroll.appraise" />
                 </view>
                 <view class="d-flex py-1 px-2"
-                      v-if="authStore.userInfo.role_group == 1 && scroll.comment">
+                      v-if="scroll.status == 10">
                   <view class="flex-grow-0 name text-right text-subtitle assess-label">订单反馈：</view>
-                  <view class="text">{{scroll.comment || '暂无数据'}}</view>
-                </view>
-                <view class="d-flex py-1 px-2"
-                      v-if="authStore.userInfo.role_group != 3">
-                  <view class="name text-right text-subtitle">报修时间：</view>
-                  <view class="text">{{scroll.expect_time || '暂无数据'}}</view>
-                </view>
-                <view class="d-flex py-1 px-2"
-                      v-if="authStore.userInfo.role_group != 3">
-                  <view class="name text-right text-subtitle">完成时间：</view>
-                  <view class="text">{{scroll.finish_time || '暂无数据'}}</view>
+                  <view class="text">{{scroll.appraiseOpinion || '暂无数据'}}</view>
                 </view>
                 <view class="d-flex jc-between flex-wrap"
-                      v-if="authStore.userInfo.role_group == 1">
+                      v-if="scroll.status > 8">
                   <nut-button size="small"
-                              color="#007CCC"
+                              :color="scroll.status == '8'?'#09C160':'#BBBBBB'"
                               type="info"
-                              @click="popupOrderInfo(scroll)">详情明细</nut-button>
+                              @click="scroll.status == '8'?submitAcceptance(scroll):''">维修验收</nut-button>
                   <nut-button size="small"
-                              :color="scroll.status == 'repair_complete'?'#09C160':'#BBBBBB'"
+                              :color="scroll.status == '9'?'#FFB800':'#BBBBBB'"
                               type="info"
-                              @click="scroll.status == 'repair_complete'?popupAcceptance(scroll):''">维修验收</nut-button>
+                              @click="scroll.status == '9'?popupAssess(scroll):''">评价</nut-button>
                   <nut-button size="small"
-                              :color="scroll.status_score == '1'?'#FFB800':'#BBBBBB'"
+                              color="#FF5722"
                               type="info"
-                              @click="scroll.status_score == '1'?popupAssess(scroll):''">评价</nut-button>
-                  <nut-button size="small"
-                              :color="scroll.status_complain == '1'?'#FF5722':'#BBBBBB'"
-                              type="info"
-                              @click="scroll.status_complain == '1'?popupComplaint(scroll):''">投诉</nut-button>
+                              @click="popupComplaint(scroll)">投诉</nut-button>
                 </view>
 
                 <view class="d-flex py-1 jc-between flex-wrap"
-                      v-if="authStore.userInfo.role_group == 2">
-                  <nut-button class="mb-2"
-                              size="small"
+                      v-if="authStore.userInfo.roleId == 104 || authStore.userInfo.roleId == 110 || authStore.userInfo.roleId == 1">
+                  <nut-button size="small"
                               color="#007CCC"
                               type="info"
                               @click="popupOrderInfo(scroll)">详情明细</nut-button>
                   <nut-button size="small"
-                              :color="scroll.status == 'assigned'?'#007CCC':'#BBBBBB'"
+                              :color="scroll.status == '1' || scroll.status == '2' ? '#007CCC' : '#BBBBBB'"
                               type="info"
-                              @click="scroll.status == 'assigned'?detection(scroll):''">立即检测</nut-button>
+                              @click="scroll.status == '1' || scroll.status == '2' ? detection(scroll) : ''">立即检测</nut-button>
                   <nut-button size="small"
-                              :color="scroll.status == 'checking'?'#09C160':'#BBBBBB'"
+                              :color="scroll.status == '3' ? '#09C160' : '#BBBBBB'"
                               type="info"
-                              @click="scroll.status == 'checking'?popupReport(scroll):''">检测报告</nut-button>
+                              @click="scroll.status == '3' ? popupReport(scroll) : ''">检测报告</nut-button>
                   <nut-button size="small"
-                              :color="scroll.status == 'examine_approval'?'#5FB878':'#BBBBBB'"
+                              :color="scroll.status == '6' ? '#5FB878' : '#BBBBBB'"
                               type="info"
-                              @click="scroll.status == 'examine_approval'?popupStart(scroll):''">开始维修</nut-button>
+                              @click="scroll.status == '6' ? popupStart(scroll) : ''">开始维修</nut-button>
                   <nut-button size="small"
-                              :color="scroll.status == 'repairing'?'#FF5722':'#BBBBBB'"
+                              :color="scroll.status == '7' ? '#FF5722' : '#BBBBBB'"
                               type="info"
-                              @click="scroll.status == 'repairing'?popupEnd(scroll):''">维修完成</nut-button>
+                              @click="scroll.status == '7' ? popupEnd(scroll) : ''">维修完成</nut-button>
                 </view>
 
                 <view class="d-flex py-1"
@@ -181,11 +166,6 @@
       <!-- 详情明细 -->
       <popup-orderInfo-component v-model:visible="showOrderInfo"
                                  :formData="formDataOrderInfo" />
-
-      <!-- 维修验收 -->
-      <popup-acceptance-component v-model:visible="showAcceptance"
-                                  :formData="formDataAcceptance"
-                                  :submit="submitAcceptance" />
 
       <!-- 评价 -->
       <popup-assess-component v-model:visible="showAssess"
@@ -240,7 +220,7 @@
 
 <script lang="ts" setup>
 import * as Taro from '@tarojs/taro';
-import { reactive, toRefs, h } from 'vue';
+import { reactive, toRefs, computed, h } from 'vue';
 import { useAuthStore } from '@/store';
 import {
   orderList,
@@ -252,7 +232,11 @@ import {
   offerSubmit,
   orderInfo,
   acceptConfirm,
-  repairComplete
+  repairComplete,
+  orderTypeArr,
+  orderStatus,
+  getFeedbackInfo,
+  acceptanceOrder
 } from '@/api/';
 import { Vo } from '@/interfaces/';
 import { getViewStyle } from '@/utils/util';
@@ -261,7 +245,6 @@ import TabbarComponent from '@/components/TabbarComponent.vue';
 import popupStartComponent from '@/pages/component/popupStartComponent.vue';
 import popupOrderInfoComponent from '@/pages/component/popupOrderInfoComponent.vue';
 import popupEndComponent from '@/pages/component/popupEndComponent.vue';
-import popupAcceptanceComponent from '@/pages/component/popupAcceptanceComponent.vue';
 import popupAssessComponent from '@/pages/component/popupAssessComponent.vue';
 import popupComplaintComponent from '@/pages/component/popupComplaintComponent.vue';
 import popupReportComponent from '@/pages/component/popupReportComponent.vue';
@@ -308,28 +291,94 @@ const state = reactive({
   flagPageList: false, //判断当前行数据是否加载完
   showOrderInfo: false, //详情明细
   formDataOrderInfo: {
-    facility_name: '',
-    serial_number: '',
-    model_number: '',
+    equipment: {},
+    dept: {},
+    feedbackInfo: {},
+    totalPrice: '',
+    repairman: '',
+    createTime: '',
+    spend_period: '',
+    applyDeptOpinion: '',
+    equipmentOpinion: '',
+    subheadOpinion: '',
+    deanOpinion: '',
+    company_name: '',
     department_name: '',
-    num: 0,
-    unit: 0,
-    unit_price: null,
-    discount_pirce: null,
-    totao_price: null,
-    spend_period: null,
-    warranty_period: null,
-    failure_describe: '',
-    repair_result: '',
-    create_time: null,
-    offerer_name: '',
-    creater_name: '',
-    partsTitle: [],
-    partsList: [],
-    department_opinion: '',
-    equip_opinion: '',
-    dean_opinion: '',
-    dean_branch_opinion: ''
+    accepter_name: '',
+    partsTitle: [
+      {
+        align: 'center',
+        key: 'partsModel',
+        title: '型号'
+      },
+      {
+        align: 'center',
+        key: 'partsName',
+        title: '配件名'
+      },
+      {
+        align: 'center',
+        key: 'number',
+        title: '数量'
+      },
+      {
+        align: 'center',
+        key: 'unit',
+        title: '单位'
+      },
+      {
+        align: 'center',
+        key: 'partsPrice',
+        title: '部件费'
+      },
+      {
+        align: 'center',
+        key: 'maintenancePrice',
+        title: '维修费'
+      }
+    ],
+    payTitle: [
+      {
+        align: 'center',
+        key: 'partsModel',
+        title: '型号'
+      },
+      {
+        align: 'center',
+        key: 'partsName',
+        title: '配件名'
+      },
+      {
+        align: 'center',
+        key: 'number',
+        title: '数量'
+      },
+      {
+        align: 'center',
+        key: 'unit',
+        title: '单位'
+      },
+      {
+        align: 'center',
+        key: 'partsPrice',
+        title: '部件费'
+      },
+      {
+        align: 'center',
+        key: 'maintenancePrice',
+        title: '维修费'
+      },
+      {
+        align: 'center',
+        key: 'unitPrice',
+        title: '单价'
+      },
+      {
+        align: 'center',
+        key: 'preferentialPrice',
+        title: '优惠价'
+      }
+    ]
   },
   showAcceptance: false, //维修验收
   formDataAcceptance: {
@@ -492,7 +541,9 @@ const state = reactive({
     partsData: [],
     total_price: ''
   },
-  keyWord: ''
+  keyWord: '',
+  orderType: [],
+  orderStatusArr: []
 });
 
 const {
@@ -526,8 +577,28 @@ const {
   formData,
   showOffer,
   formDataOffer,
-  keyWord
+  keyWord,
+  orderType,
+  orderStatusArr
 } = toRefs(state);
+
+const getOrderStatusType = computed(() => (index: string) => {
+  if (index != null && index != '') {
+    const e = orderStatusArr.value.find(item => item.dictValue == index);
+    return e.dictLabel;
+  } else {
+    return '';
+  }
+});
+
+const getOrderType = computed(() => (index: string) => {
+  if (index != null && index != '') {
+    const e = orderType.value.find(item => item.dictValue == index);
+    return e.dictLabel;
+  } else {
+    return '';
+  }
+});
 
 Taro.useDidShow(() => {
   asyncInitScrollList();
@@ -547,9 +618,11 @@ const submit = () => {
   scrollList.value = [];
   currentPageList.value = 1;
 
-  orderList({ status: tabActive.value, page: currentPageList.value, limit: 5, keyWord: keyWord.value }).then(res => {
-    scrollList.value.push(...res.data.data);
-  });
+  orderList({ StatusType: tabActive.value, page: currentPageList.value, limit: 5, keyWord: keyWord.value }).then(
+    res => {
+      scrollList.value.push(...res.rows);
+    }
+  );
 };
 
 /** 初始化数据 */
@@ -558,14 +631,14 @@ const asyncInitScrollList = async () => {
   Taro.showLoading({ title: '加载中' });
 
   for (var i = 0; i < currentPageList.value; i++)
-    _asyncFn.push(orderList({ status: tabActive.value, page: i + 1, limit: 5 }));
+    _asyncFn.push(orderList({ StatusType: tabActive.value, page: i + 1, limit: 5 }));
 
   scrollList.value = []; //将列表数据清空后
 
   for await (const res of _asyncFn) {
-    scrollList.value.push(...res.data.data);
-    currentPageList.value = res.data.current_page;
-    lastPageList.value = res.data.last_page;
+    scrollList.value.push(...res.rows);
+    currentPageList.value = res.currentPage;
+    lastPageList.value = res.totalPages;
   }
 };
 
@@ -576,20 +649,17 @@ const onToRouter = (url: string) => {
 
 /**详情明细popup */
 const popupOrderInfo = e => {
-  orderInfo({ order_id: e.id }).then(res => {
-    formDataOrderInfo.value = res.data;
-    showOrderInfo.value = true;
-  });
-};
+  const { partsTitle, payTitle } = formDataOrderInfo.value;
+  formDataOrderInfo.value = e;
+  formDataOrderInfo.value.partsTitle = partsTitle;
+  formDataOrderInfo.value.payTitle = payTitle;
+  showOrderInfo.value = true;
 
-/**维修验收popup */
-const popupAcceptance = e => {
-  orderInfo({ order_id: e.id }).then(res => {
-    formDataAcceptance.value = res.data;
-    formDataAcceptance.value.order_id = e.id;
-
-    showAcceptance.value = true;
-  });
+  if (e.feedbackId) {
+    getFeedbackInfo(e.feedbackId).then(res => {
+      formDataOrderInfo.value.feedbackInfo = res.data;
+    });
+  }
 };
 
 /** 维修验收提交 */
@@ -600,8 +670,7 @@ const submitAcceptance = e => {
     success: function (res) {
       if (res.confirm) {
         Taro.showLoading({ title: '正在提交' });
-        acceptConfirm({ order_id: formDataAcceptance.value.order_id }).then(res => {
-          showAcceptance.value = false;
+        acceptanceOrder(e.orderId).then(res => {
           Taro.showToast({ title: res.msg });
           setTimeout(() => asyncInitScrollList(), 2000);
         });
@@ -613,11 +682,11 @@ const submitAcceptance = e => {
 
 /**评价popup */
 const popupAssess = e => {
-  formDataAssess.value.order_id = e.id;
-  formDataAssess.value.facility_name = e.facility_name;
+  formDataAssess.value.order_id = e.orderId;
+  formDataAssess.value.facility_name = e.equipment.equipmentName;
   formDataAssess.value.grade = 5;
   formDataAssess.value.content = '非常好';
-  formDataAssess.value.engineer_name = e.engineer_name;
+  formDataAssess.value.engineer_name = e.engineerName;
   showAssess.value = true;
 };
 
@@ -630,7 +699,13 @@ const submitAssess = () => {
       if (res.confirm) {
         Taro.showLoading({ title: '正在提交' });
 
-        comment(formDataAssess.value).then(res => {
+        const param = {
+          orderId: formDataAssess.value.order_id,
+          appraiseName: formDataAssess.value.engineer_name,
+          appraise: formDataAssess.value.grade,
+          appraiseOpinion: formDataAssess.value.content
+        };
+        comment(param).then(res => {
           showAssess.value = false;
           Taro.showToast({ title: res.msg });
           setTimeout(() => asyncInitScrollList(), 2000);
@@ -688,9 +763,9 @@ const detection = e => {
       if (res.confirm) {
         Taro.showLoading({ title: '正在提交' });
 
-        handling({ id: e.id }).then(res => {
+        handling(e.orderId).then(res => {
           Taro.showToast({ title: res.msg });
-          setTimeout(() => asyncInitScrollList(), 2000);
+          asyncInitScrollList();
         });
       }
     }
@@ -699,9 +774,10 @@ const detection = e => {
 
 /**检测报告popup */
 const popupReport = e => {
-  formDataReport.value.order_id = e.id;
-  formDataReport.value.facility_name = e.facility_name;
-  formDataReport.value.failure_describe = e.failure_describe;
+  tableData.value.index = 0;
+  formDataReport.value.order_id = e.orderId;
+  formDataReport.value.facility_name = e.equipment.equipmentName;
+  formDataReport.value.failure_describe = e.errorDescription;
   formDataReport.value.failure_cause = '';
   formDataReport.value.partsList.length = 0;
   showReport.value = true;
@@ -823,32 +899,41 @@ const editTableData = e => {
 
 /**开始维修popup */
 const popupStart = e => {
-  formDataStart.value.order_id = e.id;
-  formDataStart.value.facility_name = e.facility_name;
-  formDataStart.value.failure_describe = e.failure_describe;
-  formDataStart.value.failure_cause = e.failure_cause;
+  formDataStart.value.order_id = e.orderId;
+  formDataStart.value.facility_name = e.equipment.equipmentName;
+  formDataStart.value.failure_describe = e.errorDescription;
+  if (e.feedbackId) {
+    getFeedbackInfo(e.feedbackId).then(res => {
+      formDataStart.value.failure_cause = res.data.equipmentInspection;
+    });
+  }
   formDataEnd.value.repair_time = '';
+  formDataEnd.value.repair_result = '';
   showStart.value = true;
 };
 
 /**开始维修提交 */
 const submitStart = () => {
-  Taro.showLoading({ title: '正在提交' });
+  Taro.showLoading({ title: '加载中' });
 
-  startRepair(formDataStart.value).then(res => {
+  startRepair(formDataStart.value.order_id).then(res => {
     showStart.value = false;
     Taro.showToast({ title: res.msg });
-    setTimeout(() => asyncInitScrollList(), 2000);
+    asyncInitScrollList();
   });
 };
 
 /**维修完成popup */
 const popupEnd = e => {
-  formDataEnd.value.order_id = e.id;
-  formDataEnd.value.facility_name = e.facility_name;
-  formDataEnd.value.failure_describe = e.failure_describe;
-  formDataEnd.value.failure_cause = e.failure_cause;
-  formDataEnd.value.repair_time = e.repair_time;
+  formDataEnd.value.order_id = e.orderId;
+  formDataEnd.value.facility_name = e.equipment.equipmentName;
+  formDataEnd.value.failure_describe = e.errorDescription;
+  if (e.feedbackId) {
+    getFeedbackInfo(e.feedbackId).then(res => {
+      formDataEnd.value.failure_cause = res.data.equipmentInspection;
+      formDataEnd.value.repair_time = res.data.maintenanceStartTime;
+    });
+  }
   formDataEnd.value.finish_time = '';
   formDataEnd.value.repair_result = '';
   showEnd.value = true;
@@ -856,12 +941,11 @@ const popupEnd = e => {
 
 /**维修完成提交 */
 const submitEnd = () => {
-  Taro.showLoading({ title: '正在提交' });
-
-  repairComplete(formDataEnd.value).then(res => {
+  const param = { orderId: formDataEnd.value.order_id, feedbackResult: formDataEnd.value.repair_result };
+  repairComplete(param).then(res => {
     showEnd.value = false;
     Taro.showToast({ title: res.msg });
-    setTimeout(() => asyncInitScrollList(), 2000);
+    asyncInitScrollList();
   });
 };
 
@@ -908,6 +992,11 @@ const getNewScrollList = e => {
   asyncInitScrollList();
 };
 
+Promise.all([orderTypeArr({}), orderStatus({})]).then(res => {
+  orderType.value = res[0].data;
+  orderStatusArr.value = res[1].data;
+});
+
 /**懒加载 */
 const lazyScrollLoad = () => {
   const lastPage = lastPageList.value; //最后一页
@@ -916,8 +1005,8 @@ const lazyScrollLoad = () => {
   if (currentPage < lastPage) {
     Taro.showLoading({ title: '加载中' });
     currentPageList.value++;
-    orderList({ status: tabActive.value, page: currentPageList.value, limit: 5 }).then(res => {
-      scrollList.value.push(...res.data.data);
+    orderList({ StatusType: tabActive.value, page: currentPageList.value, limit: 5 }).then(res => {
+      scrollList.value.push(...res.rows);
     });
   } else {
     flagPageList.value = true;

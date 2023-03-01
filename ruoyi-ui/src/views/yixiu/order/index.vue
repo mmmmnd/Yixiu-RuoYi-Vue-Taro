@@ -187,6 +187,12 @@
                      v-hasPermi="['yixiu:equipment:edit']">审核</el-button>
           <el-button size="mini"
                      type="text"
+                     icon="el-icon-document-checked"
+                     v-if="checkRole(['business']) && scope.row.status == 8"
+                     @click="orderAcceptance(scope.row)"
+                     v-hasPermi="['yixiu:equipment:edit']">验收</el-button>
+          <el-button size="mini"
+                     type="text"
                      icon="el-icon-delete"
                      v-if="scope.row.status == 0"
                      @click="handleDelete(scope.row)"
@@ -452,7 +458,7 @@
 <script>
 import cache from '@/plugins/cache'
 import { checkRole } from '@/utils/permission'
-import { listOrder, getOrder, delOrder, pickOrder, sendOrder, getPartsOrder, feedbackOrder, auditOrder, getFeedbackInfo } from "@/api/yixiu/order";
+import { listOrder, getOrder, delOrder, pickOrder, sendOrder, getPartsOrder, feedbackOrder, auditOrder, getFeedbackInfo, acceptanceOrder } from "@/api/yixiu/order";
 import { getBusinessUserInfo } from "@/api/system/user";
 
 export default {
@@ -702,6 +708,13 @@ export default {
       this.openAudit = true;
       this.title = "订单审核";
       this.form.orderId = e.orderId
+    },
+    /* 验收 */
+    orderAcceptance (e) {
+      acceptanceOrder(e.orderId).then(res => {
+        this.getList();
+        this.$modal.msgSuccess(res.msg);
+      })
     }
   },
 };

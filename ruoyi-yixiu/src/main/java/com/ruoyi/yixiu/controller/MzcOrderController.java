@@ -51,11 +51,8 @@ public class MzcOrderController extends BaseController
     @GetMapping("/list")
     public TableDataInfo<MzcOrder> list(MzcOrderListDTO mzcOrderListDTO)
     {
-        MzcOrder mzcOrder = new MzcOrder();
-        BeanUtils.copyBeanProp(mzcOrder, mzcOrderListDTO);
-
         startPage();
-        List<MzcOrder> list = mzcOrderService.selectMzcOrderList(mzcOrder);
+        List<MzcOrder> list = mzcOrderService.selectMzcOrderList(mzcOrderListDTO);
         return getDataTable(list);
     }
 
@@ -66,9 +63,9 @@ public class MzcOrderController extends BaseController
     @PreAuthorize("@ss.hasPermi('yixiu:order:export')")
     @Log(title = "订单", businessType = BusinessType.EXPORT)
     @PostMapping(value="/export",produces = "application/octet-stream")
-    public void export(HttpServletResponse response, MzcOrder mzcOrder)
+    public void export(HttpServletResponse response, MzcOrderListDTO mzcOrderListDTO)
     {
-        List<MzcOrder> list = mzcOrderService.selectMzcOrderList(mzcOrder);
+        List<MzcOrder> list = mzcOrderService.selectMzcOrderList(mzcOrderListDTO);
         ExcelUtil<MzcOrder> util = new ExcelUtil<MzcOrder>(MzcOrder.class);
         util.exportExcel(response, list, "订单数据");
     }
@@ -252,4 +249,31 @@ public class MzcOrderController extends BaseController
         mzcOrderService.endRepairOrder(mzcOrderEndRepairDTO);
         return R.ok();
     }
+
+    /**
+     * 结束订单维修
+     */
+    @ApiOperation("订单验收")
+    @PreAuthorize("@ss.hasPermi('yixiu:order:acceptance')")
+    @Log(title = "订单验收", businessType = BusinessType.OTHER)
+    @GetMapping("/acceptance/{orderId}")
+    public  R<Integer> acceptance(@ApiParam(value = "订单id", defaultValue = "1", required = true) @PathVariable("orderId") Long orderId)
+    {
+        mzcOrderService.acceptanceOrder(orderId);
+        return R.ok();
+    }
+
+    /**
+     * 订单评价
+     */
+    @ApiOperation("订单评价")
+    @PreAuthorize("@ss.hasPermi('yixiu:order:evaluation')")
+    @Log(title = "订单评价", businessType = BusinessType.OTHER)
+    @PostMapping("/evaluation")
+    public  R<Integer> evaluation(@RequestBody MzcOrderEvaluationDTO mzcOrderEvaluationDTO)
+    {
+        mzcOrderService.evaluationOrder(mzcOrderEvaluationDTO);
+        return R.ok();
+    }
+
 }
