@@ -5,7 +5,7 @@
  * @version: 1.0.0
  * @Date: 2022-09-06 09:47:23
  * @LastEditors: 莫卓才
- * @LastEditTime: 2022-11-15 09:03:40
+ * @LastEditTime: 2023-03-01 21:50:38
 -->
 <template >
   <view class="home">
@@ -38,11 +38,11 @@
                     :key="scroll">
                 <view class="d-flex py-1 px-2">
                   <view class="name text-right text-subtitle">费用项目：</view>
-                  <view class="text">{{scroll.title || '暂无数据'}}</view>
+                  <view class="text">{{scroll.project || '暂无数据'}}</view>
                 </view>
                 <view class="d-flex py-1 px-2">
                   <view class="name text-right text-subtitle">类型：</view>
-                  <view class="text">{{scroll.classes || '暂无数据'}}</view>
+                  <view class="text">{{scroll.category || '暂无数据'}}</view>
                 </view>
                 <view class="d-flex py-1 px-2">
                   <view class="name text-right text-subtitle">金额：</view>
@@ -50,15 +50,15 @@
                 </view>
                 <view class="d-flex py-1 px-2">
                   <view class="name text-right text-subtitle">总金额：</view>
-                  <view class="text">{{scroll.price_total || '暂无数据'}}</view>
+                  <view class="text">{{scroll.totalPrice || '暂无数据'}}</view>
                 </view>
                 <view class="d-flex py-1 px-2">
                   <view class="name text-right text-subtitle">报销人：</view>
-                  <view class="text">{{scroll.leader || '暂无数据'}}</view>
+                  <view class="text">{{scroll.person || '暂无数据'}}</view>
                 </view>
                 <view class="d-flex py-1 px-2">
                   <view class="name text-right text-subtitle">报销状态：</view>
-                  <view class="text">{{signStatus(scroll.check_status) || '暂无数据'}}</view>
+                  <view class="text">{{signStatus(scroll.status) || '暂无数据'}}</view>
                 </view>
                 <view class="d-flex py-1 px-2">
                   <view class="name text-right text-subtitle">报销意见：</view>
@@ -66,15 +66,15 @@
                 </view>
                 <view class="d-flex flex-wrap">
                   <nut-button size="small"
-                              :color="scroll.check_status == '2'?'#BBBBBB':'#007CCC'"
+                              :color="scroll.status == '2'?'#BBBBBB':'#007CCC'"
                               type="info"
                               class="mr-2"
-                              @click="scroll.check_status == '2'?'':update(scroll)">编辑</nut-button>
+                              @click="scroll.status == '2'?'':update(scroll)">编辑</nut-button>
 
                   <nut-button size="small"
-                              :color="scroll.check_status == '3'?'#FF5722':'#BBBBBB'"
+                              :color="scroll.status == '0'?'#FF5722':'#BBBBBB'"
                               type="info"
-                              @click="scroll.check_status == '3'?del(scroll):''">删除</nut-button>
+                              @click="scroll.status == '0'?del(scroll):''">删除</nut-button>
                 </view>
               </view>
               <nut-divider v-show="lastPageList == currentPageList || flagPageList">我是有底线的~</nut-divider>
@@ -121,7 +121,7 @@
 import * as Taro from '@tarojs/taro';
 import { reactive, toRefs, computed } from 'vue';
 import { useAuthStore } from '@/store';
-import { reimbursePageList, reimburseAdd, reimburseDel } from '@/api/';
+import { reimbursePageList, reimburseAdd, reimburseDel, reimburseEdit } from '@/api/';
 import { Vo } from '@/interfaces/';
 import { getViewStyle } from '@/utils/util';
 import NavBarComponent from '@/components/NavBarComponent.vue';
@@ -191,7 +191,7 @@ Taro.useDidShow(() => {
   asyncInitScrollList();
 });
 
-const signStatus = computed(() => (i: number) => i == 1 ? '未通过' : i == 2 ? '已通过' : i == 3 ? '驳回' : '');
+const signStatus = computed(() => (i: number) => i == 0 ? '待审核' : i == 1 ? '已通过' : i == 2 ? '驳回' : '');
 
 // 设置高度
 Taro.useReady(() => {
@@ -209,14 +209,14 @@ const asyncInitScrollList = async () => {
   Taro.showLoading({ title: '加载中' });
 
   for (var i = 0; i < currentPageList.value; i++)
-    _asyncFn.push(reimbursePageList({ status: tabActive.value, page: i + 1, limit: 5 }));
+    _asyncFn.push(reimbursePageList({ statusType: tabActive.value, pageNum: i + 1, pageSize: 5 }));
 
   scrollList.value = []; //将列表数据清空后
 
   for await (const res of _asyncFn) {
-    scrollList.value.push(...res.data.data);
-    currentPageList.value = res.data.current_page;
-    lastPageList.value = res.data.last_page;
+    scrollList.value.push(...res.rows);
+    currentPageList.value = res.currentPage;
+    lastPageList.value = res.totalPages;
   }
 };
 
@@ -230,7 +230,7 @@ const popupComplaint = () => {
   formDataComplaint.value.classes = '';
   formDataComplaint.value.price = '';
   formDataComplaint.value.price_total = '';
-  formDataComplaint.value.leader = userInfo.nickname;
+  formDataComplaint.value.leader = userInfo.nickName;
   showComplaint.value = true;
 };
 
@@ -242,11 +242,29 @@ const submitComplaint = () => {
     success: function (res) {
       if (res.confirm) {
         Taro.showLoading({ title: '正在提交' });
-        reimburseAdd({ data: formDataComplaint.value }).then(res => {
-          showComplaint.value = false;
-          Taro.showToast({ title: res.msg });
-          setTimeout(() => asyncInitScrollList(), 2000);
-        });
+
+        const param = {
+          reimbursementId: formDataComplaint.value.id,
+          project: formDataComplaint.value.title,
+          category: formDataComplaint.value.classes,
+          price: formDataComplaint.value.price,
+          totalPrice: formDataComplaint.value.price_total,
+          person: formDataComplaint.value.leader
+        };
+
+        if (formDataComplaint.value.id) {
+          reimburseEdit(param).then(res => {
+            showComplaint.value = false;
+            Taro.showToast({ title: res.msg });
+            setTimeout(() => asyncInitScrollList(), 2000);
+          });
+        } else {
+          reimburseAdd(param).then(res => {
+            showComplaint.value = false;
+            Taro.showToast({ title: res.msg });
+            setTimeout(() => asyncInitScrollList(), 2000);
+          });
+        }
         console.log('用户点击确定');
       }
     }
@@ -256,12 +274,12 @@ const submitComplaint = () => {
 /**修改 */
 const update = e => {
   formDataComplaint.value.falg = false;
-  formDataComplaint.value.id = e.id;
-  formDataComplaint.value.title = e.title;
-  formDataComplaint.value.classes = e.classes;
+  formDataComplaint.value.id = e.reimbursementId;
+  formDataComplaint.value.title = e.project;
+  formDataComplaint.value.classes = e.category;
   formDataComplaint.value.price = e.price;
-  formDataComplaint.value.price_total = e.price_total;
-  formDataComplaint.value.leader = e.leader;
+  formDataComplaint.value.price_total = e.totalPrice;
+  formDataComplaint.value.leader = e.person;
   showComplaint.value = true;
 };
 
@@ -272,7 +290,7 @@ const del = e => {
     content: '是否删除报销信息？',
     success: function (res) {
       res.confirm &&
-        reimburseDel({ id: e.id }).then(res => {
+        reimburseDel(e.reimbursementId).then(res => {
           Taro.showToast({ title: res.msg });
           setTimeout(() => asyncInitScrollList(), 2000);
         });
@@ -298,8 +316,8 @@ const lazyScrollLoad = () => {
   if (currentPage < lastPage) {
     Taro.showLoading({ title: '加载中' });
     currentPageList.value++;
-    reimbursePageList({ status: tabActive.value, page: currentPageList.value, limit: 5 }).then(res => {
-      scrollList.value.push(...res.data.data);
+    reimbursePageList({ statusTypestatus: tabActive.value, pageNum: currentPageList.value, pageSize: 5 }).then(res => {
+      scrollList.value.push(...res.rows);
     });
   } else {
     flagPageList.value = true;

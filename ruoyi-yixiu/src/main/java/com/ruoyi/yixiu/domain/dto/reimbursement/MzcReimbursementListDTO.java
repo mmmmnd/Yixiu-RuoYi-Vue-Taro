@@ -16,6 +16,9 @@ public class MzcReimbursementListDTO {
     @ApiModelProperty(value = "审核状态")
     private String status;
 
+    @ApiModelProperty(value = "类型 （0全部，1申请中，2已通过，3驳回）")
+    private Integer statusType;
+
     public Integer getPageNum() {
         return pageNum;
     }
@@ -46,5 +49,13 @@ public class MzcReimbursementListDTO {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public Integer getStatusType() {
+        return statusType;
+    }
+
+    public void setStatusType(Integer statusType) {
+        this.statusType = statusType;
     }
 }

@@ -107,6 +107,9 @@
                     :value="scope.row.status" />
         </template>
       </el-table-column>
+      <el-table-column label="审核内容"
+                       align="center"
+                       prop="remark" />
       <el-table-column label="操作"
                        align="center"
                        class-name="small-padding fixed-width">
@@ -227,6 +230,12 @@
                     disabled
                     placeholder="请输入负责人" />
         </el-form-item>
+        <el-form-item label="审核内容"
+                      prop="remark">
+          <el-input v-model="form.remark"
+                    type="textarea"
+                    placeholder="请输入审核内容" />
+        </el-form-item>
         <el-form-item label="审核状态">
           <el-radio-group v-model="form.status">
             <el-radio v-for="dict in dict.type.mzc_audit_status"
@@ -300,6 +309,9 @@ export default {
         person: [
           { required: true, message: "负责人不能为空", trigger: "blur" }
         ],
+        remark: [
+          { required: true, message: "审核内容不能为空", trigger: "blur" }
+        ],
       }
     };
   },
@@ -331,6 +343,7 @@ export default {
         totalPrice: null,
         person: null,
         status: "0",
+        remark: null,
         delFlag: null,
         deleteBy: null,
         createTime: null,

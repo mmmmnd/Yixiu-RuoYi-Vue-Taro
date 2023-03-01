@@ -5,17 +5,20 @@ import io.swagger.annotations.ApiModelProperty;
 public class MzcReimbursementAuditDTO {
 
     @ApiModelProperty(value = "报销id")
-    private Long reimbursement_id;
+    private Long reimbursementId;
 
     @ApiModelProperty(value = "状态 (0 未审核 1已审核 2未通过)")
     private String status;
 
-    public Long getReimbursement_id() {
-        return reimbursement_id;
+    @ApiModelProperty(value = "状态 (0 未审核 1已审核 2未通过)")
+    private String remark;
+
+    public Long getReimbursementId() {
+        return reimbursementId;
     }
 
-    public void setReimbursement_id(Long reimbursement_id) {
-        this.reimbursement_id = reimbursement_id;
+    public void setReimbursementId(Long reimbursementId) {
+        this.reimbursementId = reimbursementId;
     }
 
     public String getStatus() {
@@ -24,5 +27,13 @@ public class MzcReimbursementAuditDTO {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
     }
 }

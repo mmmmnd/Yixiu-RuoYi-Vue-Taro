@@ -3,6 +3,10 @@ package com.ruoyi.yixiu.service.impl;
 import java.util.List;
 import com.ruoyi.common.utils.DateUtils;
 import static com.ruoyi.common.utils.SecurityUtils.getUsername;
+
+import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.common.utils.bean.BeanUtils;
+import com.ruoyi.yixiu.domain.dto.reimbursement.MzcReimbursementListDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.ruoyi.yixiu.mapper.MzcReimbursementMapper;
@@ -36,12 +40,33 @@ public class MzcReimbursementServiceImpl implements IMzcReimbursementService
     /**
      * 查询报销列表
      *
-     * @param mzcReimbursement 报销
+     * @param mzcReimbursementListDTO 报销
      * @return 报销
      */
     @Override
-    public List<MzcReimbursement> selectMzcReimbursementList(MzcReimbursement mzcReimbursement)
+    public List<MzcReimbursement> selectMzcReimbursementList(MzcReimbursementListDTO mzcReimbursementListDTO)
     {
+        MzcReimbursement mzcReimbursement = new MzcReimbursement();
+        BeanUtils.copyBeanProp(mzcReimbursement, mzcReimbursementListDTO);
+
+        Integer type = mzcReimbursementListDTO.getStatusType();
+        if (StringUtils.isNotNull(type)) {
+            switch (type) {
+                case 0:
+                    mzcReimbursement.setStatus(null);
+                    break;
+                case 1:
+                    mzcReimbursement.setStatus("0");
+                    break;
+                case 2:
+                    mzcReimbursement.setStatus("1");
+                    break;
+                case 3:
+                    mzcReimbursement.setStatus("2");
+                    break;
+            }
+        }
+
         return mzcReimbursementMapper.selectMzcReimbursementList(mzcReimbursement);
     }
 

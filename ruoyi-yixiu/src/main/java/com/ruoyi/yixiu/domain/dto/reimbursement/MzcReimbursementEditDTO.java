@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 public class MzcReimbursementEditDTO {
 
     @ApiModelProperty(value = "报销id")
-    private Long reimbursement_id;
+    private Long reimbursementId;
 
     @ApiModelProperty(value = "项目")
     private String project;
@@ -22,14 +22,14 @@ public class MzcReimbursementEditDTO {
     private BigDecimal totalPrice;
 
     @ApiModelProperty(value = "负责人")
-    private BigDecimal person;
+    private String person;
 
-    public Long getReimbursement_id() {
-        return reimbursement_id;
+    public Long getReimbursementId() {
+        return reimbursementId;
     }
 
-    public void setReimbursement_id(Long reimbursement_id) {
-        this.reimbursement_id = reimbursement_id;
+    public void setReimbursementId(Long reimbursementId) {
+        this.reimbursementId = reimbursementId;
     }
 
     public String getProject() {
@@ -64,11 +64,11 @@ public class MzcReimbursementEditDTO {
         this.totalPrice = totalPrice;
     }
 
-    public BigDecimal getPerson() {
+    public String getPerson() {
         return person;
     }
 
-    public void setPerson(BigDecimal person) {
+    public void setPerson(String person) {
         this.person = person;
     }
 }

@@ -2,6 +2,7 @@ package com.ruoyi.yixiu.service;
 
 import java.util.List;
 import com.ruoyi.yixiu.domain.MzcReimbursement;
+import com.ruoyi.yixiu.domain.dto.reimbursement.MzcReimbursementListDTO;
 
 /**
  * 报销Service接口
@@ -22,10 +23,10 @@ public interface IMzcReimbursementService
     /**
      * 查询报销列表
      * 
-     * @param mzcReimbursement 报销
+     * @param mzcReimbursementListDTO 报销
      * @return 报销集合
      */
-    public List<MzcReimbursement> selectMzcReimbursementList(MzcReimbursement mzcReimbursement);
+    public List<MzcReimbursement> selectMzcReimbursementList(MzcReimbursementListDTO mzcReimbursementListDTO);
 
     /**
      * 新增报销

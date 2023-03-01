@@ -19,7 +19,7 @@ public class MzcReimbursementAddDTO {
     private BigDecimal totalPrice;
 
     @ApiModelProperty(value = "负责人")
-    private BigDecimal person;
+    private String person;
 
     public String getProject() {
         return project;
@@ -53,11 +53,11 @@ public class MzcReimbursementAddDTO {
         this.totalPrice = totalPrice;
     }
 
-    public BigDecimal getPerson() {
+    public String getPerson() {
         return person;
     }
 
-    public void setPerson(BigDecimal person) {
+    public void setPerson(String person) {
         this.person = person;
     }
 }

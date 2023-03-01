@@ -29,7 +29,7 @@ import java.util.List;
  */
 @Api(tags = "报销")
 @RestController
-@RequestMapping("/yixiu/reimbursement")
+    @RequestMapping("/yixiu/reimbursement")
 public class MzcReimbursementController extends BaseController {
     @Autowired
     private IMzcReimbursementService mzcReimbursementService;
@@ -41,11 +41,8 @@ public class MzcReimbursementController extends BaseController {
     @PreAuthorize("@ss.hasPermi('yixiu:reimbursement:list')")
     @GetMapping("/list")
     public TableDataInfo<MzcReimbursement> list(MzcReimbursementListDTO mzcReimbursementListDTO) {
-        MzcReimbursement mzcReimbursement = new MzcReimbursement();
-        BeanUtils.copyBeanProp(mzcReimbursement, mzcReimbursementListDTO);
-
         startPage();
-        List<MzcReimbursement> list = mzcReimbursementService.selectMzcReimbursementList(mzcReimbursement);
+        List<MzcReimbursement> list = mzcReimbursementService.selectMzcReimbursementList(mzcReimbursementListDTO);
         return getDataTable(list);
     }
 
@@ -56,11 +53,8 @@ public class MzcReimbursementController extends BaseController {
     @PreAuthorize("@ss.hasPermi('yixiu:reimbursement:export')")
     @Log(title = "报销", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
-    public void export(HttpServletResponse response, MzcReimbursementExportDTO mzcReimbursementExportDTO) {
-        MzcReimbursement mzcReimbursement = new MzcReimbursement();
-        BeanUtils.copyBeanProp(mzcReimbursement, mzcReimbursementExportDTO);
-
-        List<MzcReimbursement> list = mzcReimbursementService.selectMzcReimbursementList(mzcReimbursement);
+    public void export(HttpServletResponse response, MzcReimbursementListDTO mzcReimbursementListDTO) {
+        List<MzcReimbursement> list = mzcReimbursementService.selectMzcReimbursementList(mzcReimbursementListDTO);
         ExcelUtil<MzcReimbursement> util = new ExcelUtil<MzcReimbursement>(MzcReimbursement.class);
         util.exportExcel(response, list, "报销数据");
     }

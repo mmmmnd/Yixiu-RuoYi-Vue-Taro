@@ -46,13 +46,6 @@
         },
         {
           "name": "",
-          "pathName": "pages/acceptance/index",
-          "query": "",
-          "launchMode": "default",
-          "scene": null
-        },
-        {
-          "name": "",
           "pathName": "pages/complaint/index",
           "query": "",
           "launchMode": "default",
@@ -117,6 +110,13 @@
         {
           "name": "",
           "pathName": "pages/complaint/index",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
+          "name": "",
+          "pathName": "pages/account/index",
           "query": "",
           "launchMode": "default",
           "scene": null
