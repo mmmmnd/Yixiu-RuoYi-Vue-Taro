@@ -330,7 +330,7 @@ public class SysUserServiceImpl implements ISysUserService
      */
     @Override
     @Transactional
-    public void insertUserAuth(Long userId, Long roleIds)
+    public void insertUserAuth(Long userId, Long[] roleIds)
     {
         userRoleMapper.deleteUserRoleByUserId(userId);
         insertUserRole(userId, roleIds);
@@ -405,7 +405,7 @@ public class SysUserServiceImpl implements ISysUserService
      */
     public void insertUserRole(SysUser user)
     {
-        this.insertUserRole(user.getUserId(), user.getRoleId());
+        this.insertUserRole(user.getUserId(), user.getRoleIds());
     }
 
     /**
@@ -435,31 +435,21 @@ public class SysUserServiceImpl implements ISysUserService
      * 新增用户角色信息
      * 
      * @param userId 用户ID
-     * @param roleId 角色ID
+     * @param roleIds 角色IDS
      */
-    public void insertUserRole(Long userId, Long roleId)
+    public void insertUserRole(Long userId, Long[] roleIds)
     {
-//        if (StringUtils.isNotEmpty(roleIds))
-//        {
-//            // 新增用户与角色管理
-//            List<SysUserRole> list = new ArrayList<SysUserRole>(roleIds.length);
-//            for (Long roleId : roleIds)
-//            {
-//                SysUserRole ur = new SysUserRole();
-//                ur.setUserId(userId);
-//                ur.setRoleId(roleId);
-//                list.add(ur);
-//            }
-//            userRoleMapper.batchUserRole(list);
-//        }
-
-        if (roleId != null){
-            List<SysUserRole> list = new ArrayList<SysUserRole>(1);
-            SysUserRole ur = new SysUserRole();
-            ur.setUserId(userId);
-            ur.setRoleId(roleId);
-
-            list.add(ur);
+        if (StringUtils.isNotEmpty(roleIds))
+        {
+            // 新增用户与角色管理
+            List<SysUserRole> list = new ArrayList<SysUserRole>(roleIds.length);
+            for (Long roleId : roleIds)
+            {
+                SysUserRole ur = new SysUserRole();
+                ur.setUserId(userId);
+                ur.setRoleId(roleId);
+                list.add(ur);
+            }
             userRoleMapper.batchUserRole(list);
         }
     }
