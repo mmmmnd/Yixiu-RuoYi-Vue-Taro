@@ -10,7 +10,7 @@
             <nut-icon name="photograph" />
             <image class="avatar"
                    mode="aspectFill"
-                   :src="userInfo.myInfo.avatar?userInfo.myInfo.avatar:userInfo.avatarUrl" />
+                   :src="BASE_URL+userInfo.myInfo.avatar" />
           </button>
           <view class="header d-flex flex-column ai-start">
             <text class="name fs-lg text-white">{{formData.nickname}}</text>
@@ -29,13 +29,12 @@
             <text class="phone text-lightGrey">登录体验更多功能</text>
           </view>
         </view>
-
       </template>
     </view>
     <view class="info-wrapper px-2 fs-sm">
       <view class="info-title d-flex ai-center jc-between px-4">
-        <text class="text-darkYellow">{{!!formData.company_id?"签约客户":'游客'}}</text>
-        <text class="text-subtitle">{{isLogin?formData.company_name:'暂无医院信息'}}</text>
+        <text class="text-darkYellow">{{!!formData.status == 0?"签约客户":'游客'}}</text>
+        <text class="text-subtitle">{{isLogin?formData.department_name:'暂无医院信息'}}</text>
       </view>
       <view class="info-list">
         <view class="info-item d-flex ai-center p-3"
@@ -94,6 +93,7 @@
 </template>
 
 <script lang="ts" setup>
+import { BASE_URL } from '@/config';
 import * as Taro from '@tarojs/taro';
 import { reactive, toRefs, computed } from 'vue';
 import { useAuthStore, useTabbarStore } from '@/store';
@@ -199,19 +199,17 @@ const onChooseAvatar = e => {
   const userInfo = authStore.userInfos;
 
   Taro.uploadFile({
-    url: 'https://xcx.ylqx.top/foreign/my/portrait',
+    url: BASE_URL + '/system/user/profile/avatar',
     filePath: e.detail.avatarUrl,
-    name: 'file',
+    name: 'avatarfile',
     header: {
-      token: getToken()
+      Authorization: 'Bearer ' + getToken()
     },
     success(r: any) {
-      r = JSON.parse(r.data);
+      userInfo.myInfo.avatar = r.imgUrl;
 
-      saveWechatInfo({ avatar: r.data.fullpath, openid: userInfo.openid }).then(res => {
-        userInfo.myInfo.avatar = r.data.fullpath;
-        authStore.setMyInfo(userInfo);
-      });
+      console.log(userInfo.myInfo.avatar);
+      authStore.setMyInfo(userInfo);
     },
     fail(e) {
       Taro.showToast({ title: '上传失败，请换一张头像' });
@@ -250,8 +248,7 @@ Taro.useDidShow(() => {
     formData.value.department_name = res.user.dept.deptName;
     formData.value.phone = res.user.phonenumber;
     formData.value.company_address = res.user.dept.address;
-    formData.value.company_name = res.data.company_name;
-    formData.value.company_id = res.data.company_id;
+    formData.value.company_name = res.user.deptName;
 
     authStore.setMyInfo(userInfo);
   });

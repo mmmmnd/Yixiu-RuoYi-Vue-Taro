@@ -7,11 +7,15 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <resultMap type="MzcComplaint" id="MzcComplaintResult">
         <result property="complaintId"    column="complaint_id"    />
         <result property="orderId"    column="order_id"    />
+        <result property="equipmentId"    column="equipment_id"    />
+        <result property="equipmentName"    column="equipment_name"    />
         <result property="complaintType"    column="complaint_type"    />
         <result property="nickname"    column="nickname"    />
         <result property="phone"    column="phone"    />
         <result property="status"    column="status"    />
+        <result property="title"    column="title"    />
         <result property="remark"    column="remark"    />
+        <result property="reply"    column="reply"    />
         <result property="deleteBy"    column="delete_by"    />
         <result property="delFlag"    column="del_flag"    />
         <result property="createTime"    column="create_time"    />
@@ -21,7 +25,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectMzcComplaintVo">
-        select complaint_id, order_id, complaint_type, nickname, phone, status, remark, delete_by, del_flag, create_time, create_by, update_time, update_by from mzc_complaint
+        select complaint_id, order_id, equipment_id, complaint_type, nickname, phone, status, title, remark, reply, delete_by, del_flag, create_time, create_by, update_time, update_by,
+        (select equipment_name from mzc_equipment where equipment_id = mzc_complaint.equipment_id) equipment_name
+        from mzc_complaint
     </sql>
 
     <select id="selectMzcComplaintList" parameterType="MzcComplaint" resultMap="MzcComplaintResult">
@@ -43,11 +49,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         insert into mzc_complaint
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="orderId != null">order_id,</if>
+            <if test="equipmentId != null">equipment_id,</if>
             <if test="complaintType != null">complaint_type,</if>
             <if test="nickname != null">nickname,</if>
             <if test="phone != null">phone,</if>
             <if test="status != null">status,</if>
+            <if test="title != null">title,</if>
             <if test="remark != null">remark,</if>
+            <if test="reply != null">reply,</if>
             <if test="deleteBy != null">delete_by,</if>
             <if test="delFlag != null">del_flag,</if>
             <if test="createTime != null">create_time,</if>
@@ -57,10 +66,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="orderId != null">#{orderId},</if>
+            <if test="equipmentId != null">#{equipmentId},</if>
             <if test="complaintType != null">#{complaintType},</if>
             <if test="nickname != null">#{nickname},</if>
             <if test="phone != null">#{phone},</if>
             <if test="status != null">#{status},</if>
+            <if test="title != null">#{title},</if>
+            <if test="reply != null">#{reply},</if>
             <if test="remark != null">#{remark},</if>
             <if test="deleteBy != null">#{deleteBy},</if>
             <if test="delFlag != null">#{delFlag},</if>
@@ -75,10 +87,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         update mzc_complaint
         <trim prefix="SET" suffixOverrides=",">
             <if test="orderId != null">order_id = #{orderId},</if>
+            <if test="equipmentId != null">equipment_id = #{equipmentId},</if>
             <if test="complaintType != null">complaint_type = #{complaintType},</if>
             <if test="nickname != null">nickname = #{nickname},</if>
             <if test="phone != null">phone = #{phone},</if>
             <if test="status != null">status = #{status},</if>
+            <if test="title != null">title = #{title},</if>
+            <if test="reply != null">reply = #{reply},</if>
             <if test="remark != null">remark = #{remark},</if>
             <if test="deleteBy != null">delete_by = #{deleteBy},</if>
             <if test="delFlag != null">del_flag = #{delFlag},</if>

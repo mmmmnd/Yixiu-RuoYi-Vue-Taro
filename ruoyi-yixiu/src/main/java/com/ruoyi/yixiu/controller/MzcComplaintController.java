@@ -54,11 +54,8 @@ public class MzcComplaintController extends BaseController
     @GetMapping("/list")
     public TableDataInfo<MzcComplaint> list(MzcComplaintListDTO mzcComplaintListDTO)
     {
-        MzcComplaint mzcComplaint = new MzcComplaint();
-        BeanUtils.copyBeanProp(mzcComplaint,mzcComplaintListDTO);
-
         startPage();
-        List<MzcComplaint> list = mzcComplaintService.selectMzcComplaintList(mzcComplaint);
+        List<MzcComplaint> list = mzcComplaintService.selectMzcComplaintList(mzcComplaintListDTO);
         return getDataTable(list);
     }
 
@@ -69,12 +66,9 @@ public class MzcComplaintController extends BaseController
     @PreAuthorize("@ss.hasPermi('yixiu:complaint:export')")
     @Log(title = "投诉", businessType = BusinessType.EXPORT)
     @PostMapping(value = "/export", produces = "application/octet-stream")
-    public void export(HttpServletResponse response, MzcComplaintExportDTO mzcComplaintExportDTO)
+    public void export(HttpServletResponse response, MzcComplaintListDTO mzcComplaintListDTO)
     {
-        MzcComplaint mzcComplaint = new MzcComplaint();
-        BeanUtils.copyBeanProp(mzcComplaint,mzcComplaintExportDTO);
-
-        List<MzcComplaint> list = mzcComplaintService.selectMzcComplaintList(mzcComplaint);
+        List<MzcComplaint> list = mzcComplaintService.selectMzcComplaintList(mzcComplaintListDTO);
         ExcelUtil<MzcComplaint> util = new ExcelUtil<MzcComplaint>(MzcComplaint.class);
         util.exportExcel(response, list, "投诉数据");
     }
@@ -123,8 +117,8 @@ public class MzcComplaintController extends BaseController
     /**
      * 删除投诉
      */
-    @ApiOperation("修改设备列表")
-    @ApiImplicitParam(name = "complaintIds", value = "报废IDS 多个传 [1,2] 单个传 1", required = true, allowMultiple = true, paramType = "path")
+    @ApiOperation("删除投诉")
+    @ApiImplicitParam(name = "complaintIds", value = "投诉IDS 多个传 [1,2] 单个传 1", required = true, allowMultiple = true, paramType = "path")
     @PreAuthorize("@ss.hasPermi('yixiu:complaint:remove')")
     @Log(title = "投诉", businessType = BusinessType.DELETE)
 	@DeleteMapping("/{complaintIds}")

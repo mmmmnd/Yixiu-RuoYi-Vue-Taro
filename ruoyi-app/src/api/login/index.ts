@@ -5,7 +5,7 @@
  * @version: 1.0.0
  * @Date: 2021-11-18 09:36:18
  * @LastEditors: 莫卓才
- * @LastEditTime: 2023-02-16 16:00:34
+ * @LastEditTime: 2023-03-01 15:53:10
  */
 import { Auth, Wx, User } from '@/interfaces/';
 import Https from '@/utils/http/https';
@@ -18,7 +18,7 @@ export function codeback(params): Promise<Service.BackendResultConfig<Wx.IUserDe
 
 /** 储存用户信息 */
 export function saveWechatInfo(params): Promise<Service.BackendResultConfig<Wx.ICode>> {
-  return https.post('/foreign/login/saveWechatInfo', params);
+  return https.post('/system/user/profile/avatar', params);
 }
 
 /** 获取用户手机号码 */

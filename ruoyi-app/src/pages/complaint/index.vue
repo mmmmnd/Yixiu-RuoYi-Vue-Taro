@@ -5,7 +5,7 @@
  * @version: 1.0.0
  * @Date: 2022-09-06 09:47:23
  * @LastEditors: 莫卓才
- * @LastEditTime: 2023-03-01 08:21:24
+ * @LastEditTime: 2023-03-01 10:49:41
 -->
 <template >
   <view class="home">
@@ -47,11 +47,11 @@
                 </view>
                 <view class="d-flex py-1 px-2">
                   <view class="name text-right text-subtitle">投诉原因：</view>
-                  <view class="text">{{scroll.content || '暂无数据'}}</view>
+                  <view class="text">{{scroll.title || '暂无数据'}}</view>
                 </view>
                 <view class="d-flex py-1 px-2">
                   <view class="name text-right text-subtitle">投诉内容：</view>
-                  <view class="text">{{scroll.other || '暂无数据'}}</view>
+                  <view class="text">{{scroll.remark || '暂无数据'}}</view>
                 </view>
                 <view class="d-flex py-1 px-2">
                   <view class="name text-right text-subtitle">联系方式：</view>
@@ -59,11 +59,12 @@
                 </view>
                 <view class="d-flex py-1 px-2">
                   <view class="name text-right text-subtitle">投诉时间：</view>
-                  <view class="text">{{scroll.create_time || '暂无数据'}}</view>
+                  <view class="text">{{scroll.createTime || '暂无数据'}}</view>
                 </view>
-                <view class="d-flex py-1 px-2">
+                <view class="d-flex py-1 px-2"
+                      v-if="scroll.status == 1">
                   <view class="name text-right text-subtitle">系统回复：</view>
-                  <view class="text text-red">{{scroll.reply_content || '暂无数据'}}</view>
+                  <view class="text text-red">{{scroll.reply || '暂无数据'}}</view>
                 </view>
               </view>
               <nut-divider v-show="lastPageList == currentPageList || flagPageList">我是有底线的~</nut-divider>
@@ -191,14 +192,14 @@ const asyncInitScrollList = async () => {
   Taro.showLoading({ title: '加载中' });
 
   for (var i = 0; i < currentPageList.value; i++)
-    _asyncFn.push(complainPageList({ status: tabActive.value, page: i + 1, limit: 5 }));
+    _asyncFn.push(complainPageList({ statusType: tabActive.value, pageNum: i + 1, pageSize: 5 }));
 
   scrollList.value = []; //将列表数据清空后
 
   for await (const res of _asyncFn) {
-    scrollList.value.push(...res.data.data);
-    currentPageList.value = res.data.current_page;
-    lastPageList.value = res.data.last_page;
+    scrollList.value.push(...res.rows);
+    currentPageList.value = res.currentPage;
+    lastPageList.value = res.totalPages;
   }
 };
 
@@ -215,8 +216,8 @@ const popupComplaint = () => {
     formDataComplaint.value.facility_name = '';
     formDataComplaint.value.other = '';
     formDataComplaint.value.content = '';
-    formDataComplaint.value.engineer_name = res.data.nickname;
-    formDataComplaint.value.engineer_phone = res.data.phone;
+    formDataComplaint.value.engineer_name = res.user.nickName;
+    formDataComplaint.value.engineer_phone = res.user.phonenumber;
     showComplaint.value = true;
   });
 };
@@ -230,7 +231,14 @@ const submitComplaint = () => {
       if (res.confirm) {
         Taro.showLoading({ title: '正在提交' });
 
-        complainAdd(formDataComplaint.value).then(res => {
+        const param = {
+          nickname: formDataComplaint.value.engineer_name,
+          phone: formDataComplaint.value.engineer_phone,
+          title: formDataComplaint.value.content,
+          remark: formDataComplaint.value.other
+        };
+
+        complainAdd(param).then(res => {
           showComplaint.value = false;
           Taro.showToast({ title: res.msg });
           setTimeout(() => asyncInitScrollList(), 2000);
@@ -258,8 +266,8 @@ const lazyScrollLoad = () => {
   if (currentPage < lastPage) {
     Taro.showLoading({ title: '加载中' });
     currentPageList.value++;
-    complainPageList({ status: tabActive.value, page: currentPageList.value, limit: 5 }).then(res => {
-      scrollList.value.push(...res.data.data);
+    complainPageList({ statusType: tabActive.value, pageNum: currentPageList.value, pageSize: 5 }).then(res => {
+      scrollList.value.push(...res.rows);
     });
   } else {
     flagPageList.value = true;

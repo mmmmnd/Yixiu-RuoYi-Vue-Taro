@@ -91,6 +91,9 @@
       <el-table-column label="订单id"
                        align="center"
                        prop="orderId" />
+      <el-table-column label="设备名"
+                       align="center"
+                       prop="equipmentName" />
       <el-table-column label="投诉类型 "
                        align="center"
                        prop="complaintType">

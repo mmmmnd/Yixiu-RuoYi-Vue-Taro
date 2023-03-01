@@ -13,10 +13,10 @@ const https = new Https();
 
 /**投诉 */
 export function complainAdd(params): Promise<Service.BackendResultConfig<Order.IComplaint>> {
-  return https.post('/foreign/complain/add', params);
+  return https.post('/yixiu/complaint', params);
 }
 
 /**投诉列表 */
 export function complainPageList(params): Promise<Service.BackendResultConfig<Table.IPage<Order.IComplaintList>>> {
-  return https.get('/foreign/complain/pageList', params);
+  return https.get('/yixiu/complaint/list', params);
 }

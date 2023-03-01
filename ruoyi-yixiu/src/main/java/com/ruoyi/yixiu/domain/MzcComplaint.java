@@ -26,6 +26,16 @@ public class MzcComplaint extends BaseEntity
     @Excel(name = "订单id")
     private Long orderId;
 
+    /** 设备id */
+    @ApiModelProperty(value = "设备id")
+    @Excel(name = "设备id")
+    private Long equipmentId;
+
+    /** 设备名 */
+    @ApiModelProperty(value = "设备名")
+    @Excel(name = "设备名")
+    private String equipmentName;
+
     /** 投诉类型 （0 普通投诉 1 订单投诉） */
     @ApiModelProperty(value = "投诉类型 （0 普通投诉 1 订单投诉）")
     @Excel(name = "投诉类型 ", readConverterExp = "0=,普=通投诉,1=,订=单投诉")
@@ -45,6 +55,16 @@ public class MzcComplaint extends BaseEntity
     @ApiModelProperty(value = "状态 （0 未处理 1已处理）")
     @Excel(name = "状态 ", readConverterExp = "0=,未=处理,1=已处理")
     private String status;
+
+    /*标题*/
+    @ApiModelProperty(value = "标题")
+    @Excel(name = "标题")
+    private String title;
+
+    /*系统回复*/
+    @ApiModelProperty(value = "系统回复")
+    @Excel(name = "系统回复")
+    private String reply;
 
     /** 删除者 */
     @ApiModelProperty(value = "删除者")
@@ -72,7 +92,24 @@ public class MzcComplaint extends BaseEntity
     {
         return orderId;
     }
-    public void setComplaintType(String complaintType) 
+
+    public Long getEquipmentId() {
+        return equipmentId;
+    }
+
+    public void setEquipmentId(Long equipmentId) {
+        this.equipmentId = equipmentId;
+    }
+
+    public String getEquipmentName() {
+        return equipmentName;
+    }
+
+    public void setEquipmentName(String equipmentName) {
+        this.equipmentName = equipmentName;
+    }
+
+    public void setComplaintType(String complaintType)
     {
         this.complaintType = complaintType;
     }
@@ -113,7 +150,23 @@ public class MzcComplaint extends BaseEntity
         this.deleteBy = deleteBy;
     }
 
-    public String getDeleteBy() 
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getReply() {
+        return reply;
+    }
+
+    public void setReply(String reply) {
+        this.reply = reply;
+    }
+
+    public String getDeleteBy()
     {
         return deleteBy;
     }

@@ -16,6 +16,9 @@ public class MzcComplaintListDTO {
     @ApiModelProperty(value = "序列号")
     private String status;
 
+    @ApiModelProperty(value = "类型 （0 全部，1已提交，2派件中，3待审核，4维修中，5完成）")
+    private String statusType;
+
     public Integer getPageNum() {
         return pageNum;
     }
@@ -46,5 +49,13 @@ public class MzcComplaintListDTO {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getStatusType() {
+        return statusType;
+    }
+
+    public void setStatusType(String statusType) {
+        this.statusType = statusType;
     }
 }

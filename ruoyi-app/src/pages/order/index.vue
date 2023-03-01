@@ -5,7 +5,7 @@
  * @version: 1.0.0
  * @Date: 2022-09-06 09:47:23
  * @LastEditors: 莫卓才
- * @LastEditTime: 2023-02-28 17:24:47
+ * @LastEditTime: 2023-03-01 11:24:55
 -->
 <template >
   <view class="home">
@@ -107,9 +107,9 @@
                               type="info"
                               @click="scroll.status == '9'?popupAssess(scroll):''">评价</nut-button>
                   <nut-button size="small"
-                              color="#FF5722"
+                              :color="scroll.status == '10'?'#FF5722':'#BBBBBB'"
                               type="info"
-                              @click="popupComplaint(scroll)">投诉</nut-button>
+                              @click="scroll.status == '10'?popupComplaint(scroll):''">投诉</nut-button>
                 </view>
 
                 <view class="d-flex py-1 jc-between flex-wrap"
@@ -414,7 +414,8 @@ const state = reactive({
     engineer_phone: '',
     other: '',
     content: '',
-    engineer_name: ''
+    engineer_name: '',
+    equipmentId: ''
   },
   showReport: false, //检测报告
   formDataReport: {
@@ -725,12 +726,15 @@ const changeRate = () => {
 
 /**投诉popup */
 const popupComplaint = e => {
-  formDataComplaint.value.order_id = e.id;
-  formDataComplaint.value.facility_name = e.facility_name;
-  formDataComplaint.value.engineer_phone = e.engineer_phone;
+  console.log(e.engineerId);
+
+  formDataComplaint.value.order_id = e.orderId;
+  formDataComplaint.value.equipmentId = e.engineerId;
+  formDataComplaint.value.facility_name = e.equipment.equipmentName;
   formDataComplaint.value.other = '';
   formDataComplaint.value.content = '';
-  formDataComplaint.value.engineer_name = e.engineer_name;
+  formDataComplaint.value.engineer_name = e.repairman;
+  formDataComplaint.value.engineer_phone = e.repairPhone;
   showComplaint.value = true;
 };
 
@@ -743,7 +747,16 @@ const submitComplaint = () => {
       if (res.confirm) {
         Taro.showLoading({ title: '正在提交' });
 
-        complainAdd(formDataComplaint.value).then(res => {
+        const param = {
+          orderId: formDataComplaint.value.order_id,
+          equipmentId: formDataComplaint.value.equipmentId,
+          nickname: formDataComplaint.value.engineer_name,
+          phone: formDataComplaint.value.engineer_phone,
+          title: formDataComplaint.value.content,
+          remark: formDataComplaint.value.other
+        };
+
+        complainAdd(param).then(res => {
           showComplaint.value = false;
           Taro.showToast({ title: res.msg });
           setTimeout(() => asyncInitScrollList(), 2000);
