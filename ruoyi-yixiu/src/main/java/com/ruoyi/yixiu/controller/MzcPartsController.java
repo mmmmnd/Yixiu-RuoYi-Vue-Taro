@@ -45,6 +45,25 @@ public class MzcPartsController extends BaseController {
         MzcParts mzcParts = new MzcParts();
         BeanUtils.copyBeanProp(mzcParts, mzcPartsListDTO);
 
+        /*小程序类型*/
+        Integer type = mzcPartsListDTO.getStatusType();
+        if (type != null){
+            switch (type){
+                case 0:
+                    mzcParts.setStatus(null);
+                    break;
+                case 1:
+                    mzcParts.setStatus("0");
+                    break;
+                case 2:
+                    mzcParts.setStatus("1");
+                    break;
+                case 3:
+                    mzcParts.setStatus("2");
+                    break;
+            }
+        }
+
         startPage();
         List<MzcParts> list = mzcPartsService.selectMzcPartsList(mzcParts);
         return getDataTable(list);

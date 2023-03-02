@@ -5,7 +5,7 @@
  * @version: 1.0.0
  * @Date: 2022-09-06 09:47:23
  * @LastEditors: 莫卓才
- * @LastEditTime: 2022-10-14 17:20:07
+ * @LastEditTime: 2023-03-02 21:37:13
 -->
 <template >
   <view class="home">
@@ -38,11 +38,11 @@
                     :key="scroll">
                 <view class="d-flex py-1 px-2">
                   <view class="name text-right text-subtitle">名称：</view>
-                  <view class="text">{{scroll.parts_name || '暂无数据'}}</view>
+                  <view class="text">{{scroll.name || '暂无数据'}}</view>
                 </view>
                 <view class="d-flex py-1 px-2">
                   <view class="name text-right text-subtitle">规格型号：</view>
-                  <view class="text">{{scroll.parts_size || '暂无数据'}}</view>
+                  <view class="text">{{scroll.model || '暂无数据'}}</view>
                 </view>
                 <view class="d-flex py-1 px-2">
                   <view class="name text-right text-subtitle">用途：</view>
@@ -50,11 +50,11 @@
                 </view>
                 <view class="d-flex py-1 px-2">
                   <view class="name text-right text-subtitle">数量：</view>
-                  <view class="text">{{scroll.parts_num || '暂无数据'}}</view>
+                  <view class="text">{{scroll.number || '暂无数据'}}</view>
                 </view>
                 <view class="d-flex py-1 px-2">
                   <view class="name text-right text-subtitle">是否急需：</view>
-                  <view class="text">{{urgency(scroll.urgency) || '暂无数据'}}</view>
+                  <view class="text">{{getPartsStatusArrType(scroll.needStatus) || '暂无数据'}}</view>
                 </view>
                 <view class="d-flex py-1 px-2">
                   <view class="name text-right text-subtitle">备注：</view>
@@ -62,11 +62,11 @@
                 </view>
                 <view class="d-flex py-1 px-2">
                   <view class="name text-right text-subtitle">审批状态：</view>
-                  <view class="text text-red">{{scroll.status_text || '暂无数据'}}</view>
+                  <view class="text text-red">{{getAuditStatusArrType(scroll.status) || '暂无数据'}}</view>
                 </view>
                 <view class="d-flex py-1 px-2">
                   <view class="name text-right text-subtitle">审批时间：</view>
-                  <view class="text">{{scroll.check_time || '暂无数据'}}</view>
+                  <view class="text">{{scroll.auditTime || '暂无数据'}}</view>
                 </view>
               </view>
               <nut-divider v-show="lastPageList == currentPageList  || flagPageList">我是有底线的~</nut-divider>
@@ -114,13 +114,16 @@
 <script lang="ts" setup>
 import * as Taro from '@tarojs/taro';
 import { reactive, toRefs, computed } from 'vue';
-import { partsApplyPageList, partsApplyaddPost } from '@/api/';
+import { partsApplyPageList, partsApplyaddPost, partsStatus, auditStatus } from '@/api/';
 import { Vo } from '@/interfaces/';
 import { getViewStyle } from '@/utils/util';
+import { useAuthStore } from '@/store';
 import NavBarComponent from '@/components/NavBarComponent.vue';
 import TabbarComponent from '@/components/TabbarComponent.vue';
 import popupAccessoriesComponent from '@/pages/component/popupAccessoriesComponent.vue';
 import movableAreaComponent from '@/components/movableAreaComponent.vue';
+
+const authStore = useAuthStore();
 
 const state = reactive({
   marginTop: 0,
@@ -160,7 +163,9 @@ const state = reactive({
     purpose: '',
     urgency: 1,
     remark: '王东'
-  }
+  },
+  partsStatusArr: [],
+  auditStatusArr: []
 });
 
 const {
@@ -176,8 +181,28 @@ const {
   flagPageList,
   fixednavComplaint,
   showComplaint,
-  formDataComplaint
+  formDataComplaint,
+  partsStatusArr,
+  auditStatusArr
 } = toRefs(state);
+
+const getPartsStatusArrType = computed(() => (index: string) => {
+  if (index != null && index != '') {
+    const e = partsStatusArr.value.find(item => item.dictValue == index);
+    return e.dictLabel;
+  } else {
+    return '';
+  }
+});
+
+const getAuditStatusArrType = computed(() => (index: string) => {
+  if (index != null && index != '') {
+    const e = auditStatusArr.value.find(item => item.dictValue == index);
+    return e.dictLabel;
+  } else {
+    return '';
+  }
+});
 
 /**是否急需 */
 const urgency = computed(() => (i: number) => i == 1 ? '是' : i == 2 ? '否' : '');
@@ -202,16 +227,21 @@ const asyncInitScrollList = async () => {
   Taro.showLoading({ title: '加载中' });
 
   for (var i = 0; i < currentPageList.value; i++)
-    _asyncFn.push(partsApplyPageList({ status: tabActive.value, page: i + 1, limit: 5 }));
+    _asyncFn.push(partsApplyPageList({ statusType: tabActive.value, pageNum: i + 1, pageSize: 5 }));
 
   scrollList.value = []; //将列表数据清空后
 
   for await (const res of _asyncFn) {
-    scrollList.value.push(...res.data.data);
-    currentPageList.value = res.data.current_page;
-    lastPageList.value = res.data.last_page;
+    scrollList.value.push(...res.rows);
+    currentPageList.value = res.currentPage;
+    lastPageList.value = res.totalPages;
   }
 };
+
+Promise.all([partsStatus({}), auditStatus({})]).then(res => {
+  partsStatusArr.value = res[0].data;
+  auditStatusArr.value = res[1].data;
+});
 
 /**页面跳转 */
 const onToRouter = (url: string) => {
@@ -239,8 +269,17 @@ const submitComplaint = () => {
     success: function (res) {
       if (res.confirm) {
         Taro.showLoading({ title: '正在提交' });
+        const param = {
+          name: formDataComplaint.value.parts_name,
+          model: formDataComplaint.value.parts_size,
+          purpose: formDataComplaint.value.purpose,
+          number: formDataComplaint.value.parts_num,
+          needStatus: formDataComplaint.value.urgency,
+          remark: formDataComplaint.value.remark,
+          purchaseName: authStore.userInfos.myInfo.nickName
+        };
 
-        partsApplyaddPost({ data: formDataComplaint.value }).then(res => {
+        partsApplyaddPost(param).then(res => {
           showComplaint.value = false;
           Taro.showToast({ title: res.msg });
           setTimeout(() => asyncInitScrollList(), 2000);
@@ -268,8 +307,8 @@ const lazyScrollLoad = () => {
   if (currentPage < lastPage) {
     Taro.showLoading({ title: '加载中' });
     currentPageList.value++;
-    partsApplyPageList({ status: tabActive.value, page: currentPageList.value, limit: 5 }).then(res => {
-      scrollList.value.push(...res.data.data);
+    partsApplyPageList({ statusType: tabActive.value, pageNum: currentPageList.value, pageSize: 5 }).then(res => {
+      scrollList.value.push(...res.rows);
     });
   } else {
     flagPageList.value = true;

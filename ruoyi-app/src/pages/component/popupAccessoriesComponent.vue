@@ -5,7 +5,7 @@
  * @version: 1.0.0
  * @Date: 2022-09-21 08:30:18
  * @LastEditors: 莫卓才
- * @LastEditTime: 2023-03-02 10:59:25
+ * @LastEditTime: 2023-03-02 21:32:53
 -->
 <template>
   <popup-component v-model:showPopup="update"
@@ -45,9 +45,9 @@
       <nut-radiogroup v-model="formData.urgency"
                       direction="horizontal">
         <nut-radio shape="button"
-                   label="1">是</nut-radio>
+                   label="0">否</nut-radio>
         <nut-radio shape="button"
-                   label="2">否</nut-radio>
+                   label="1">是</nut-radio>
       </nut-radiogroup>
     </view>
     <view class="d-flex py-1 px-4 pl-2">

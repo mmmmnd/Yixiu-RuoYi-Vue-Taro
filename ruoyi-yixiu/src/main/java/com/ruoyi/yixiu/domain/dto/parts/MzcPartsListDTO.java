@@ -16,6 +16,9 @@ public class MzcPartsListDTO {
     @ApiModelProperty(value = "审核状态（ 0 未审核 1 已审核 2未通过 ）")
     private String auditStatus;
 
+    @ApiModelProperty(value = "类型 （0 全部，1待审核，2已审核，3未通过）")
+    private Integer statusType;
+
     public Integer getPageNum() {
         return pageNum;
     }
@@ -46,5 +49,13 @@ public class MzcPartsListDTO {
 
     public void setAuditStatus(String auditStatus) {
         this.auditStatus = auditStatus;
+    }
+
+    public Integer getStatusType() {
+        return statusType;
+    }
+
+    public void setStatusType(Integer statusType) {
+        this.statusType = statusType;
     }
 }
