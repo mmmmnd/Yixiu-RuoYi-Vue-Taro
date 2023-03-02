@@ -5,21 +5,13 @@
   * @version: 1.0.0
   * @Date: 2022-09-06 09:47:23
  * @LastEditors: 莫卓才
- * @LastEditTime: 2022-11-30 08:27:05
+ * @LastEditTime: 2023-03-02 09:32:17
  -->
  <template >
   <view class="home">
     <nav-bar-component class="NavBar"
                        :name="NavBarName"
                        :isNavbar="true" />
-    <!-- 
-    <view class="body p-2 bannber"
-          :style="{marginTop:marginTop+'px'}">
-
-      <image :src="swiperList[0]?.remote_path"
-             class="w-100 h-100 "
-             mode="scaleToFill" />
-    </view> -->
 
     <nut-searchbar :style="{marginTop:marginTop+'px'}"
                    v-model="keyWord"
@@ -54,27 +46,27 @@
                     <view class="order-scroll-item pb-2">
                       <view class="d-flex py-1 px-2">
                         <view class="name text-right text-subtitle">医院名称：</view>
-                        <view class="text">{{scroll.company_name || '暂无数据'}}</view>
+                        <view class="text">{{scroll.dept.parentName || '暂无数据'}}</view>
                       </view>
                       <view class="d-flex py-1 px-2">
                         <view class="name text-right text-subtitle">科室：</view>
-                        <view class="text">{{scroll.department_name || '暂无数据'}}</view>
+                        <view class="text">{{scroll.dept.deptName || '暂无数据'}}</view>
                       </view>
                       <view class="d-flex py-1 px-2">
                         <view class="name text-right text-subtitle">设备名称：</view>
-                        <view class="text">{{scroll.name || '暂无数据'}}</view>
+                        <view class="text">{{scroll.equipmentName || '暂无数据'}}</view>
                       </view>
                       <view class="d-flex py-1 px-2">
                         <view class="name text-right text-subtitle">序列号：</view>
-                        <view class="text">{{scroll.series_number || '暂无数据'}}</view>
+                        <view class="text">{{scroll.serialNumber || '暂无数据'}}</view>
                       </view>
                       <view class="d-flex py-1 px-2">
                         <view class="name text-right text-subtitle">型号：</view>
-                        <view class="text">{{scroll.facility_model || '暂无数据'}}</view>
+                        <view class="text">{{scroll.modelNumber || '暂无数据'}}</view>
                       </view>
                       <view class="d-flex py-1 px-2">
                         <view class="name text-right text-subtitle">出厂编号：</view>
-                        <view class="text">{{scroll.factory_number || '暂无数据'}}</view>
+                        <view class="text">{{scroll.factoryNumber || '暂无数据'}}</view>
                       </view>
                       <view class="d-flex py-1 px-2">
                         <view class="name text-right text-subtitle">品牌：</view>
@@ -82,19 +74,19 @@
                       </view>
                       <view class="d-flex py-1 px-2">
                         <view class="name text-right text-subtitle">价格：</view>
-                        <view class="text">{{scroll.unit_price || '暂无数据'}}</view>
+                        <view class="text">{{scroll.price || '暂无数据'}}</view>
                       </view>
                       <view class="d-flex py-1 px-2">
                         <view class="name text-right text-subtitle">购入时间：</view>
-                        <view class="text">{{scroll.buy_date || '暂无数据'}}</view>
+                        <view class="text">{{scroll.purchaseTime || '暂无数据'}}</view>
                       </view>
                       <view class="d-flex py-1 px-2">
                         <view class="name text-right text-subtitle">保养时间：</view>
-                        <view class="text">{{scroll.buy_date || '暂无数据'}}</view>
+                        <view class="text">{{scroll.maintain || '暂无数据'}}</view>
                       </view>
                       <view class="d-flex py-1 px-2">
                         <view class="name text-right text-subtitle">报废时间：</view>
-                        <view class="text">{{scroll.buy_date || '暂无数据'}}</view>
+                        <view class="text">{{scroll.scrapTime || '暂无数据'}}</view>
                       </view>
                       <view class="d-flex py-1 px-2">
                         <view class="name text-right text-subtitle">其他：</view>
@@ -182,7 +174,15 @@
 <script lang="ts" setup>
 import * as Taro from '@tarojs/taro';
 import { reactive, toRefs, computed } from 'vue';
-import { facilityPageList, facilityAdd, companygetAllList, departmentGetAllList, repairLog, orderInfo } from '@/api/';
+import {
+  facilityPageList,
+  facilityAdd,
+  deptAncestorsList,
+  deptParentIdList,
+  repairLog,
+  getFeedbackInfo,
+  orderList
+} from '@/api/';
 import { Vo } from '@/interfaces/';
 import { getViewStyle } from '@/utils/util';
 import NavBarComponent from '@/components/NavBarComponent.vue';
@@ -254,28 +254,94 @@ const state = reactive({
   formDataHistory: [],
   showOrderInfo: false, //详情明细
   formDataOrderInfo: {
-    facility_name: '',
-    serial_number: '',
-    model_number: '',
+    equipment: {},
+    dept: {},
+    feedbackInfo: {},
+    totalPrice: '',
+    repairman: '',
+    createTime: '',
+    spend_period: '',
+    applyDeptOpinion: '',
+    equipmentOpinion: '',
+    subheadOpinion: '',
+    deanOpinion: '',
+    company_name: '',
     department_name: '',
-    num: 0,
-    unit: 0,
-    unit_price: null,
-    discount_pirce: null,
-    totao_price: null,
-    spend_period: null,
-    warranty_period: null,
-    failure_describe: '',
-    repair_result: '',
-    create_time: null,
-    offerer_name: '',
-    creater_name: '',
-    partsTitle: [],
-    partsList: [],
-    department_opinion: '',
-    equip_opinion: '',
-    dean_opinion: '',
-    dean_branch_opinion: ''
+    accepter_name: '',
+    partsTitle: [
+      {
+        align: 'center',
+        key: 'partsModel',
+        title: '型号'
+      },
+      {
+        align: 'center',
+        key: 'partsName',
+        title: '配件名'
+      },
+      {
+        align: 'center',
+        key: 'number',
+        title: '数量'
+      },
+      {
+        align: 'center',
+        key: 'unit',
+        title: '单位'
+      },
+      {
+        align: 'center',
+        key: 'partsPrice',
+        title: '部件费'
+      },
+      {
+        align: 'center',
+        key: 'maintenancePrice',
+        title: '维修费'
+      }
+    ],
+    payTitle: [
+      {
+        align: 'center',
+        key: 'partsModel',
+        title: '型号'
+      },
+      {
+        align: 'center',
+        key: 'partsName',
+        title: '配件名'
+      },
+      {
+        align: 'center',
+        key: 'number',
+        title: '数量'
+      },
+      {
+        align: 'center',
+        key: 'unit',
+        title: '单位'
+      },
+      {
+        align: 'center',
+        key: 'partsPrice',
+        title: '部件费'
+      },
+      {
+        align: 'center',
+        key: 'maintenancePrice',
+        title: '维修费'
+      },
+      {
+        align: 'center',
+        key: 'unitPrice',
+        title: '单价'
+      },
+      {
+        align: 'center',
+        key: 'preferentialPrice',
+        title: '优惠价'
+      }
+    ]
   }
 });
 
@@ -320,11 +386,9 @@ const submit = () => {
   scrollList.value = [];
   currentPageList.value = 1;
 
-  facilityPageList({ status: tabActive.value, page: currentPageList.value, limit: 5, keyWord: keyWord.value }).then(
-    res => {
-      scrollList.value.push(...res.data.data);
-    }
-  );
+  facilityPageList({ pageNum: currentPageList.value, pageSize: 5, keyWord: keyWord.value }).then(res => {
+    scrollList.value.push(...res.data.data);
+  });
 };
 
 /* 保存二维码 */
@@ -519,15 +583,14 @@ const asyncInitScrollList = async () => {
   const _asyncFn = [];
   Taro.showLoading({ title: '加载中' });
 
-  for (var i = 0; i < currentPageList.value; i++)
-    _asyncFn.push(facilityPageList({ status: tabActive.value, page: i + 1, limit: 5 }));
+  for (var i = 0; i < currentPageList.value; i++) _asyncFn.push(facilityPageList({ pageNum: i + 1, pageSize: 5 }));
 
   scrollList.value = []; //将列表数据清空后
 
   for await (const res of _asyncFn) {
-    scrollList.value.push(...res.data.data);
-    currentPageList.value = res.data.current_page;
-    lastPageList.value = res.data.last_page;
+    scrollList.value.push(...res.rows);
+    currentPageList.value = res.currentPage;
+    lastPageList.value = res.totalPages;
   }
 };
 
@@ -538,10 +601,19 @@ const onToRouter = (url: string) => {
 
 /**详情明细popup */
 const popupOrderInfo = e => {
-  orderInfo({ order_id: e.id }).then(res => {
-    formDataOrderInfo.value = res.data;
-    showOrderInfo.value = true;
-  });
+  const { partsTitle, payTitle } = formDataOrderInfo.value;
+  formDataOrderInfo.value = e;
+  formDataOrderInfo.value.partsTitle = partsTitle;
+  formDataOrderInfo.value.payTitle = payTitle;
+  showOrderInfo.value = true;
+
+  if (e.feedbackId) {
+    getFeedbackInfo(e.feedbackId).then(res => {
+      formDataOrderInfo.value.feedbackInfo = res.data;
+    });
+  }
+
+  console.log(formDataOrderInfo.value);
 };
 
 /**设备popup */
@@ -568,13 +640,13 @@ const popupComplaint = () => {
 
 /* 历史记录 */
 const popupHistory = e => {
-  repairLog({ id: e.id }).then(res => {
-    if (res.data.data.length == 0) {
+  orderList({ equipmentId: e.equipmentId }).then(res => {
+    if (res.rows.length == 0) {
       Taro.showToast({ title: '暂无历史数据', icon: 'none' });
     } else {
       showHistory.value = true;
 
-      formDataHistory.value = res.data.data;
+      formDataHistory.value = res.rows;
     }
   });
 };
@@ -604,10 +676,10 @@ const typeChange = (e, name) => {
   if (name == 'companyType') {
     const o = form[name][e.detail.value];
 
-    form.company_name = o.name;
-    form.company_id = o.id;
+    form.company_name = o.deptName;
+    form.company_id = o.deptId;
 
-    departmentGetAllList({ company_id: o.id }).then(res => {
+    deptParentIdList({ parentId: form.company_id }).then(res => {
       form.department_name = '';
       form.department_id = 0;
       form.departmentType = res.data;
@@ -615,8 +687,8 @@ const typeChange = (e, name) => {
   } else if (name == 'departmentType') {
     const o = form[name][e.detail.value];
 
-    form.department_name = o.name;
-    form.department_id = o.id;
+    form.department_name = o.deptName;
+    form.department_id = o.deptId;
   } else {
     form[name] = e.detail.value;
   }
@@ -649,12 +721,12 @@ const lazyScrollLoad = () => {
   console.log(`第${tabActive.value}行，当前页${currentPage},最后一页${lastPage}`);
 };
 
-// Promise.all([slideList({}), companygetAllList({})]).then(res => {
+// Promise.all([slideList({}), deptAncestorsList({})]).then(res => {
 //   swiperList.value.push(...res[0].data);
 //   formDataComplaint.value.companyType = res[1].data;
 // });
 
-companygetAllList({}).then(res => {
+deptAncestorsList({}).then(res => {
   formDataComplaint.value.companyType = res.data;
 });
 </script>

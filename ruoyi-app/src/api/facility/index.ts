@@ -12,7 +12,7 @@ const https = new Https();
 
 /**设备列表 */
 export function facilityPageList(params): Promise<Service.BackendResultConfig> {
-  return https.get('/foreign/facility/pageList', params);
+  return https.get('/yixiu/equipment/list', params);
 }
 
 /**设备新增 */

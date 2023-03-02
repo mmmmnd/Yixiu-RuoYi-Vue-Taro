@@ -5,10 +5,10 @@
  * @version: 1.0.0
  * @Date: 2022-09-21 08:30:18
  * @LastEditors: 莫卓才
- * @LastEditTime: 2022-10-13 18:06:10
+ * @LastEditTime: 2023-03-02 10:59:25
 -->
 <template>
-  <popup-component v-model:showPopup="showData"
+  <popup-component v-model:showPopup="update"
                    :closeableFalg="true"
                    title="配件申请">
     <view class="d-flex py-1 px-4 pl-2">
@@ -70,7 +70,7 @@
   </popup-component>
 </template>
 <script lang="ts" setup>
-import { reactive, ref } from 'vue';
+import { ref } from 'vue';
 import popupComponent from '@/components/popupComponent.vue';
 
 const props = defineProps({
@@ -87,6 +87,7 @@ const props = defineProps({
     default: () => {}
   }
 });
+const update = ref(props.showData);
 </script>
 <style lang="scss">
 .assess-label {

@@ -5,10 +5,10 @@
  * @version: 1.0.0
  * @Date: 2022-09-21 08:30:18
  * @LastEditors: 莫卓才
- * @LastEditTime: 2022-10-10 18:05:39
+ * @LastEditTime: 2023-03-02 10:59:11
 -->
 <template>
-  <popup-component v-model:showPopup="showAssess"
+  <popup-component v-model:showPopup="update"
                    :closeableFalg="true"
                    title="维修验收">
     <view class="d-flex py-1 px-4 pl-2">
@@ -98,6 +98,7 @@ const props = defineProps({
 });
 
 const showTable = ref(false);
+const update = ref(props.showAssess);
 const overlayStyle = { paddingBottom: '140%' };
 </script>
 <style lang="scss">

@@ -5,10 +5,10 @@
  * @version: 1.0.0
  * @Date: 2022-09-21 08:30:18
  * @LastEditors: 莫卓才
- * @LastEditTime: 2022-11-14 10:49:21
+ * @LastEditTime: 2023-03-02 11:02:14
 -->
 <template>
-  <popup-component v-model:showPopup="showComplaint"
+  <popup-component v-model:showPopup="update"
                    :closeableFalg="true"
                    :title="formData.status_offer !=1?'提交报价单':'显示报价单'">
     <view class="d-flex py-1 px-2">
@@ -103,6 +103,7 @@
   </popup-component>
 </template>
 <script lang="ts" setup>
+import { ref } from 'vue';
 import popupComponent from '@/components/popupComponent.vue';
 
 const props = defineProps({
@@ -119,6 +120,7 @@ const props = defineProps({
     default: () => {}
   }
 });
+const update = ref(props.showComplaint);
 </script>
 <style lang="scss">
 .assess-label {

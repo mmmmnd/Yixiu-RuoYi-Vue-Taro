@@ -5,21 +5,21 @@
  * @version: 1.0.0
  * @Date: 2022-09-21 08:30:18
  * @LastEditors: 莫卓才
- * @LastEditTime: 2022-11-15 17:26:22
+ * @LastEditTime: 2023-03-02 11:01:21
 -->
 <template>
-  <popup-component v-model:showPopup="showData"
+  <popup-component v-model:showPopup="update"
                    :closeableFalg="true"
                    title="设备新增">
     <view class="d-flex py-1 px-4 pl-2">
       <view class="flex-grow-0 name text-right text-subtitle assess-label">医院名称：</view>
       <picker mode="selector"
-              rangeKey="name"
+              rangeKey="deptName"
               class="w-100"
               :range="formData.companyType"
               @change="e=>typeChange(e,'companyType')">
         <view class="picker text-subtitle">
-          {{formData.company_name?formData.company_name:"请选择医院名称"}}
+          {{formData.companyName?formData.companyName:"请选择医院名称"}}
           <nut-icon name="arrow-down"
                     class="float-r"></nut-icon>
         </view>
@@ -30,7 +30,7 @@
           v-show="!!formData.departmentType.length">
       <view class="flex-grow-0 name text-right text-subtitle assess-label">科室：</view>
       <picker mode="selector"
-              rangeKey="name"
+              rangeKey="deptName"
               class="w-100"
               :range="formData.departmentType"
               @change="e=>typeChange(e,'departmentType')">
@@ -135,6 +135,7 @@
   </popup-component>
 </template>
 <script lang="ts" setup>
+import { ref } from 'vue';
 import popupComponent from '@/components/popupComponent.vue';
 
 const props = defineProps({
@@ -155,6 +156,7 @@ const props = defineProps({
     default: () => {}
   }
 });
+const update = ref(props.showData);
 </script>
 <style lang="scss">
 .assess-label {

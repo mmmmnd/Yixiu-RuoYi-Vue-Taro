@@ -5,10 +5,10 @@
  * @version: 1.0.0
  * @Date: 2022-09-21 08:30:18
  * @LastEditors: 莫卓才
- * @LastEditTime: 2022-11-11 11:54:42
+ * @LastEditTime: 2023-03-02 11:02:52
 -->
 <template>
-  <popup-component v-model:showPopup="showData"
+  <popup-component v-model:showPopup="update"
                    style="width: 70%;top: 35%;"
                    :closeableFalg="true"
                    title="配件列表">
@@ -68,7 +68,7 @@
   </popup-component>
 </template>
 <script lang="ts" setup>
-import { reactive, ref } from 'vue';
+import { ref } from 'vue';
 import popupComponent from '@/components/popupComponent.vue';
 
 const props = defineProps({
@@ -89,6 +89,7 @@ const props = defineProps({
     default: () => {}
   }
 });
+const update = ref(props.showData);
 </script>
 <style lang="scss">
 .assess-label {

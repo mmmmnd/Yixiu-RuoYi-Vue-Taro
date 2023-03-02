@@ -5,10 +5,10 @@
  * @version: 1.0.0
  * @Date: 2022-09-21 08:30:18
  * @LastEditors: 莫卓才
- * @LastEditTime: 2023-02-28 17:27:58
+ * @LastEditTime: 2023-03-02 11:00:02
 -->
 <template>
-  <popup-component v-model:showPopup="showComplaint"
+  <popup-component v-model:showPopup="update"
                    :closeableFalg="true"
                    title="订单投诉">
 
@@ -53,6 +53,7 @@
   </popup-component>
 </template>
 <script lang="ts" setup>
+import { ref } from 'vue';
 import popupComponent from '@/components/popupComponent.vue';
 
 const props = defineProps({
@@ -69,6 +70,7 @@ const props = defineProps({
     default: () => {}
   }
 });
+const update = ref(props.showComplaint);
 </script>
 <style lang="scss">
 .assess-label {

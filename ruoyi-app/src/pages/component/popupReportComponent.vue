@@ -5,10 +5,10 @@
  * @version: 1.0.0
  * @Date: 2022-09-21 08:30:18
  * @LastEditors: 莫卓才
- * @LastEditTime: 2022-11-14 11:20:13
+ * @LastEditTime: 2023-03-02 11:02:42
 -->
 <template>
-  <popup-component v-model:showPopup="showAssess"
+  <popup-component v-model:showPopup="update"
                    :closeableFalg="true"
                    title="检测报告"
                    class="report">
@@ -54,7 +54,7 @@
   </popup-component>
 </template>
 <script lang="ts" setup>
-import { reactive, ref } from 'vue';
+import { ref } from 'vue';
 import popupComponent from '@/components/popupComponent.vue';
 
 const props = defineProps({
@@ -71,6 +71,8 @@ const props = defineProps({
     default: () => {}
   }
 });
+
+const update = ref(props.showAssess);
 
 const emit = defineEmits(['showTableData']);
 

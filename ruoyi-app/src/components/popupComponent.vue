@@ -1,15 +1,15 @@
 <!--
- * @Author: 莫卓才
- * @eMail: handsome.mo@foxmail.com
- * @Descripttion: 描述
- * @version: 1.0.0
- * @Date: 2022-09-16 17:13:03
+  * @Author: 莫卓才
+  * @eMail: handsome.mo@foxmail.com
+  * @Descripttion: 描述
+  * @version: 1.0.0
+  * @Date: 2022-09-16 17:13:03
  * @LastEditors: 莫卓才
- * @LastEditTime: 2022-09-29 16:10:14
--->
-<template>
+ * @LastEditTime: 2023-03-02 11:07:49
+ -->
+ <template>
   <nut-popup pop-class="popclass"
-             v-model:visible="showPopup"
+             v-model:visible="update"
              :z-index="100"
              :closeable="closeableFalg"
              @close="closePopup"
@@ -44,6 +44,8 @@ const props = defineProps({
   }
 });
 
+const update = ref(props.showPopup);
+
 const emit = defineEmits(['update:showPopup']);
 
 /**关闭父弹窗 */
@@ -59,7 +61,7 @@ const closePopup = () => {
       border-bottom: 4rpx solid #f0f2f1;
     }
   }
-  .nutui-popup__close-icon--top-right {
+  .nut-popup__close-icon--top-right {
     top: 0px;
     right: 0px;
   }
