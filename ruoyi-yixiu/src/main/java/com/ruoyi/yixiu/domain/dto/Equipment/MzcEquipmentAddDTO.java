@@ -2,6 +2,9 @@ package com.ruoyi.yixiu.domain.dto.Equipment;
 
 import io.swagger.annotations.ApiModelProperty;
 
+import java.math.BigDecimal;
+import java.util.Date;
+
 public class MzcEquipmentAddDTO {
 
     @ApiModelProperty(value = "归属单位")
@@ -23,13 +26,13 @@ public class MzcEquipmentAddDTO {
     private String brand;
 
     @ApiModelProperty(value = "价格")
-    private String price;
+    private BigDecimal price;
 
     @ApiModelProperty(value = "购买时间")
-    private String purchaseTime;
+    private Date purchaseTime;
 
     @ApiModelProperty(value = "报废时间")
-    private String scrapTime;
+    private Date scrapTime;
 
     @ApiModelProperty(value = "保养预警")
     private String maintain;
@@ -85,27 +88,27 @@ public class MzcEquipmentAddDTO {
         this.brand = brand;
     }
 
-    public String getPrice() {
+    public BigDecimal getPrice() {
         return price;
     }
 
-    public void setPrice(String price) {
+    public void setPrice(BigDecimal price) {
         this.price = price;
     }
 
-    public String getPurchaseTime() {
+    public Date getPurchaseTime() {
         return purchaseTime;
     }
 
-    public void setPurchaseTime(String purchaseTime) {
+    public void setPurchaseTime(Date purchaseTime) {
         this.purchaseTime = purchaseTime;
     }
 
-    public String getScrapTime() {
+    public Date getScrapTime() {
         return scrapTime;
     }
 
-    public void setScrapTime(String scrapTime) {
+    public void setScrapTime(Date scrapTime) {
         this.scrapTime = scrapTime;
     }
 

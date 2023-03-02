@@ -5,7 +5,7 @@
  * @version: 1.0.0
  * @Date: 2022-11-02 10:50:07
  * @LastEditors: 莫卓才
- * @LastEditTime: 2022-11-10 15:34:07
+ * @LastEditTime: 2023-03-02 16:14:11
  */
 import Https from '@/utils/http/https';
 const https = new Https();
@@ -17,7 +17,7 @@ export function facilityPageList(params): Promise<Service.BackendResultConfig> {
 
 /**设备新增 */
 export function facilityAdd(params): Promise<Service.BackendResultConfig> {
-  return https.post('/foreign/facility/add', params);
+  return https.post('/yixiu/equipment', params);
 }
 
 /* 历史记录 */

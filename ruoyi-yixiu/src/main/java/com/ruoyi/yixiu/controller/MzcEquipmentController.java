@@ -1,5 +1,8 @@
 package com.ruoyi.yixiu.controller;
 
+import cn.binarywang.wx.miniapp.api.WxMaService;
+import cn.binarywang.wx.miniapp.api.impl.WxMaServiceImpl;
+import cn.binarywang.wx.miniapp.config.impl.WxMaDefaultConfigImpl;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.R;
@@ -128,5 +131,17 @@ public class MzcEquipmentController extends BaseController {
     @DeleteMapping("/{equipmentIds}")
     public R<Integer> remove(@PathVariable Long[] equipmentIds) {
         return R.ok(mzcEquipmentService.deleteMzcEquipmentByEquipmentIds(equipmentIds));
+    }
+
+    /**
+     * 设备二维码
+     *
+     * @return 文件路径
+     */
+    @ApiOperation(value = "设备二维码")
+    @PreAuthorize("@ss.hasPermi('yixiu:equipment:qrCode')")
+    @GetMapping ("/equipment/{param}")
+    public R<String> qrCode(@ApiParam(value = "参数", defaultValue = "id=1&name=2", required = true) @PathVariable("param") String param)  {
+        return R.ok(mzcEquipmentService.createEquipmentQrCode(param));
     }
 }

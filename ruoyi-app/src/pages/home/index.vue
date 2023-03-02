@@ -28,7 +28,8 @@
       </nut-swiper>
 
       <nut-sticky :top="marginTop"
-                  z-index="100">
+                  z-index="100"
+                  style="height:auto">
         <nut-grid :border="false"
                   :column-number="4"
                   class="navGrid">
@@ -44,7 +45,6 @@
         </nut-grid>
       </nut-sticky>
     </view>
-
     <view class="divider" />
 
     <!-- 工程师 -->

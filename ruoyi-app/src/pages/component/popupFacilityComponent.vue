@@ -5,7 +5,7 @@
  * @version: 1.0.0
  * @Date: 2022-09-21 08:30:18
  * @LastEditors: 莫卓才
- * @LastEditTime: 2023-03-02 11:01:21
+ * @LastEditTime: 2023-03-02 16:10:17
 -->
 <template>
   <popup-component v-model:showPopup="update"
@@ -19,7 +19,7 @@
               :range="formData.companyType"
               @change="e=>typeChange(e,'companyType')">
         <view class="picker text-subtitle">
-          {{formData.companyName?formData.companyName:"请选择医院名称"}}
+          {{formData.company_name?formData.company_name:"请选择医院名称"}}
           <nut-icon name="arrow-down"
                     class="float-r"></nut-icon>
         </view>

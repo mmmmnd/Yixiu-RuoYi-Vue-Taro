@@ -99,6 +99,9 @@ public class MzcOrder extends BaseEntity
     /** 评价人（用户id） */
     private String appraiseName;
 
+    /** 验收人 */
+    private String acceptor;
+
     /** 创建人id */
     private Long userId;
 
@@ -319,6 +322,14 @@ public class MzcOrder extends BaseEntity
 
     public void setAppraiseName(String appraiseName) {
         this.appraiseName = appraiseName;
+    }
+
+    public String getAcceptor() {
+        return acceptor;
+    }
+
+    public void setAcceptor(String acceptor) {
+        this.acceptor = acceptor;
     }
 
     public void setDeleteBy(String deleteBy)

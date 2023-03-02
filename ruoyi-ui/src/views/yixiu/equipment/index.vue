@@ -306,7 +306,7 @@
       <div ref="imageCanvas">
         <p style="width: 1px;position: absolute;left: 25px;font-size: 44px;line-height: 44px;top: 65px;">扫码报修</p>
         <img :src="equipment.srcUrl"
-             style="margin-left: 12%;" />
+             style="margin-left: 12%;height: 200px;margin: 0 auto;display: block;" />
         <p style="width: 1px;position: absolute;right: 65px;font-size: 44px;line-height: 44px;top: 65px;">扫码报修</p>
         <div style="font-size: 24px;line-height: 0;display: flex;">
           <p style="flex: 0 0 120px;text-align: right;">医院名称:</p>
@@ -528,10 +528,11 @@ export default {
     },
     /* 设备二维码 */
     handleQrCode (row) {
-      qrCodeEquipment({ equipmentId: row.equipmentId }).then(res => {
+      const param = "equipmentId=" + row.equipmentId;
+      qrCodeEquipment(param).then(res => {
         this.qrCodeOpen = true;
         this.title = "设备二维码";
-        this.equipment.srcUrl = "data:image/png;base64," + res.data.img
+        this.equipment.srcUrl = "data:image/png;base64," + res.data
         this.equipment.parentName = row.dept.parentName
         this.equipment.equipmentName = row.equipmentName
         this.equipment.deptName = row.dept.deptName

@@ -75,4 +75,12 @@ public interface IMzcEquipmentService
      * @return 结果
      */
     public int deleteMzcEquipmentByEquipmentId(Long equipmentId);
+
+    /**
+     * 生成设备二维码
+     *
+     * @param param 参数
+     * @return 结果
+     */
+    public String createEquipmentQrCode(String param);
 }

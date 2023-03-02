@@ -5,7 +5,7 @@
  * @version: 1.0.0
  * @Date: 2023-01-24 10:40:38
  * @LastEditors: 莫卓才
- * @LastEditTime: 2023-02-01 16:31:34
+ * @LastEditTime: 2023-03-02 15:33:42
  */
 import request from '@/utils/request'
 
@@ -53,11 +53,10 @@ export function delEquipment (equipmentId) {
 }
 
 // 设备二维码
-export function qrCodeEquipment (data) {
+export function qrCodeEquipment (param) {
   return request({
-    url: '/qrCode/equipment/',
-    method: 'post',
-    data: data
+    url: '/yixiu/equipment/equipment/' + param,
+    method: 'get',
   })
 }
 

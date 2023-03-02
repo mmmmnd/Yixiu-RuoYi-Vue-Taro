@@ -5,7 +5,7 @@
   * @version: 1.0.0
   * @Date: 2022-09-06 09:47:23
  * @LastEditors: 莫卓才
- * @LastEditTime: 2023-03-02 09:32:17
+ * @LastEditTime: 2023-03-02 17:15:07
  -->
  <template >
   <view class="home">
@@ -181,7 +181,8 @@ import {
   deptParentIdList,
   repairLog,
   getFeedbackInfo,
-  orderList
+  orderList,
+  qrCodeEquipment
 } from '@/api/';
 import { Vo } from '@/interfaces/';
 import { getViewStyle } from '@/utils/util';
@@ -247,7 +248,8 @@ const state = reactive({
     buy_date: '',
     keep_warm_note: '',
     scrap_warn_date: '',
-    remark: ''
+    remark: '',
+    factory_number: ''
   },
   keyWord: '',
   showHistory: false, //历史记录
@@ -386,18 +388,20 @@ const submit = () => {
   scrollList.value = [];
   currentPageList.value = 1;
 
-  facilityPageList({ pageNum: currentPageList.value, pageSize: 5, keyWord: keyWord.value }).then(res => {
-    scrollList.value.push(...res.data.data);
+  facilityPageList({ pageNum: currentPageList.value, pageSize: 5, equipmentName: keyWord.value }).then(res => {
+    scrollList.value.push(...res.rows);
   });
 };
 
 /* 保存二维码 */
 const saveQrCode = e => {
+  const param = 'equipmentId=' + e.equipmentId;
+
   Taro.createSelectorQuery()
     .select('#myCanvas')
     .fields({ node: true, size: true })
     .exec(async res => {
-      if (!e.qrcode) return Taro.showToast({ title: '暂无图片信息', icon: 'error' });
+      // if (!e.qrcode) return Taro.showToast({ title: '暂无图片信息', icon: 'error' });
       const canvas = res[0].node;
       const { width, height } = res[0];
 
@@ -416,16 +420,17 @@ const saveQrCode = e => {
       ctx.fillStyle = '#fff';
       ctx.fillRect(0, 0, rpx2px(width * 2), rpx2px(height * 2));
 
-      const imgUrl: any = await getImageInfo('https://xcx.ylqx.top/' + e.qrcode);
+      const r = await qrCodeEquipment(param);
+      // const imgUrl: any = await getImageInfo('data:image/png;base64,' + r.data);
 
       await drawImage(
         ctx,
         canvas,
-        imgUrl.path,
+        'data:image/png;base64,' + r.data,
         rpx2px(200),
         rpx2px(0),
-        rpx2px(imgUrl.width / 1.25),
-        rpx2px(imgUrl.height / 1.25)
+        rpx2px(400 / 1.25),
+        rpx2px(400 / 1.25)
       );
 
       // drawText(ctx, '医院名称:', rpx2px(0), rpx2px(380), `${24}px 宋体 small-caps`, '#000');
@@ -434,7 +439,7 @@ const saveQrCode = e => {
 
       drawRanksTexts(
         ctx,
-        `医院名称:${e.company_name}`,
+        `医院名称:${e.dept.parentName}`,
         rpx2px(120),
         rpx2px(380),
         rpx2px(750),
@@ -444,7 +449,7 @@ const saveQrCode = e => {
       );
       drawRanksTexts(
         ctx,
-        `设备名称:${e.name}`,
+        `设备名称:${e.equipmentName}`,
         rpx2px(120),
         rpx2px(430),
         rpx2px(750),
@@ -454,7 +459,7 @@ const saveQrCode = e => {
       );
       drawRanksTexts(
         ctx,
-        `科室名称:${e.department_name}`,
+        `科室名称:${e.dept.deptName}`,
         rpx2px(120),
         rpx2px(480),
         rpx2px(750),
@@ -612,8 +617,6 @@ const popupOrderInfo = e => {
       formDataOrderInfo.value.feedbackInfo = res.data;
     });
   }
-
-  console.log(formDataOrderInfo.value);
 };
 
 /**设备popup */
@@ -634,6 +637,7 @@ const popupComplaint = () => {
   formDataComplaint.value.keep_warm_note = '';
   formDataComplaint.value.scrap_warn_date = '';
   formDataComplaint.value.remark = '';
+  formDataComplaint.value.factory_number = '';
 
   showComplaint.value = true;
 };
@@ -659,8 +663,20 @@ const submitComplaint = () => {
     success: function (res) {
       if (res.confirm) {
         Taro.showLoading({ title: '正在提交' });
-
-        facilityAdd({ data: formDataComplaint.value }).then(res => {
+        const param = {
+          deptId: formDataComplaint.value.department_id,
+          equipmentName: formDataComplaint.value.name,
+          serialNumber: formDataComplaint.value.series_number,
+          modelNumber: formDataComplaint.value.facility_model,
+          factoryNumber: formDataComplaint.value.factory_number,
+          brand: formDataComplaint.value.brand,
+          price: formDataComplaint.value.unit_price,
+          purchaseTime: formDataComplaint.value.buy_date,
+          maintain: formDataComplaint.value.keep_warm_note,
+          scrapTime: formDataComplaint.value.scrap_warn_date,
+          remark: formDataComplaint.value.remark
+        };
+        facilityAdd(param).then(res => {
           showComplaint.value = false;
           Taro.showToast({ title: res.msg });
           setTimeout(() => asyncInitScrollList(), 2000);
@@ -713,7 +729,7 @@ const lazyScrollLoad = () => {
     Taro.showLoading({ title: '加载中' });
     currentPageList.value++;
     facilityPageList({ status: tabActive.value, page: currentPageList.value, limit: 5 }).then(res => {
-      scrollList.value.push(...res.data.data);
+      scrollList.value.push(...res.rows);
     });
   } else {
     flagPageList.value = true;

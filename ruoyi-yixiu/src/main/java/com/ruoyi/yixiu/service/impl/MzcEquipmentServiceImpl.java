@@ -1,12 +1,20 @@
 package com.ruoyi.yixiu.service.impl;
 
+import java.io.File;
 import java.util.List;
+
+import cn.binarywang.wx.miniapp.api.WxMaQrcodeService;
+import cn.binarywang.wx.miniapp.api.WxMaService;
 import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.common.utils.sign.Base64;
+import me.chanjar.weixin.common.error.WxErrorException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.ruoyi.yixiu.mapper.MzcEquipmentMapper;
 import com.ruoyi.yixiu.domain.MzcEquipment;
 import com.ruoyi.yixiu.service.IMzcEquipmentService;
+
+import javax.annotation.Resource;
 
 import static com.ruoyi.common.utils.SecurityUtils.getUsername;
 
@@ -22,6 +30,8 @@ public class MzcEquipmentServiceImpl implements IMzcEquipmentService
     @Autowired
     private MzcEquipmentMapper mzcEquipmentMapper;
 
+    @Resource
+    private WxMaService wxMaService;
     /**
      * 查询设备列表
      * 
@@ -124,5 +134,24 @@ public class MzcEquipmentServiceImpl implements IMzcEquipmentService
         String deleteByName = getUsername();
 
         return mzcEquipmentMapper.deleteMzcEquipmentByEquipmentId(equipmentId,deleteByName);
+    }
+
+    /**
+     * 生成设备二维码
+     *
+     * @param param 参数
+     * @return 结果
+     */
+    @Override
+    public String createEquipmentQrCode(String param) {
+        byte[] qrCodeBytes = null;
+
+        try {
+            qrCodeBytes = wxMaService.getQrcodeService().createWxaCodeBytes("pages/repair/index?"+param,"develop",430,true ,null,true);
+        } catch (WxErrorException e) {
+            e.printStackTrace();
+        }
+
+        return Base64.encode(qrCodeBytes);
     }
 }
