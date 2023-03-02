@@ -5,7 +5,7 @@
  * @version: 1.0.0
  * @Date: 2022-09-06 09:47:23
  * @LastEditors: 莫卓才
- * @LastEditTime: 2023-03-01 11:24:55
+ * @LastEditTime: 2023-03-02 22:11:34
 -->
 <template >
   <view class="home">
@@ -205,14 +205,14 @@
                              :submit="submitOffer" />
 
       <!-- 配件 -->
-      <nut-popup pop-class="popclass"
+      <!-- <nut-popup pop-class="popclass"
                  v-model:visible="showTable"
                  :z-index="100"
                  style="width:90%;maxHeight:400px">
         <nut-table :columns="formData.partsTitle"
                    :data="formData.partsData"
                    style="overflow-x: auto;white-space: nowrap;overflow-y: hidden;" />
-      </nut-popup>
+      </nut-popup> -->
       <tabbar-component />
     </view>
   </view>

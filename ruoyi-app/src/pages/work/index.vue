@@ -5,7 +5,7 @@
  * @version: 1.0.0
  * @Date: 2022-09-06 09:47:23
  * @LastEditors: 莫卓才
- * @LastEditTime: 2022-11-22 17:43:19
+ * @LastEditTime: 2023-03-02 22:19:26
 -->
 <template >
   <view class="home">
@@ -16,7 +16,7 @@
     <view class="body p-2 bannber"
           :style="{marginTop:marginTop+'px'}">
 
-      <image :src="swiperList[0]?.remote_path"
+      <image :src="BASE_URL+swiperList[0]?.filePath"
              class="w-100 h-100 "
              mode="scaleToFill" />
     </view>
@@ -46,43 +46,43 @@
                     <view class="order-scroll-item pb-2">
                       <view class="d-flex py-1 px-2">
                         <view class="name text-right text-subtitle">设备名称：</view>
-                        <view class="text text-theme">{{scroll.facility_name || '暂无数据'}}</view>
+                        <view class="text text-theme">{{scroll.equipment.equipmentName || '暂无数据'}}</view>
                       </view>
                       <view class="d-flex py-1 px-2">
                         <view class="name text-right text-subtitle">所属科室：</view>
-                        <view class="text font-ellipsis">{{scroll.department_name || '暂无数据'}}</view>
+                        <view class="text font-ellipsis">{{scroll.dept.deptName || '暂无数据'}}</view>
                       </view>
                       <view class="d-flex py-1 px-2">
                         <view class="name text-right text-subtitle">联系人：</view>
-                        <view class="text font-ellipsis">{{scroll.creater_name || '暂无数据'}}</view>
+                        <view class="text font-ellipsis">{{scroll.repairman || '暂无数据'}}</view>
                       </view>
                       <view class="d-flex py-1 px-2">
                         <view class="name text-right text-subtitle">联系方式：</view>
-                        <view class="text font-ellipsis">{{scroll.creater_phone || '暂无数据'}}</view>
+                        <view class="text font-ellipsis">{{scroll.repairPhone || '暂无数据'}}</view>
                       </view>
                       <view class="d-flex py-1 px-2">
                         <view class="name text-right text-subtitle">维修类型：</view>
-                        <view class="text font-ellipsis">{{scroll.type_name || '暂无数据'}}</view>
+                        <view class="text font-ellipsis">{{getOrderType(scroll.workType)  || '暂无数据'}}</view>
                       </view>
                       <view class="d-flex py-1 px-2">
                         <view class="name text-right text-subtitle">维修时间：</view>
-                        <view class="text font-ellipsis">{{scroll.create_time || '暂无数据'}}</view>
+                        <view class="text font-ellipsis">{{scroll.orderFeedback.maintenanceStartTime || '暂无数据'}}</view>
                       </view>
                       <view class="d-flex py-1 px-2">
                         <view class="name text-right text-subtitle">完成时间：</view>
-                        <view class="text font-ellipsis">{{scroll.finish_time || '暂无数据'}}</view>
+                        <view class="text font-ellipsis">{{scroll.orderFeedback.maintenanceEndTime || '暂无数据'}}</view>
                       </view>
                       <view class="d-flex py-1 px-2">
                         <view class="name text-right text-subtitle">订单状态：</view>
-                        <view class="text font-ellipsis text-red">{{scroll.order_status_text || '暂无数据'}}</view>
+                        <view class="text font-ellipsis text-red">{{getOrderStatusType(scroll.status) || '暂无数据'}}</view>
                       </view>
                       <view class="d-flex py-1 px-2">
                         <view class="name text-right text-subtitle">故障描述：</view>
-                        <view class="text font-ellipsis">{{scroll.failure_describe || '暂无数据'}}</view>
+                        <view class="text font-ellipsis">{{scroll.errorDescription || '暂无数据'}}</view>
                       </view>
                       <view class="d-flex py-1 px-2">
                         <view class="name text-right text-subtitle">故障原因：</view>
-                        <view class="text font-ellipsis">{{scroll.failure_cause || '暂无数据'}}</view>
+                        <view class="text font-ellipsis">{{scroll.orderFeedback.equipmentInspection || '暂无数据'}}</view>
                       </view>
                       <view class="d-flex py-1 px-2">
                         <view class="name text-right text-subtitle">配件：</view>
@@ -93,11 +93,7 @@
                       </view>
                       <view class="d-flex py-1 px-2">
                         <view class="name text-right text-subtitle">验收人：</view>
-                        <view class="text font-ellipsis">{{scroll.accepter_name || '暂无数据'}}</view>
-                      </view>
-                      <view class="d-flex py-1 px-2">
-                        <view class="name text-right text-subtitle">验收时间：</view>
-                        <view class="text font-ellipsis">{{scroll.accepter_time || '暂无数据'}}</view>
+                        <view class="text font-ellipsis">{{scroll.acceptor || '暂无数据'}}</view>
                       </view>
                     </view>
                   </template>
@@ -118,8 +114,8 @@
              v-model:visible="showTable"
              :z-index="100"
              style="width:90%;maxHeight:400px">
-    <nut-table :columns="formData.partsTitle"
-               :data="formData.partsData"
+    <nut-table :columns="formData?.partsTitle"
+               :data="formData?.partsData"
                style="overflow-x: auto;white-space: nowrap;overflow-y: hidden;" />
   </nut-popup>
 
@@ -128,9 +124,10 @@
 </template>
 
 <script lang="ts" setup>
+import { BASE_URL } from '@/config';
 import * as Taro from '@tarojs/taro';
-import { reactive, toRefs } from 'vue';
-import { orderList, slideList } from '@/api/';
+import { reactive, toRefs, computed } from 'vue';
+import { orderList, slideList, orderStatus, orderTypeArr, getFeedbackInfo } from '@/api/';
 import { Vo } from '@/interfaces/';
 import { getViewStyle } from '@/utils/util';
 import popupComponent from '@/components/popupComponent.vue';
@@ -163,12 +160,17 @@ const state = reactive({
     partsTitle: [
       {
         align: 'center',
-        key: 'parts_name',
+        key: 'partsModel',
+        title: '型号'
+      },
+      {
+        align: 'center',
+        key: 'partsName',
         title: '配件名'
       },
       {
         align: 'center',
-        key: 'num',
+        key: 'number',
         title: '数量'
       },
       {
@@ -178,19 +180,21 @@ const state = reactive({
       },
       {
         align: 'center',
-        key: 'parts_price',
+        key: 'partsPrice',
         title: '部件费'
       },
       {
         align: 'center',
-        key: 'repair_price',
+        key: 'maintenancePrice',
         title: '维修费'
       }
     ],
     partsData: [],
     accept_person: '',
     accept_time: ''
-  }
+  },
+  orderStatusArr: [],
+  orderType: []
 });
 
 const {
@@ -205,8 +209,28 @@ const {
   currentPageList,
   flagPageList,
   showTable,
+  orderStatusArr,
+  orderType,
   formData
 } = toRefs(state);
+
+const getOrderStatusType = computed(() => (index: string) => {
+  if (index != null && index != '') {
+    const e = orderStatusArr.value.find(item => item.dictValue == index);
+    return e.dictLabel;
+  } else {
+    return '';
+  }
+});
+
+const getOrderType = computed(() => (index: string) => {
+  if (index != null && index != '') {
+    const e = orderType.value.find(item => item.dictValue == index);
+    return e.dictLabel;
+  } else {
+    return '';
+  }
+});
 
 Taro.useDidShow(() => {
   asyncInitScrollList();
@@ -226,17 +250,24 @@ Taro.useReady(() => {
 /**显示配件table */
 const showTableFun = e => {
   showTable.value = true;
-  formData.value.partsData = e.partsData;
+
+  if (e.feedbackId) {
+    getFeedbackInfo(e.feedbackId).then(res => {
+      formData.value.partsData = res.data.orderParts;
+    });
+  } else {
+    formData.value.partsData = [];
+  }
 };
 
 /** 初始化数据 */
 const asyncInitScrollList = () => {
   Taro.showLoading({ title: '加载中' });
 
-  orderList({ page: currentPageList.value, limit: 5 }).then(res => {
-    currentPageList.value = res.data.current_page;
-    lastPageList.value = res.data.last_page;
-    scrollList.value = res.data.data;
+  orderList({ pageNum: currentPageList.value, pageSize: 5 }).then(res => {
+    scrollList.value = res.rows;
+    currentPageList.value = res.currentPage;
+    lastPageList.value = res.totalPages;
     flagPageList.value = false;
   });
 };
@@ -249,8 +280,8 @@ const lazyScrollLoad = () => {
     Taro.showLoading({ title: '加载中' });
     currentPageList.value++;
 
-    orderList({ page: currentPageList.value, limit: 5 }).then(res => {
-      scrollList.value.push(...res.data.data);
+    orderList({ pageNum: currentPageList.value, pageSize: 5 }).then(res => {
+      scrollList.value.push(...res.rows);
     });
   } else {
     Taro.hideLoading();
@@ -261,8 +292,10 @@ const lazyScrollLoad = () => {
   console.log(`第${tabActive.value}行，当前页${currentPage},最后一页${lastPage}`);
 };
 
-slideList({}).then(res => {
-  swiperList.value.push(...res.data);
+Promise.all([slideList({}), orderStatus({}), orderTypeArr({})]).then(res => {
+  swiperList.value.push(...res[0].rows);
+  orderStatusArr.value = res[1].data;
+  orderType.value = res[2].data;
 });
 </script>
 
