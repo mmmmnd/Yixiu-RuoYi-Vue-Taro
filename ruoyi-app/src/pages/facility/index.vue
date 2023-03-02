@@ -728,7 +728,7 @@ const lazyScrollLoad = () => {
   if (currentPage < lastPage) {
     Taro.showLoading({ title: '加载中' });
     currentPageList.value++;
-    facilityPageList({ status: tabActive.value, page: currentPageList.value, limit: 5 }).then(res => {
+    facilityPageList({ status: tabActive.value, pageNum: currentPageList.value, pageSize: 5 }).then(res => {
       scrollList.value.push(...res.rows);
     });
   } else {

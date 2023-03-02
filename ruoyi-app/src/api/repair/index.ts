@@ -5,7 +5,7 @@
  * @version: 1.0.0
  * @Date: 2022-09-09 16:33:27
  * @LastEditors: 莫卓才
- * @LastEditTime: 2023-02-28 17:09:19
+ * @LastEditTime: 2023-03-02 17:47:12
  */
 import { Product, Work, Engineer, Table, Hospital, Order, Accessories } from '@/interfaces/';
 import Https from '@/utils/http/https';
@@ -23,7 +23,7 @@ export function orderTypeArr(params): Promise<Service.BackendResultConfig<Work.I
 
 /** 扫码 */
 export function scanQrcodeRepair(params): Promise<Service.BackendResultConfig<Hospital.IInfo>> {
-  return https.post('/foreign/repair/scanQrcodeRepair', params);
+  return https.get('/yixiu/equipment/'+params);
 }
 
 /**订单记录 */

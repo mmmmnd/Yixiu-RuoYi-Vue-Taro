@@ -5,7 +5,7 @@
  * @version: 1.0.0
  * @Date: 2022-09-06 09:47:23
  * @LastEditors: 莫卓才
- * @LastEditTime: 2023-02-24 16:41:51
+ * @LastEditTime: 2023-03-02 17:58:56
 -->
 <template >
   <view class="home">
@@ -454,27 +454,25 @@ Promise.all([orderTypeArr({}), slideList({}), deptAncestorsList({})]).then(res =
 });
 
 Taro.useDidShow(() => {
+  const myInfo = authStore.userInfos.myInfo;
+
   /** 扫码 */
-  if (routerParams.id) {
+  if (routerParams.equipmentId) {
     Taro.showLoading({ title: '加载中' });
 
     tabbar.setActive(2);
 
-    scanQrcodeRepair({ id: routerParams.id }).then(res => {
-      formData.facility_id = res.data.facility_id || '';
-      formData.facility_name = res.data.facility_name || '';
-      formData.serial_number = res.data.serial_number || '';
-      formData.creater = userInfo.value.nickname || '';
-      formData.creater_phone = userInfo.value.phone || '';
-      formData.company_id = res.data.company_id || 0;
-      formData.company_name = res.data.company_name || '';
-      formData.department_id = res.data.department_id || 0;
-      formData.department_name = res.data.department_name || '';
-      formData.expect_time = res.data.expect_time || '';
-      formData.facility_model = res.data.facility_model || '';
-      formData.factory_number = res.data.factory_number || '';
-      formData.type_id = res.data.type_id || '';
-      formData.failure_describe = res.data.failure_describe || '';
+    scanQrcodeRepair(routerParams.equipmentId).then(res => {
+      formData.deptId = res.data.dept.deptId || '';
+      formData.equipmentId = res.data.equipmentId || '';
+      formData.companyName = res.data.dept.parentName || '';
+      formData.deptName = res.data.dept.deptName || '';
+      formData.repairman = myInfo.nickName || '';
+      formData.repairPhone = myInfo.phonenumber || '';
+      formData.serialNumber = res.data.serialNumber || 0;
+      formData.modelNumber = res.data.modelNumber || '';
+      formData.factoryNumber = res.data.factoryNumber || 0;
+      formData.equipmentName = res.data.equipmentName || 0;
     });
   }
 });
