@@ -5,7 +5,7 @@
   * @version: 1.0.0
   * @Date: 2022-09-06 09:47:23
  * @LastEditors: 莫卓才
- * @LastEditTime: 2023-03-03 11:37:34
+ * @LastEditTime: 2023-03-03 16:57:13
  -->
 <template>
   <view class="home">
@@ -237,38 +237,36 @@
                 <view class="flex-grow-1 content">
                   <view class="d-flex py-1">
                     <view class="name text-right text-subtitle">设备名称：</view>
-                    <view class="text text-theme">{{ item.facility_name || "暂无数据" }}</view>
+                    <view class="text text-theme">{{ item.equipment.equipmentName || "暂无数据" }}</view>
                   </view>
                   <view class="d-flex py-1 px-2">
                     <view class="name text-right text-subtitle">医院名称：</view>
-                    <view class="text">{{ item.company_name || "暂无数据" }}</view>
+                    <view class="text">{{ item.dept.parentName || "暂无数据" }}</view>
                   </view>
                   <view class="d-flex py-1">
                     <view class="name text-right text-subtitle">工程师：</view>
-                    <view class="text">{{ item.engineer_name || "暂无数据" }}</view>
+                    <view class="text">{{ item.engineerName || "暂无数据" }}</view>
                   </view>
                   <view class="d-flex py-1">
                     <view class="name text-right text-subtitle">联系方式：</view>
-                    <view class="text">{{ item.creater_phone || "暂无数据" }}</view>
+                    <view class="text">{{ item.repairPhone || "暂无数据" }}</view>
                   </view>
                   <view class="d-flex py-1">
                     <view class="name text-right text-subtitle">维修类型：</view>
-                    <view class="text">{{ item.type_name || "暂无数据" }}</view>
+                    <view class="text">{{ getOrderType(item.workType)|| "暂无数据" }}</view>
                   </view>
                   <view class="d-flex py-1">
                     <view class="name text-right text-subtitle">报修时间：</view>
-                    <view class="text">{{ item.expect_time || "暂无数据" }}</view>
+                    <view class="text">{{ item.createTime || "暂无数据" }}</view>
                   </view>
                   <view class="d-flex py-1">
                     <view class="name text-right text-subtitle">完成时间：</view>
-                    <view class="text">{{ item.finish_time || "暂无数据" }}</view>
+                    <view class="text">{{ item.orderFeedback.maintenanceEndTime || "暂无数据" }}</view>
                   </view>
-                </view>
-                <view class="flex-grow-0 position d-flex flex-column jc-center">
-                  <image mode="aspectFill"
-                         :src="getStatusCoceImgType(item.status_code, 'path')" />
-                  <text class="fs-xs text-white">{{ getStatusCoceImgType(item.status_code, 'name') || "暂无数据" }}</text>
-
+                  <view class="d-flex py-1">
+                    <view class="name text-right text-subtitle">订单状态：</view>
+                    <view class="text text-red">{{ getOrderStatusType(item.status) || "暂无数据" }}</view>
+                  </view>
                 </view>
               </view>
             </view>
