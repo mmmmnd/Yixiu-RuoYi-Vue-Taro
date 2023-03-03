@@ -5,7 +5,7 @@
  * @version: 1.0.0
  * @Date: 2022-09-06 09:47:23
  * @LastEditors: 莫卓才
- * @LastEditTime: 2022-11-16 17:10:07
+ * @LastEditTime: 2023-03-03 16:47:19
 -->
 <template >
   <view class="home">
@@ -16,7 +16,7 @@
     <view class="body p-2 bannber"
           :style="{marginTop:marginTop+'px'}">
 
-      <image :src="swiperList[0]?.remote_path"
+      <image :src="BASE_URL+swiperList[0]?.filePath"
              class="w-100 h-100 "
              mode="scaleToFill" />
     </view>
@@ -46,15 +46,11 @@
                     <view class="order-scroll-item pb-2">
                       <view class="d-flex py-1 px-2">
                         <view class="name text-right text-subtitle">维修点名称：</view>
-                        <view class="text text-theme">{{scroll.name || '暂无数据'}}</view>
+                        <view class="text text-theme">{{scroll.deptName || '暂无数据'}}</view>
                       </view>
                       <view class="d-flex py-1 px-2">
                         <view class="name text-right text-subtitle">联系电话：</view>
                         <view class="text">{{scroll.phone || '暂无数据'}}</view>
-                      </view>
-                      <view class="d-flex py-1 px-2">
-                        <view class="name text-right text-subtitle">服务时间：</view>
-                        <view class="text">{{scroll.server_time || '暂无数据'}}</view>
                       </view>
                       <view class="d-flex py-1 px-2">
                         <view class="name text-right text-subtitle">地址：</view>
@@ -88,6 +84,7 @@
 </template>
 
 <script lang="ts" setup>
+import { BASE_URL } from '@/config';
 import * as Taro from '@tarojs/taro';
 import { reactive, toRefs } from 'vue';
 import { districtPageList, slideList } from '@/api/';
@@ -135,7 +132,6 @@ Taro.useReady(() => {
       marginTop.value = res.topHeight;
       scrollHegiht.value =
         res.topHeight + res.bottonHeight + res.tabTopHeight + res.repairTitleHeight + res.bannberHeight + 20;
-      asyncInitScrollList();
     });
   });
 });
@@ -144,11 +140,13 @@ Taro.useReady(() => {
 const asyncInitScrollList = () => {
   Taro.showLoading({ title: '加载中' });
 
-  districtPageList({ page: currentPageList.value, limit: 5 }).then(res => {
+  districtPageList({ parentId: 1 }).then(res => {
     currentPageList.value = res.data.current_page;
     lastPageList.value = res.data.last_page;
-    scrollList.value = res.data.data;
+    scrollList.value = res.data;
     flagPageList.value = false;
+
+    console.log(res);
   });
 };
 
@@ -169,8 +167,8 @@ const lazyScrollLoad = () => {
   if (currentPage < lastPage) {
     Taro.showLoading({ title: '加载中' });
     currentPageList.value++;
-    districtPageList({ page: currentPageList.value, limit: 1 }).then(res => {
-      scrollList.value.push(...res.data.data);
+    districtPageList({ parentId: 1 }).then(res => {
+      scrollList.value.push(...res.rows);
     });
   } else {
     flagPageList.value = true;
@@ -181,7 +179,7 @@ const lazyScrollLoad = () => {
 };
 
 slideList({}).then(res => {
-  swiperList.value.push(...res.data);
+  swiperList.value.push(...res.rows);
 });
 </script>
 

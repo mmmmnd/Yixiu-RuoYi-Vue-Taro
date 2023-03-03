@@ -5,12 +5,12 @@
  * @version: 1.0.0
  * @Date: 2022-09-21 08:30:18
  * @LastEditors: 莫卓才
- * @LastEditTime: 2023-03-02 11:02:14
+ * @LastEditTime: 2023-03-03 11:22:55
 -->
 <template>
   <popup-component v-model:showPopup="update"
                    :closeableFalg="true"
-                   :title="formData.status_offer !=1?'提交报价单':'显示报价单'">
+                   :title="formData.status_offer ==4?'提交报价单':'显示报价单'">
     <view class="d-flex py-1 px-2">
       <view class="flex-grow-0 name text-right text-subtitle assess-label">设备名称：</view>
       <view class="text ">{{formData.facility_name || '暂无数据'}}</view>
@@ -46,32 +46,32 @@
       <view class="content d-flex w-100"
             v-for="(item,index) in formData.partsData"
             :key="index">
-        <view style="width:12.5%;border: 1px solid #000;text-align: center;box-sizing: border-box;">{{item.model_number || '暂无数据'}}</view>
-        <view style="width:12.5%;border: 1px solid #000;text-align: center;box-sizing: border-box;">{{item.parts_name || '暂无数据'}}</view>
-        <view style="width:12.5%;border: 1px solid #000;text-align: center;box-sizing: border-box;">{{item.num || '暂无数据'}}</view>
+        <view style="width:12.5%;border: 1px solid #000;text-align: center;box-sizing: border-box;">{{item.partsModel || '暂无数据'}}</view>
+        <view style="width:12.5%;border: 1px solid #000;text-align: center;box-sizing: border-box;">{{item.partsName || '暂无数据'}}</view>
+        <view style="width:12.5%;border: 1px solid #000;text-align: center;box-sizing: border-box;">{{item.number || '暂无数据'}}</view>
         <view style="width:12.5%;border: 1px solid #000;text-align: center;box-sizing: border-box;">{{item.unit || '暂无数据'}}</view>
-        <view style="width:12.5%;border: 1px solid #000;text-align: center;box-sizing: border-box;word-break:break-all;">{{item.parts_price || '暂无数据'}}</view>
-        <view style="width:12.5%;border: 1px solid #000;text-align: center;box-sizing: border-box;word-break:break-all;">{{item.repair_price || '暂无数据'}}</view>
+        <view style="width:12.5%;border: 1px solid #000;text-align: center;box-sizing: border-box;word-break:break-all;">{{item.partsPrice || '暂无数据'}}</view>
+        <view style="width:12.5%;border: 1px solid #000;text-align: center;box-sizing: border-box;word-break:break-all;">{{item.maintenancePrice || '暂无数据'}}</view>
 
         <view style="width:12.5%;min-height: 45px;border: 1px solid #000;text-align: center;box-sizing: border-box;word-break:break-all;"
-              v-if="formData.status_offer != 1">
+              v-if="formData.status_offer == 4">
           <input class="nut-input-text"
                  type="text"
-                 v-model="item.unit_price"
+                 v-model="item.unitPrice"
                  placeholder="请输入单价" />
         </view>
         <view v-else
-              style="width:12.5%;min-height: 45px;border: 1px solid #000;text-align: center;box-sizing: border-box;word-break:break-all;">{{item.unit_price || '暂无数据'}}</view>
+              style="width:12.5%;min-height: 45px;border: 1px solid #000;text-align: center;box-sizing: border-box;word-break:break-all;">{{item.unitPrice || '暂无数据'}}</view>
 
         <view style="width:12.5%;min-height: 45px;border: 1px solid #000;text-align: center;box-sizing: border-box;word-break:break-all;"
-              v-if="formData.status_offer != 1">
+              v-if="formData.status_offer == 4">
           <input class="nut-input-text"
                  type="text"
-                 v-model="item.discount_price"
+                 v-model="item.preferentialPrice"
                  placeholder="请输入单价" />
         </view>
         <view v-else
-              style="width:12.5%;min-height: 45px;border: 1px solid #000;text-align: center;box-sizing: border-box;word-break:break-all;">{{item.discount_price || '暂无数据'}}</view>
+              style="width:12.5%;min-height: 45px;border: 1px solid #000;text-align: center;box-sizing: border-box;word-break:break-all;">{{item.preferentialPrice || '暂无数据'}}</view>
       </view>
 
     </view>
@@ -82,7 +82,7 @@
     </view>
     <view class="d-flex py-1 px-4 pl-2">
       <view class="flex-grow-0 name text-right text-subtitle assess-label">总价：</view>
-      <input v-if="formData.status_offer != 1"
+      <input v-if="formData.status_offer == 4"
              class="nut-input-text"
              type="text"
              v-model="formData.total_price"
@@ -93,7 +93,7 @@
 
     </view>
     <view class="d-flex py-1 px-2 mb-2"
-          v-if="formData.status_offer != 1">
+          v-if="formData.status_offer == 4">
       <view class="flex-grow-0 name text-right text-subtitle assess-label"></view>
       <nut-button color="#007CCC"
                   shape="square"

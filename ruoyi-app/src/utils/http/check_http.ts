@@ -5,7 +5,7 @@
  * @version: 1.0.0
  * @Date: 2021-07-05 11:14:06
  * @LastEditors: 莫卓才
- * @LastEditTime: 2023-02-16 21:59:27
+ * @LastEditTime: 2023-03-03 10:12:12
  */
 import * as Taro from '@tarojs/taro';
 import { HTTP_ERROR, BASE_URL, WHITE_PATH, WHITELIST_ROUTES } from '@/config';
@@ -76,7 +76,7 @@ CheckHttp.prototype.interceptors = {
     if (data.code >= 200 && data.code < 300) return data;
 
     if (debounce && data.code === 401) {
-      // authStore.resetAuthStore();
+      authStore.resetAuthStore();
       debounce = false;
       Taro.showModal({
         title: '未绑定',

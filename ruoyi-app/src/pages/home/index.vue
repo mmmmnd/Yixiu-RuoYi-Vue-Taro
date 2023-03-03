@@ -5,7 +5,7 @@
   * @version: 1.0.0
   * @Date: 2022-09-06 09:47:23
  * @LastEditors: 莫卓才
- * @LastEditTime: 2023-02-28 09:16:48
+ * @LastEditTime: 2023-03-03 11:37:34
  -->
 <template>
   <view class="home">
@@ -162,31 +162,31 @@
                 <view class="flex-grow-1 content">
                   <view class="d-flex py-1">
                     <view class="name text-right text-subtitle">设备名称：</view>
-                    <view class="text text-theme">{{ item.facility_name || "暂无数据" }}</view>
+                    <view class="text text-theme">{{ item.equipment?.equipmentName || "暂无数据" }}</view>
                   </view>
                   <view class="d-flex py-1">
                     <view class="name text-right text-subtitle">工程师：</view>
-                    <view class="text">{{ item.engineer_name || "暂无数据" }}</view>
+                    <view class="text">{{ item.engineerName || "暂无数据" }}</view>
                   </view>
                   <view class="d-flex py-1">
                     <view class="name text-right text-subtitle">医院名称：</view>
-                    <view class="text">{{ item.company_name || "暂无数据" }}</view>
+                    <view class="text">{{ item.dept?.parentName || "暂无数据" }}</view>
                   </view>
                   <view class="d-flex py-1">
                     <view class="name text-right text-subtitle">医院科室：</view>
-                    <view class="text">{{ item.department_name || "暂无数据" }}</view>
+                    <view class="text">{{ item.dept?.deptName || "暂无数据" }}</view>
                   </view>
                   <view class="d-flex py-1">
                     <view class="name text-right text-subtitle">联系方式：</view>
-                    <view class="text">{{ item.creater_phone || "暂无数据" }}</view>
+                    <view class="text">{{ item.repairPhone || "暂无数据" }}</view>
                   </view>
                   <view class="d-flex py-1">
                     <view class="name text-right text-subtitle">维修类型：</view>
-                    <view class="text">{{ item.type_name || "暂无数据" }}</view>
+                    <view class="text">{{ getOrderType(item.workType) || "暂无数据" }}</view>
                   </view>
                   <view class="d-flex py-1">
                     <view class="name text-right text-subtitle">订单状态：</view>
-                    <view class="text text-red">{{ item.order_status_text || "暂无数据" }}</view>
+                    <view class="text text-red">{{ getOrderStatusType(item.status) || "暂无数据" }}</view>
                   </view>
                 </view>
                 <view class="flex-grow-0 position d-flex flex-column jc-evenly">
@@ -195,13 +195,13 @@
                               type="info"
                               @click="popupOrderInfo(item)">详情明细</nut-button>
                   <nut-button size="small"
-                              :color="item.status_offer != '1' ? '#007CCC' : '#BBBBBB'"
+                              :color="item.status == '4' ? '#007CCC' : '#BBBBBB'"
                               type="info"
-                              @click="item.status_offer != '1' ? popupOffer(item) : ''">提交报价单</nut-button>
+                              @click="item.status == '4' ? popupOffer(item) : ''">提交报价单</nut-button>
                   <nut-button size="small"
-                              :color="item.status_offer == '1' ? '#09C160' : '#BBBBBB'"
+                              :color="item.status >5 ? '#09C160' : '#BBBBBB'"
                               type="info"
-                              @click="item.status_offer == '1' ? popupOffer(item) : ''">查看报价单</nut-button>
+                              @click="item.status > 5 ? popupOffer(item) : ''">查看报价单</nut-button>
                 </view>
               </view>
             </view>
@@ -933,17 +933,22 @@ const submitEnd = () => {
 
 /**报价单popup */
 const popupOffer = e => {
-  formDataOffer.value.order_id = e.id;
+  formDataOffer.value.order_id = e.orderId;
+  formDataOffer.value.feedbackId = e.orderId;
   formDataOffer.value.facility_name = e.facility_name;
-  formDataOffer.value.serial_number = e.serial_number;
-  formDataOffer.value.department_name = e.department_name;
-  formDataOffer.value.failure_describe = e.failure_describe;
-  formDataOffer.value.failure_cause = e.failure_cause;
-  formDataOffer.value.status_offer = e.status_offer;
+  formDataOffer.value.serial_number = e.equipment.equipmentName;
+  formDataOffer.value.department_name = e.dept.deptName;
+  formDataOffer.value.failure_describe = e.errorDescription;
+  formDataOffer.value.failure_cause = e.orderFeedback.equipmentInspection;
+  formDataOffer.value.status_offer = e.status;
 
-  formDataOffer.value.partsData = e.partsData;
+  if (e.feedbackId) {
+    getFeedbackInfo(e.feedbackId).then(res => {
+      formDataOffer.value.partsData = res.data.orderParts;
+    });
+  }
 
-  formDataOffer.value.total_price = e.total_price;
+  formDataOffer.value.total_price = e.orderFeedback.totalPrice;
 
   showOffer.value = true;
 };
@@ -952,7 +957,14 @@ const popupOffer = e => {
 const submitOffer = () => {
   Taro.showLoading({ title: '加载中' });
 
-  offerSubmit(formDataOffer.value).then(res => {
+  const param = {
+    orderId: formDataOffer.value.order_id,
+    feedbackId: formDataOffer.value.feedbackId,
+    orderParts: formDataOffer.value.partsData,
+    totalPrice: formDataOffer.value.total_price
+  };
+
+  offerSubmit(param).then(res => {
     showOffer.value = false;
     asyncInitScrollList();
   });
@@ -996,13 +1008,17 @@ Taro.useDidShow(() => {
   /**登录再去请求登录后的信息 */
   if (authStore.isLogin) {
     Taro.showLoading({ title: '加载中' });
-    Promise.all([myInfo({}), headerMenu({}), orderStatus({}), orderTypeArr({})]).then(res => {
+    Promise.all([myInfo({}), orderStatus({}), orderTypeArr({})]).then(res => {
       userInfo.NavBarName = '欢迎登录:' + res[0].user.nickName;
-      userInfo.gridList = res[1].data;
       userInfo.myInfo = res[0].user;
       userInfo.roleId = res[0].user.roleId;
-      orderStatusArr.value = res[2].data;
-      orderType.value = res[3].data;
+      orderStatusArr.value = res[1].data;
+      orderType.value = res[2].data;
+      const roleId =
+        userInfo.roleId == 104 || userInfo.roleId == 110 || userInfo.roleId == 1 ? 1 : userInfo.roleId == 100 ? 2 : 3;
+      headerMenu(roleId).then(res => {
+        userInfo.gridList = res.data;
+      });
 
       authStore.setMyInfo(userInfo);
       authStore.setGridList(userInfo);

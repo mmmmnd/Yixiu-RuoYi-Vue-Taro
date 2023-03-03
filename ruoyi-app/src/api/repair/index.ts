@@ -5,7 +5,7 @@
  * @version: 1.0.0
  * @Date: 2022-09-09 16:33:27
  * @LastEditors: 莫卓才
- * @LastEditTime: 2023-03-02 17:47:12
+ * @LastEditTime: 2023-03-03 11:32:28
  */
 import { Product, Work, Engineer, Table, Hospital, Order, Accessories } from '@/interfaces/';
 import Https from '@/utils/http/https';
@@ -77,5 +77,5 @@ export function repairComplete(params): Promise<Service.BackendResultConfig> {
 
 /**报价单提交 */
 export function offerSubmit(params): Promise<Service.BackendResultConfig> {
-  return https.post('/foreign/repair/offerSubmit', params);
+  return https.post('/yixiu/order/feedback', params);
 }

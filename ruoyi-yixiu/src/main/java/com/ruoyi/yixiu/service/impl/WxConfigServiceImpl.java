@@ -24,20 +24,20 @@ public class WxConfigServiceImpl implements WxConfigService {
         HeaderMenuVO menuVO1,menuVO2,menuVO3,menuVO4 = null;
 
         if (roleId == 1){
-            menuVO1 = new HeaderMenuVO("", "https://xcx.ylqx.top/static/xcx/repairRequest.png?time=1676599032", "设备列表", "page", "/pages/facility/index");
-            menuVO2 = new HeaderMenuVO("", "https://xcx.ylqx.top/static/xcx/accessories.png?time=1676599032", "配件申请", "page", "/pages/accessories/index");
-            menuVO3 = new HeaderMenuVO("", "https://xcx.ylqx.top/static/xcx/scanCode.png?time=1676599032", "扫码报修", "fn", "/pages/facility/index");
-            menuVO4 = new HeaderMenuVO("", "https://xcx.ylqx.top/static/xcx/report.png?time=1676599032", "工作报告", "page", "/pages/work/index");
+            menuVO1 = new HeaderMenuVO("2", "https://xcx.ylqx.top/static/xcx/repairRequest.png", "维修申请", "tabBar", "/pages/repair/index");
+            menuVO2 = new HeaderMenuVO("1", "https://xcx.ylqx.top/static/xcx/maintenanceRecords.png", "维修记录", "tabBar", "/pages/order/index");
+            menuVO3 = new HeaderMenuVO(null, "https://xcx.ylqx.top/static/xcx/scanCode.png", "扫码报修", "fn", "/pages/facility/index");
+            menuVO4 = new HeaderMenuVO(null, "https://xcx.ylqx.top/static/xcx/repair.png", "维修点", "page", "/pages/place/index");
         }else if(roleId == 2){
-            menuVO1 = new HeaderMenuVO("", "https://xcx.ylqx.top/static/xcx/repairRequest.png?time=1676599032", "设备列表", "page", "/pages/facility/index");
-            menuVO2 = new HeaderMenuVO("", "https://xcx.ylqx.top/static/xcx/accessories.png?time=1676599032", "配件申请", "page", "/pages/accessories/index");
-            menuVO3 = new HeaderMenuVO("", "https://xcx.ylqx.top/static/xcx/scanCode.png?time=1676599032", "扫码报修", "fn", "/pages/facility/index");
-            menuVO4 = new HeaderMenuVO("", "https://xcx.ylqx.top/static/xcx/report.png?time=1676599032", "工作报告", "page", "/pages/work/index");
+            menuVO1 = new HeaderMenuVO(null, "https://xcx.ylqx.top/static/xcx/repairRequest.png", "设备列表", "page", "/pages/facility/index");
+            menuVO2 = new HeaderMenuVO(null, "https://xcx.ylqx.top/static/xcx/accessories.png", "配件申请", "page", "/pages/accessories/index");
+            menuVO3 = new HeaderMenuVO(null, "https://xcx.ylqx.top/static/xcx/scanCode.png", "扫码报修", "fn", "/pages/facility/index");
+            menuVO4 = new HeaderMenuVO(null, "https://xcx.ylqx.top/static/xcx/report.png", "工作报告", "page", "/pages/work/index");
         }else{
-            menuVO1 = new HeaderMenuVO("", "https://xcx.ylqx.top/static/xcx/repairRequest.png?time=1676599032", "设备列表", "page", "/pages/facility/index");
-            menuVO2 = new HeaderMenuVO("", "https://xcx.ylqx.top/static/xcx/accessories.png?time=1676599032", "配件申请", "page", "/pages/accessories/index");
-            menuVO3 = new HeaderMenuVO("", "https://xcx.ylqx.top/static/xcx/scanCode.png?time=1676599032", "扫码报修", "fn", "/pages/facility/index");
-            menuVO4 = new HeaderMenuVO("", "https://xcx.ylqx.top/static/xcx/report.png?time=1676599032", "工作报告", "page", "/pages/work/index");
+            menuVO1 = new HeaderMenuVO("2", "https://xcx.ylqx.top/static/xcx/repairRequest.png", "维修申请", "tabBar", "/pages/repair/index");
+            menuVO2 = new HeaderMenuVO(null, "https://xcx.ylqx.top/static/xcx/invoice.png", "发票申请", "page", "/pages/invoice/index");
+            menuVO3 = new HeaderMenuVO(null, "https://xcx.ylqx.top/static/xcx/scanCode.png", "扫码报修", "fn", "");
+            menuVO4 = new HeaderMenuVO(null, "https://xcx.ylqx.top/static/xcx/customer.png", "我的客户", "page", "/pages/customer/index");
         }
 
          list.add(menuVO1);

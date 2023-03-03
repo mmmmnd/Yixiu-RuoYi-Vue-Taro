@@ -12,5 +12,5 @@ import Https from '@/utils/http/https';
 const https = new Https();
 
 export function districtPageList(params): Promise<Service.BackendResultConfig<Table.IPage<Place.IInfo>>> {
-  return https.get('/foreign/district/pageList', params);
+  return https.get('/system/dept/getParentIdList', params);
 }

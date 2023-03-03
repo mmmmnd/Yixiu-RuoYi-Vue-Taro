@@ -5,7 +5,7 @@
  * @version: 1.0.0
  * @Date: 2022-09-21 08:30:18
  * @LastEditors: 莫卓才
- * @LastEditTime: 2023-03-02 11:03:05
+ * @LastEditTime: 2023-03-02 22:55:02
 -->
 <template>
   <popup-component v-model:showPopup="update"
@@ -49,7 +49,7 @@ const props = defineProps({
     default: () => {}
   }
 });
-const update = ref(() => props.showPopup);
+const update = ref(() => props.showComplaint);
 </script>
 <style lang="scss">
 .assess-label {

@@ -5,7 +5,7 @@
  * @version: 1.0.0
  * @Date: 2022-09-06 09:47:23
  * @LastEditors: 莫卓才
- * @LastEditTime: 2023-03-02 22:11:34
+ * @LastEditTime: 2023-03-03 11:44:16
 -->
 <template >
   <view class="home">
@@ -47,7 +47,7 @@
                 </view>
                 <view class="d-flex py-1 px-2">
                   <view class="name text-right text-subtitle">工程师：</view>
-                  <view class="text">{{scroll.engineer_name || '暂无数据'}}</view>
+                  <view class="text">{{scroll.engineerName || '暂无数据'}}</view>
                 </view>
                 <view class="d-flex py-1 px-2">
                   <view class="name text-right text-subtitle">医院名称：</view>
@@ -97,7 +97,7 @@
                   <view class="text">{{scroll.appraiseOpinion || '暂无数据'}}</view>
                 </view>
                 <view class="d-flex jc-between flex-wrap"
-                      v-if="scroll.status > 8">
+                      v-if="authStore.userInfo.roleId == 104 || authStore.userInfo.roleId == 110 || authStore.userInfo.roleId == 1 && scroll.status > 8">
                   <nut-button size="small"
                               :color="scroll.status == '8'?'#09C160':'#BBBBBB'"
                               type="info"
@@ -137,21 +137,21 @@
                 </view>
 
                 <view class="d-flex py-1"
-                      v-if="authStore.userInfo.role_group == 3">
+                      v-if="authStore.userInfo.roleId == 100">
                   <nut-button size="small"
                               color="#007CCC"
                               type="info"
                               @click="popupOrderInfo(scroll)">详情明细</nut-button>
                   <nut-button size="small"
-                              :color="scroll.status_offer != '1'?'#007CCC':'#BBBBBB'"
+                              :color="scroll.status == '4'?'#007CCC':'#BBBBBB'"
                               type="info"
                               class="mx-2"
-                              @click="scroll.status_offer != '1'?popupOffer(scroll):''">提交报价单</nut-button>
+                              @click="scroll.status == '4'?popupOffer(scroll):''">提交报价单</nut-button>
                   <nut-button size="small"
-                              :color="scroll.status_offer == '1'?'#09C160':'#BBBBBB'"
+                              :color="scroll.status >5 ?'#09C160':'#BBBBBB'"
                               type="info"
                               class="mx-2"
-                              @click="scroll.status_offer == '1'?popupOffer(scroll):''">查看报价单</nut-button>
+                              @click="scroll.status >5 ?popupOffer(scroll):''">查看报价单</nut-button>
                 </view>
               </view>
 
@@ -970,26 +970,38 @@ const showTableFun = e => {
 
 /**报价单popup */
 const popupOffer = e => {
-  formDataOffer.value.order_id = e.id;
+  formDataOffer.value.order_id = e.orderId;
+  formDataOffer.value.feedbackId = e.orderId;
   formDataOffer.value.facility_name = e.facility_name;
-  formDataOffer.value.serial_number = e.serial_number;
-  formDataOffer.value.department_name = e.department_name;
-  formDataOffer.value.failure_describe = e.failure_describe;
-  formDataOffer.value.failure_cause = e.failure_cause;
-  formDataOffer.value.status_offer = e.status_offer;
+  formDataOffer.value.serial_number = e.equipment.equipmentName;
+  formDataOffer.value.department_name = e.dept.deptName;
+  formDataOffer.value.failure_describe = e.errorDescription;
+  formDataOffer.value.failure_cause = e.orderFeedback.equipmentInspection;
+  formDataOffer.value.status_offer = e.status;
 
-  formDataOffer.value.partsData = e.partsData;
+  if (e.feedbackId) {
+    getFeedbackInfo(e.feedbackId).then(res => {
+      formDataOffer.value.partsData = res.data.orderParts;
+    });
+  }
 
-  formDataOffer.value.total_price = e.total_price;
+  formDataOffer.value.total_price = e.orderFeedback.totalPrice;
 
   showOffer.value = true;
 };
 
 /**报价单提交/修改 */
 const submitOffer = () => {
-  Taro.showLoading({ title: '正在提交' });
+  Taro.showLoading({ title: '加载中' });
 
-  offerSubmit(formDataOffer.value).then(res => {
+  const param = {
+    orderId: formDataOffer.value.order_id,
+    feedbackId: formDataOffer.value.feedbackId,
+    orderParts: formDataOffer.value.partsData,
+    totalPrice: formDataOffer.value.total_price
+  };
+
+  offerSubmit(param).then(res => {
     showOffer.value = false;
     asyncInitScrollList();
   });
