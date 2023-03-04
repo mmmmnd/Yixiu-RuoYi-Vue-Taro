@@ -1,10 +1,10 @@
 /*
- * @Author: 莫卓才
+ * @Author: mmmmnd
  * @eMail: handsome.mo@foxmail.com
  * @Descripttion: 描述
  * @version: 1.0.0
  * @Date: 2023-02-06 16:19:36
- * @LastEditors: 莫卓才
+ * @LastEditors: mmmmnd
  * @LastEditTime: 2023-02-06 17:35:40
  */
 import request from '@/utils/request'

@@ -1,10 +1,10 @@
 <!--
- * @Author: 莫卓才
+ * @Author: mmmmnd
  * @eMail: handsome.mo@foxmail.com
  * @Descripttion: 描述
  * @version: 1.0.0
  * @Date: 2022-09-21 08:30:18
- * @LastEditors: 莫卓才
+ * @LastEditors: mmmmnd
  * @LastEditTime: 2023-03-02 10:01:14
 -->
 <template>

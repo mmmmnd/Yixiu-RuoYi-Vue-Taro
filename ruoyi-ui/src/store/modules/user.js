@@ -1,10 +1,10 @@
 /*
- * @Author: 莫卓才
+ * @Author: mmmmnd
  * @eMail: handsome.mo@foxmail.com
  * @Descripttion: 描述
  * @version: 1.0.0
  * @Date: 2023-02-14 17:10:21
- * @LastEditors: 莫卓才
+ * @LastEditors: mmmmnd
  * @LastEditTime: 2023-02-21 22:14:49
  */
 import { login, logout, getInfo } from '@/api/login'
