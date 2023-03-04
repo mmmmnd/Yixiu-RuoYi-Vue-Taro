@@ -72,7 +72,7 @@ $ CREATE DATABASE IF NOT EXISTS yixiu-ruoYi-vue-taro DEFAULT CHARACTER SET utf8m
 $ USE yixiu-ruoYi-vue-taro
 
 # 导入SQL
-$ source 根目录SQL文件夹SQL文件
+$ SOURCE 根目录SQL文件夹SQL文件
 ```
 
 ### 3.4.Redis
@@ -85,7 +85,7 @@ $ source 根目录SQL文件夹SQL文件
 
 ### 3.6.修改 前端后台Api 地址
 
-请在根目录下的 [——ruoyi-ui\.env.*](https://github.com/mmmmnd/Yixiu-RuoYi-Vue-Taro/tree/master/ruoyi-ui) 修改VUE_APP_BASE_API = api地址。
+请在根目录下的 [——ruoyi-ui\\.env.*](https://github.com/mmmmnd/Yixiu-RuoYi-Vue-Taro/tree/master/ruoyi-ui) 修改VUE_APP_BASE_API = api地址。
 
 ### 3.7.修改 前端小程序Api 地址
 
