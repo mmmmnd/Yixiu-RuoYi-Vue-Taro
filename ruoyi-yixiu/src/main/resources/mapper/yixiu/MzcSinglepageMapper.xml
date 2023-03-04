@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.yixiu.mapper.MzcSinglepageMapper">
+    
+    <resultMap type="MzcSinglepage" id="MzcSinglepageResult">
+        <result property="id"    column="id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="title"    column="title"    />
+        <result property="keywords"    column="keywords"    />
+        <result property="description"    column="description"    />
+        <result property="content"    column="content"    />
+        <result property="thumb"    column="thumb"    />
+        <result property="sort"    column="sort"    />
+        <result property="clicks"    column="clicks"    />
+        <result property="status"    column="status"    />
+        <result property="remark"    column="remark"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="deleteBy"    column="delete_by"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectMzcSinglepageVo">
+        select id, user_id, title, keywords, description, content, thumb, sort, clicks, status, remark, del_flag, delete_by, create_by, create_time, update_by, update_time from mzc_singlepage
+    </sql>
+
+    <select id="selectMzcSinglepageList" parameterType="MzcSinglepage" resultMap="MzcSinglepageResult">
+        <include refid="selectMzcSinglepageVo"/>
+        <where>  
+            <if test="title != null  and title != ''"> and title like concat('%', #{title}, '%')</if>
+             and del_flag = '0'
+        </where>
+    </select>
+    
+    <select id="selectMzcSinglepageById" parameterType="Long" resultMap="MzcSinglepageResult">
+        <include refid="selectMzcSinglepageVo"/>
+        where id = #{id} and del_flag = '0'
+
+    </select>
+        
+    <insert id="insertMzcSinglepage" parameterType="MzcSinglepage" useGeneratedKeys="true" keyProperty="id">
+        insert into mzc_singlepage
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="title != null">title,</if>
+            <if test="keywords != null">keywords,</if>
+            <if test="description != null">description,</if>
+            <if test="content != null">content,</if>
+            <if test="thumb != null">thumb,</if>
+            <if test="sort != null">sort,</if>
+            <if test="clicks != null">clicks,</if>
+            <if test="status != null">status,</if>
+            <if test="remark != null">remark,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="deleteBy != null">delete_by,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="title != null">#{title},</if>
+            <if test="keywords != null">#{keywords},</if>
+            <if test="description != null">#{description},</if>
+            <if test="content != null">#{content},</if>
+            <if test="thumb != null">#{thumb},</if>
+            <if test="sort != null">#{sort},</if>
+            <if test="clicks != null">#{clicks},</if>
+            <if test="status != null">#{status},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="deleteBy != null">#{deleteBy},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateMzcSinglepage" parameterType="MzcSinglepage">
+        update mzc_singlepage
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="title != null">title = #{title},</if>
+            <if test="keywords != null">keywords = #{keywords},</if>
+            <if test="description != null">description = #{description},</if>
+            <if test="content != null">content = #{content},</if>
+            <if test="thumb != null">thumb = #{thumb},</if>
+            <if test="sort != null">sort = #{sort},</if>
+            <if test="clicks != null">clicks = #{clicks},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="deleteBy != null">delete_by = #{deleteBy},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id} and del_flag = '0'
+    </update>
+
+    <delete id="deleteMzcSinglepageById" parameterType="Long">
+        update mzc_singlepage set del_flag = '2', delete_by = #{deleteByName} where id = #{id}
+    </delete>
+
+    <delete id="deleteMzcSinglepageByIds" parameterType="String">
+      update mzc_singlepage set del_flag = '2', delete_by = #{deleteByName} where id in
+        <foreach item="id" collection="ids" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

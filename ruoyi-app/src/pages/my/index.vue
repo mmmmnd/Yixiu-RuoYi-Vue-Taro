@@ -80,13 +80,8 @@
                              :formData="formData" />
 
     <!-- 关于我们 -->
-    <popup-component v-model:showPopup="showAbout"
-                     :closeableFalg="true"
-                     title="关于我们">
-      <view class="px-4 py-2">
-        <rich-text :nodes="formatRichText(textAbout)"></rich-text>
-      </view>
-    </popup-component>
+    <popup-my-about-component v-model:visible="showAbout"
+                              :formData="formData" />
 
     <tabbar-component />
   </view>
@@ -100,8 +95,8 @@ import { useAuthStore, useTabbarStore } from '@/store';
 import { myInfo, myAbout, saveWechatInfo } from '@/api/';
 import { getToken } from '@/utils/util';
 import TabbarComponent from '@/components/TabbarComponent.vue';
-import popupComponent from '@/components/popupComponent.vue';
 import popupMyInfoComponent from '@/pages/component/popupMyInfoComponent.vue';
+import popupMyAboutComponent from '@/pages/component/popupMyAboutComponent.vue';
 
 const authStore = useAuthStore();
 const tabbar = useTabbarStore();
@@ -153,7 +148,6 @@ const state = reactive({
   ],
   showUserInfo: false,
   showAbout: false,
-  textAbout: '',
   userInfo: authStore.userInfos,
   isLogin: authStore.isLogin,
   formData: {
@@ -162,21 +156,16 @@ const state = reactive({
     phone: null,
     company_address: '',
     company_name: '',
-    company_id: 0
+    company_id: 0,
+    textAbout: ''
   }
 });
 
-const { infoList, showUserInfo, showAbout, textAbout, userInfo, isLogin, formData } = toRefs(state);
+const { infoList, showUserInfo, showAbout, userInfo, isLogin, formData } = toRefs(state);
 
 /**格式化手机号码 */
 const getPhone = computed(() => (phone: string) => {
   return phone && phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2');
-});
-
-const formatRichText = computed(() => (html: string) => {
-  return html
-    .replace(/<img[^>]*>/gi, match => match.replace(/style=".*"/gi, '').replace(/style='.*'/gi, ''))
-    .replace(/\<img/gi, '<img style="width:100%;"');
 });
 
 /**显示Popup弹窗 */
@@ -207,8 +196,6 @@ const onChooseAvatar = e => {
     },
     success(r: any) {
       userInfo.myInfo.avatar = r.imgUrl;
-
-      console.log(userInfo.myInfo.avatar);
       authStore.setMyInfo(userInfo);
     },
     fail(e) {
@@ -256,7 +243,7 @@ Taro.useDidShow(() => {
 
 /**显示个人信息和关于 */
 myAbout({}).then(res => {
-  textAbout.value = res.data.content;
+  formData.value.textAbout = res.rows[0].content;
 });
 </script>
 <style lang="scss">

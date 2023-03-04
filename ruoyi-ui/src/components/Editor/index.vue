@@ -22,7 +22,12 @@ import Quill from "quill";
 import "quill/dist/quill.core.css";
 import "quill/dist/quill.snow.css";
 import "quill/dist/quill.bubble.css";
+import resizeImage from 'quill-image-resize-module' // 图片缩放组件引用
+import { ImageDrop } from 'quill-image-drop-module'; // 图片拖动组件引用
 import { getToken } from "@/utils/auth";
+
+Quill.register('modules/imageDrop', ImageDrop); // 注册
+Quill.register('modules/resizeImage ', resizeImage ) // 注册 
 
 export default {
   name: "Editor",
@@ -71,6 +76,16 @@ export default {
         bounds: document.body,
         debug: "warn",
         modules: {
+          imageDrop:true,
+          imageResize:{
+            displayStyles:
+            {
+              backgroundColor:'black',
+              border:'none',
+              color:'white'
+            },
+            modules:['Resize','DisplaySize','Toolbar']
+          },
           // 工具栏配置
           toolbar: [
             ["bold", "italic", "underline", "strike"],       // 加粗 斜体 下划线 删除线

@@ -5,7 +5,7 @@
  * @version: 1.0.0
  * @Date: 2022-09-20 10:30:13
  * @LastEditors: 莫卓才
- * @LastEditTime: 2023-02-17 15:40:14
+ * @LastEditTime: 2023-03-04 10:12:22
  */
 import { Order, User, Menu } from '@/interfaces/';
 import Https from '@/utils/http/https';
@@ -18,7 +18,7 @@ export function myInfo(params): Promise<Service.BackendResultConfig<User.IMyInfo
 
 /**关于 */
 export function myAbout(params): Promise<Service.BackendResultConfig<Order.IComplaint>> {
-  return https.post('/foreign/my/about', params);
+  return https.get('/yixiu/singlepage/list', params);
 }
 
 /**Nav导航栏 */
