@@ -3,6 +3,7 @@ package com.ruoyi.yixiu.controller;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
+import com.ruoyi.common.annotation.Anonymous;
 import com.ruoyi.common.core.domain.R;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +40,7 @@ public class MzcSwiperController extends BaseController
     /**
      * 查询轮播图列表
      */
-    @PreAuthorize("@ss.hasPermi('yixiu:swiper:list')")
+    @Anonymous
     @GetMapping("/list")
     public TableDataInfo<MzcSwiper> list(MzcSwiper mzcSwiper)
     {

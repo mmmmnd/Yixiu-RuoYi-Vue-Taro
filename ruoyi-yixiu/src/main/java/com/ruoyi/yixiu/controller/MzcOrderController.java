@@ -3,6 +3,7 @@ package com.ruoyi.yixiu.controller;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
+import com.ruoyi.common.annotation.Anonymous;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.utils.bean.BeanUtils;
 import com.ruoyi.yixiu.domain.dto.order.*;

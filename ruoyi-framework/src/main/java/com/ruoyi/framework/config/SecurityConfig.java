@@ -120,7 +120,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
                 // 对于登录login 注册register 验证码captchaImage 允许匿名访问
                 .antMatchers("/login", "/register", "/captchaImage").permitAll()
                 /*小程序匿名接口*/
-                .antMatchers("/wxLogin","/wxBinding").permitAll()
+                .antMatchers("/wxLogin","/wxBinding","/yixiu/swiper/list","/yixiu/config/headerMenu","/system/dict/data/type/mzc_order_status","/system/dict/data/type/mzc_order_type").permitAll()
                 // 静态资源，可匿名访问
                 .antMatchers(HttpMethod.GET, "/", "/*.html", "/**/*.html", "/**/*.css", "/**/*.js", "/profile/**").permitAll()
                 .antMatchers("/swagger-ui.html", "/swagger-resources/**", "/webjars/**", "/*/api-docs", "/druid/**").permitAll()

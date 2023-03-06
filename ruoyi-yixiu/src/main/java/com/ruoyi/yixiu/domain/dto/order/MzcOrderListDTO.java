@@ -1,8 +1,9 @@
 package com.ruoyi.yixiu.domain.dto.order;
 
+import com.ruoyi.common.core.domain.BaseEntity;
 import io.swagger.annotations.ApiModelProperty;
 
-public class MzcOrderListDTO {
+public class MzcOrderListDTO  {
 
     @ApiModelProperty(value = "分页",example = "1")
     private Integer pageNum;
